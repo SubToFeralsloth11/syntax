@@ -2785,6 +2785,54 @@ main {
 
   .site-header .container {
     flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .logo-img {
+    height: 24px;
+  }
+
+  /* Hide hamburger on mobile too - nav stays visible inline */
+  .nav-toggle {
+    display: none;
+  }
+
+  .header-right {
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  /* Nav stays visible inline, compact */
+  .nav {
+    display: flex;
+    position: static;
+    background: none;
+    backdrop-filter: none;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 1;
+    min-width: 0;
+    padding: 0;
+  }
+  .nav a {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .nav.open {
+    display: flex;
+  }
+
+  .user-section {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .site-header .container {
+    flex-wrap: nowrap;
     gap: 12px;
   }
 
@@ -2855,27 +2903,32 @@ main {
   }
 
   .coins-display {
-    font-size: 0.72rem;
-    padding: 4px 8px;
+    font-size: 0.68rem;
+    padding: 3px 6px;
   }
 
   .profile-link {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
   }
 
   .owner-badge {
-    font-size: 0.55rem;
-    padding: 1px 5px;
+    font-size: 0.5rem;
+    padding: 1px 4px;
   }
 
   .avatar-small {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .btn-sm {
-    font-size: 0.7rem;
-    padding: 3px 8px;
+    font-size: 0.68rem;
+    padding: 3px 7px;
+  }
+
+  .admin-nav-btn {
+    font-size: 0.65rem !important;
+    padding: 3px 6px !important;
   }
 
   .page-header {
