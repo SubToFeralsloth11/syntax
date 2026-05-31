@@ -65,6 +65,7 @@ const chatRoutes = require('./routes/chat');
 const settingsRoutes = require('./routes/settings');
 const bankRoutes = require('./routes/bank');
 const lotteryRoutes = require('./routes/lottery');
+const earnRoutes = require('./routes/earn');
 const adminRoutes = require('./routes/admin');
 
 function avatarUrl(avatar) {
@@ -107,6 +108,7 @@ app.use('/', chatRoutes);
 app.use('/', settingsRoutes);
 app.use('/', bankRoutes);
 app.use('/', lotteryRoutes);
+app.use('/', earnRoutes);
 app.use('/', adminRoutes);
 
 // Custom error pages
