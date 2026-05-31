@@ -33,9 +33,12 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/signup', (req, res) => {
+  const refCookie = req.cookies?.ref;
+  const referred = !!refCookie;
   res.render('signup', {
     googleEnabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
-    messages: null
+    messages: null,
+    referred
   });
 });
 
@@ -78,7 +81,7 @@ router.post('/signup', (req, res, next) => {
           db.prepare(
             'INSERT OR IGNORE INTO referrals (referrer_id, referred_id, reward_given) VALUES (?, ?, 1)'
           ).run(referrerId, user.id);
-          awardCoins(referrerId, 50, 'referral');
+          awardCoins(referrerId, 100, 'referral');
           if (totalReferrals === 0) {
             const coins = checkAchievement(referrerId, 'Social Butterfly');
             if (coins) awardCoins(referrerId, coins, 'achievement');

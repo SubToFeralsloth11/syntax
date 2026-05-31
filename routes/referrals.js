@@ -18,7 +18,7 @@ router.get('/refer', requireAuth, (req, res) => {
   `).all(userId);
 
   const referralCount = referrals.length;
-  const totalEarned = Math.min(referralCount, MAX_REFERRALS) * 50;
+  const totalEarned = Math.min(referralCount, MAX_REFERRALS) * 100;
 
   res.render('refer', { refCode, referrals, referralCount, totalEarned, maxReferrals: MAX_REFERRALS });
 });
