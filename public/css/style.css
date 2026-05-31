@@ -279,6 +279,11 @@ a:hover {
   overflow-x: auto;
 }
 
+/* Hamburger hidden on desktop */
+.nav-toggle {
+  display: none;
+}
+
 .nav a {
   color: var(--text-muted);
   font-size: 0.85rem;
@@ -2748,10 +2753,302 @@ main {
 }
 
 @media (max-width: 768px) {
+  .site-header {
+    padding: 10px 0;
+  }
+
   .site-header .container {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .logo-img {
+    height: 28px;
+  }
+
+  /* Hamburger toggle - only visible on mobile via this media query */
+  .nav-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    z-index: 101;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .nav-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+  /* Nav becomes fullscreen overlay on mobile */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 15, 26, 0.98);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+    display: none;
+  }
+  .nav.open {
+    display: flex;
+  }
+  .nav a {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .nav a:hover {
+    color: var(--accent);
+  }
+
+  .user-section {
+    gap: 6px;
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+
+  .coins-display {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+
+  .profile-link {
+    font-size: 0.82rem;
+  }
+
+  .owner-badge {
+    font-size: 0.55rem;
+    padding: 1px 5px;
+  }
+
+  .avatar-small {
+    width: 22px;
+    height: 22px;
+  }
+
+  .btn-sm {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .page-header {
+    padding: 24px 0;
+  }
+  .page-header h1 {
+    font-size: 1.4rem;
+  }
+  .page-header p {
+    font-size: 0.82rem;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  .hero-sub {
+    font-size: 0.9rem;
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
+  .game-card {
+    padding: 12px;
+  }
+  .game-thumbnail {
+    height: 100px;
+  }
+  .game-info h3 {
+    font-size: 0.9rem;
+  }
+  .game-info p {
+    font-size: 0.75rem;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Leaderboard compact */
+  .lb-header,
+  .lb-row {
+    grid-template-columns: 32px 34px 1fr 60px;
+    font-size: 0.8rem;
+  }
+  .lb-h-coins, .lb-coins { display: none; }
+  .lb-balance { font-size: 0.75rem; }
+
+  /* Admin compact */
+  .admin-layout {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .admin-sidebar {
+    flex-direction: row;
+    min-width: auto;
+  }
+  .admin-tab {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+  .admin-table {
+    font-size: 0.72rem;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 6px;
+  }
+  .col-email, .col-pass, .col-coins, .col-status {
+    display: none;
+  }
+  .admin-actions {
+    gap: 2px;
+  }
+  .admin-actions .btn-sm {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  /* Chat */
+  .chat-messages {
+    height: 50vh;
+  }
+  .chat-msg {
+    font-size: 0.85rem;
+  }
+
+  /* Lottery */
+  .jackpot-amount {
+    font-size: 2rem;
+  }
+  .lottery-info {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Settings */
+  .settings-card {
+    padding: 16px;
+  }
+
+  /* Shop */
+  .mb-buttons {
+    flex-direction: column;
+  }
+  .shop-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Wheel */
+  .wheel-wrapper {
+    max-width: 280px;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .warning-modal {
+    max-width: 95%;
+  }
+  .warning-modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .auth-card {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header {
+    padding: 8px 0;
+  }
+
+  .page-header {
+    padding: 20px 0;
+  }
+  .page-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+  .game-thumbnail {
+    height: 120px;
+  }
+
+  .game-detail-card {
+    padding: 16px;
+  }
+
+  /* Admin ultra compact */
+  .admin-table {
+    font-size: 0.68rem;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 6px 5px;
+  }
+  .col-date { display: none; }
+  .admin-actions .btn-sm {
+    font-size: 0.58rem;
+    padding: 2px 4px;
+  }
+
+  /* Leaderboard */
+  .lb-header,
+  .lb-row {
+    grid-template-columns: 28px 30px 1fr 50px;
+  }
+
+  /* Lottery */
+  .jackpot-amount {
+    font-size: 1.6rem;
+  }
+  .lottery-info {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Settings */
+  .toggle-label {
+    font-size: 0.85rem;
+  }
+
+  .btn-sm {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+}
 
   .logo {
     font-size: 1.2rem;

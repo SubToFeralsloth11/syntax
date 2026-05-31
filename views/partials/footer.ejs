@@ -7,4 +7,12 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
   }
+  function toggleNav() {
+    document.getElementById('navToggle').classList.toggle('open');
+    document.getElementById('mainNav').classList.toggle('open');
+  }
+  function closeNav() {
+    document.getElementById('navToggle').classList.remove('open');
+    document.getElementById('mainNav').classList.remove('open');
+  }
 </script>
