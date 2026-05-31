@@ -24,8 +24,10 @@
             <% const visited = visitedPaths.includes('/games/' + game.id) %>
             <% const played = playedIds.includes(game.id) %>
             <a href="/games/<%= game.id %>" class="game-card <%= game.status === 'coming-soon' ? 'coming-soon' : '' %>">
-              <div class="game-thumbnail">
-                <div class="game-placeholder"><%= game.name[0] %></div>
+              <div class="game-thumbnail" style="background-image:url('<%= game.thumbnail %>');background-size:cover;background-position:center">
+                <% if (!game.thumbnail || game.thumbnail.endsWith('.svg')) { %>
+                  <div class="game-placeholder"><%= game.name[0] %></div>
+                <% } %>
               </div>
               <div class="game-info">
                 <h3><%= game.name %></h3>

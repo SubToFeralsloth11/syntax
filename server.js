@@ -121,4 +121,22 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Syntax running at http://localhost:${PORT}`);
+
+  // Auto-generate thumbnails for games missing them
+  setTimeout(() => {
+    const fs = require('fs');
+    const path = require('path');
+    try {
+      const { execFile } = require('child_process');
+      const games = JSON.parse(fs.readFileSync(path.join(__dirname, 'config', 'games.json'), 'utf8'));
+      const needsThumbnail = games.filter(g => g.status === 'active' && g.thumbnail.endsWith('.svg'));
+      if (needsThumbnail.length > 0) {
+        console.log(`Generating thumbnails for ${needsThumbnail.length} game(s)...`);
+        execFile('node', ['scripts/generate-thumbnail.js', ...needsThumbnail.map(g => g.id)], {
+          cwd: __dirname,
+          stdio: 'inherit'
+        });
+      }
+    } catch (e) { /* ignore */ }
+  }, 3000);
 });
