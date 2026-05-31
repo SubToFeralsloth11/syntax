@@ -15,10 +15,18 @@
     <div class="user-section">
       <% if (typeof user !== 'undefined' && user) { %>
         <span class="coins-display"><%= user.coins %> coins</span>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin" class="btn btn-sm btn-glow admin-nav-btn">Admin</a>
+        <% } %>
         <a href="/settings" class="settings-link" title="Settings">
           <img src="<%= avatarUrl(user.avatar) %>" alt="" class="avatar-small" onerror="this.onerror=null;this.src='/images/default-avatar.svg'">
         </a>
-        <a href="/profile" class="profile-link"><%= user.display_name %></a>
+        <a href="/profile" class="profile-link">
+          <%= user.display_name %>
+          <% if (user.role === 'admin') { %>
+            <span class="owner-badge" title="Owner">Owner</span>
+          <% } %>
+        </a>
         <a href="/logout" class="btn btn-sm">Logout</a>
       <% } else { %>
         <a href="/login" class="btn btn-sm">Login</a>

@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   equipped_frame TEXT DEFAULT NULL,
   equipped_badge TEXT DEFAULT NULL,
   equipped_title TEXT DEFAULT NULL,
+  role TEXT DEFAULT 'user',
+  banned_until TEXT DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -143,4 +145,14 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   message TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS warnings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  admin_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (admin_id) REFERENCES users(id)
 );
