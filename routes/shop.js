@@ -39,17 +39,17 @@ router.post('/shop/mystery-box/buy', requireAuth, (req, res) => {
   const userId = req.user.id;
   const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId);
 
-  if (user.coins < 100) {
-    return res.json({ success: false, message: 'Not enough coins! You need 100.' });
+  if (user.coins < 250) {
+    return res.json({ success: false, message: 'Not enough coins! You need 250.' });
   }
 
-  awardCoins(userId, -100, 'mystery_box_buy');
+  awardCoins(userId, -250, 'mystery_box_buy');
 
   const totalBought = db.prepare(
     "SELECT COUNT(*) as cnt FROM coin_transactions WHERE user_id = ? AND reason = 'mystery_box_buy'"
   ).get(userId).cnt;
 
-  res.json({ success: true, balance: user.coins - 100, boxNumber: totalBought });
+  res.json({ success: true, balance: user.coins - 250, boxNumber: totalBought });
 });
 
 router.post('/shop/mystery-box/open', requireAuth, (req, res) => {
