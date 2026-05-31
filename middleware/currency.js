@@ -1,11 +1,18 @@
 const db = require('../db/database');
 
 function awardCoins(userId, amount, reason) {
+  if (amount < 0) {
+    const current = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId);
+    if (!current || current.coins + amount < 0) {
+      amount = -(current ? current.coins : 0);
+    }
+  }
+
   const insertTx = db.prepare(
     'INSERT INTO coin_transactions (user_id, amount, reason) VALUES (?, ?, ?)'
   );
   const updateUser = db.prepare(
-    'UPDATE users SET coins = coins + ?, total_coins_earned = total_coins_earned + ? WHERE id = ?'
+    'UPDATE users SET coins = MAX(0, coins + ?), total_coins_earned = total_coins_earned + ? WHERE id = ?'
   );
 
   const tx = db.transaction(() => {

@@ -1022,6 +1022,214 @@ a:hover {
   margin-left: 28px;
 }
 
+.trivia-timer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.trivia-timer strong {
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+/* Lottery */
+.lottery-section {
+  padding: 20px 0 60px;
+}
+
+.lottery-jackpot-card {
+  background: var(--bg-card);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.jackpot-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 204, 68, 0.1) 0%, transparent 70%);
+  animation: jackpot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes jackpot-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+.jackpot-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.jackpot-amount {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255, 204, 68, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.jackpot-sub {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+}
+
+.jackpot-growing {
+  font-size: 0.8rem;
+  color: var(--success);
+  margin-top: 8px;
+  animation: blink 1.5s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.lottery-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.lottery-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.lottery-stat {
+  text-align: center;
+  background: var(--bg);
+  padding: 14px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.lotto-stat-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lotto-stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.ticket-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ticket-input-row input {
+  width: 100px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.ticket-cost {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.ticket-chance {
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.lottery-result {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.lottery-result.hidden {
+  display: none;
+}
+
+.lottery-result.won {
+  background: rgba(255, 204, 68, 0.1);
+  border: 1px solid var(--gold);
+}
+
+.lottery-result.lost {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+}
+
+.winner-title {
+  color: var(--gold);
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.lottery-winners {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.lottery-winners h3 {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.winner-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.winner-row:last-child { border-bottom: none; }
+
+.winner-amount {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.winner-date {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  margin-left: auto;
+}
+
 .alert-success {
   background: rgba(68, 221, 136, 0.12);
   color: var(--success);

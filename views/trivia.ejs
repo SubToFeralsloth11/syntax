@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daily Trivia — Syntax</title>
+  <title>Trivia — Syntax</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -12,24 +12,27 @@
   <main>
     <section class="page-header">
       <div class="container">
-        <h1>Daily Trivia</h1>
-        <p>Answer correctly to earn 15 coins!</p>
+        <h1>Trivia</h1>
+        <p>Answer correctly to earn 25 coins! Resets every 20 minutes.</p>
       </div>
     </section>
 
     <section class="trivia-section">
       <div class="container">
+        <div class="trivia-timer">
+          Next question in: <strong id="countdown">--:--</strong>
+        </div>
         <div class="trivia-card">
           <% if (answered) { %>
             <div class="trivia-result">
               <h2><%= correct ? 'Correct!' : 'Wrong!' %></h2>
-              <p><%= correct ? 'You earned 15 coins! Come back tomorrow for a new question.' : 'Better luck tomorrow!' %></p>
+              <p><%= correct ? 'You earned 25 coins! Come back after the timer resets for a new question.' : 'Better luck next round!' %></p>
               <a href="/" class="btn btn-primary">Back to Home</a>
             </div>
           <% } else if (!question) { %>
             <div class="trivia-loading">
               <h2>Loading question...</h2>
-              <p>Please wait while we fetch today's question.</p>
+              <p>Please wait while we fetch a question.</p>
               <a href="/trivia" class="btn">Try Again</a>
             </div>
           <% } else { %>
@@ -54,6 +57,23 @@
   </main>
 
   <%- include('partials/footer') %>
+  <script>
+    var nextReset = <%= nextReset %>;
+    function updateTimer() {
+      var remaining = Math.max(0, Math.floor((nextReset - Date.now()) / 1000));
+      var min = Math.floor(remaining / 60);
+      var sec = remaining % 60;
+      document.getElementById('countdown').textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+      if (remaining <= 0) {
+        document.getElementById('countdown').textContent = 'Now!';
+        <% if (answered) { %>
+        location.reload();
+        <% } %>
+      }
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
   <script src="/js/main.js"></script>
 </body>
 </html>

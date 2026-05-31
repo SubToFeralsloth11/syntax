@@ -7,7 +7,7 @@ const { checkAchievement } = require('../middleware/achievements');
 const fs = require('fs');
 const path = require('path');
 
-const SPIN_COST = 5;
+const SPIN_COST = 2;
 const SEGMENT_POOL = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'config', 'wheel-segments.json'), 'utf8')
 );

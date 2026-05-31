@@ -142,6 +142,25 @@ CREATE TABLE IF NOT EXISTS investments (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS lottery_state (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  jackpot INTEGER DEFAULT 500,
+  base_jackpot INTEGER DEFAULT 500,
+  ticket_cost INTEGER DEFAULT 50,
+  last_tick INTEGER DEFAULT (cast(strftime('%s', 'now') as integer)),
+  total_tickets INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS lottery_tickets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  count INTEGER DEFAULT 1,
+  won INTEGER DEFAULT 0,
+  won_amount INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE IF NOT EXISTS chat_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,

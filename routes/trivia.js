@@ -6,6 +6,18 @@ const { awardCoins } = require('../middleware/currency');
 const { checkAchievement } = require('../middleware/achievements');
 
 const TRIVIA_CACHE = {};
+const TRIVIA_INTERVAL = 20 * 60 * 1000; // 20 minutes
+
+function getTriviaKey() {
+  const now = Date.now();
+  return Math.floor(now / TRIVIA_INTERVAL);
+}
+
+function getNextReset() {
+  const now = Date.now();
+  const key = Math.floor(now / TRIVIA_INTERVAL);
+  return (key + 1) * TRIVIA_INTERVAL;
+}
 
 async function fetchTrivia() {
   try {
@@ -33,47 +45,55 @@ async function fetchTrivia() {
 
 router.get('/trivia', requireAuth, async (req, res) => {
   const userId = req.user.id;
-  const today = new Date().toISOString().split('T')[0];
+  const key = getTriviaKey();
+  const questionDate = String(key);
 
   const alreadyAnswered = db.prepare(
     "SELECT correct FROM trivia_answers WHERE user_id = ? AND question_date = ?"
-  ).get(userId, today);
+  ).get(userId, questionDate);
 
   if (alreadyAnswered) {
     return res.render('trivia', {
       answered: true,
       correct: alreadyAnswered.correct === 1,
-      question: null
+      question: null,
+      nextReset: getNextReset()
     });
   }
 
-  let trivia = TRIVIA_CACHE[today];
+  let trivia = TRIVIA_CACHE[questionDate];
   if (!trivia) {
     trivia = await fetchTrivia();
-    if (trivia) TRIVIA_CACHE[today] = trivia;
+    if (trivia) TRIVIA_CACHE[questionDate] = trivia;
   }
 
   res.render('trivia', {
     answered: false,
     correct: null,
-    question: trivia
+    question: trivia,
+    nextReset: getNextReset()
   });
+});
+
+router.get('/trivia/time-left', requireAuth, (req, res) => {
+  res.json({ nextReset: getNextReset() });
 });
 
 router.post('/trivia/answer', requireAuth, async (req, res) => {
   const userId = req.user.id;
-  const today = new Date().toISOString().split('T')[0];
+  const key = getTriviaKey();
+  const questionDate = String(key);
   const { answer } = req.body;
 
   const alreadyAnswered = db.prepare(
     "SELECT id FROM trivia_answers WHERE user_id = ? AND question_date = ?"
-  ).get(userId, today);
+  ).get(userId, questionDate);
 
   if (alreadyAnswered) {
-    return res.json({ success: false, message: 'Already answered today!' });
+    return res.json({ success: false, message: 'Already answered this round! Try again after the timer resets.' });
   }
 
-  const trivia = TRIVIA_CACHE[today];
+  const trivia = TRIVIA_CACHE[questionDate];
   if (!trivia) {
     return res.json({ success: false, message: 'No question loaded. Try refreshing.' });
   }
@@ -81,10 +101,10 @@ router.post('/trivia/answer', requireAuth, async (req, res) => {
   const correct = answer === trivia.correctAnswer ? 1 : 0;
   db.prepare(
     "INSERT INTO trivia_answers (user_id, question_date, correct) VALUES (?, ?, ?)"
-  ).run(userId, today, correct);
+  ).run(userId, questionDate, correct);
 
   if (correct) {
-    awardCoins(userId, 15, 'trivia');
+    awardCoins(userId, 25, 'trivia');
 
     const totalQuestions = db.prepare(
       "SELECT COUNT(*) as cnt FROM trivia_answers WHERE user_id = ?"
