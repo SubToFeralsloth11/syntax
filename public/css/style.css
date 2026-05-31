@@ -2853,7 +2853,7 @@ main {
 
 /* Admin panel */
 .admin-section {
-  padding: 20px 0 60px;
+  padding: 30px 0 60px;
 }
 
 .admin-tabs {
@@ -2899,20 +2899,22 @@ main {
 
 .admin-table th {
   background: var(--bg);
-  padding: 12px 14px;
+  padding: 14px 14px;
   text-align: left;
   font-weight: 600;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .admin-table td {
-  padding: 10px 14px;
+  padding: 14px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   color: var(--text);
+  vertical-align: middle;
 }
 
 .admin-table tr:last-child td { border-bottom: none; }
@@ -2929,9 +2931,16 @@ main {
 .admin-table a:hover { text-decoration: underline; }
 
 .admin-actions {
-  white-space: nowrap;
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.admin-actions .btn-sm {
+  white-space: nowrap;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  flex-shrink: 0;
 }
 
 .role-tag {
