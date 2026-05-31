@@ -54,4 +54,4 @@ function restoreAccounts(db) {
   return restored;
 }
 
-module.exports = { addToLog, restoreAccounts, loadLog };
+module.exports = { addToLog, restoreAccounts, loadLog, saveLog };

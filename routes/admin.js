@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/admin');
 const { requireAuth } = require('../middleware/auth');
+const { loadLog, saveLog } = require('../db/accounts');
 
 router.get('/admin', requireAdmin, (req, res) => {
   const users = db.prepare(`
@@ -98,13 +99,15 @@ router.post('/admin/delete-user', requireAdmin, (req, res) => {
     return res.json({ success: false, message: 'You cannot delete yourself' });
   }
 
-  const target = db.prepare('SELECT id, role FROM users WHERE id = ?').get(userId);
+  const target = db.prepare('SELECT id, role, email FROM users WHERE id = ?').get(userId);
   if (!target) {
     return res.json({ success: false, message: 'User not found' });
   }
   if (target.role === 'admin') {
     return res.json({ success: false, message: 'You cannot delete another admin' });
   }
+
+  const email = target.email;
 
   db.prepare('DELETE FROM chat_messages WHERE user_id = ?').run(userId);
   db.prepare('DELETE FROM warnings WHERE user_id = ?').run(userId);
@@ -121,6 +124,12 @@ router.post('/admin/delete-user', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM user_achievements WHERE user_id = ?').run(userId);
   db.prepare('DELETE FROM investments WHERE user_id = ?').run(userId);
   db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+
+  const accounts = loadLog();
+  const filtered = accounts.filter(a => a.email !== email);
+  if (filtered.length < accounts.length) {
+    saveLog(filtered);
+  }
 
   res.json({ success: true, message: 'User and all associated data deleted' });
 });
