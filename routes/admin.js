@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/admin');
+const { requireAuth } = require('../middleware/auth');
 
 router.get('/admin', requireAdmin, (req, res) => {
   const users = db.prepare(`
@@ -158,6 +159,17 @@ router.get('/admin/user/:id', requireAdmin, (req, res) => {
   `).all(user.id);
 
   res.render('admin-user', { profile: user, warnings, transactions, messages });
+});
+
+router.post('/dismiss-warning', requireAuth, (req, res) => {
+  const { warningId } = req.body;
+  if (!warningId) return res.json({ success: false, message: 'Warning ID required' });
+
+  const warning = db.prepare('SELECT id FROM warnings WHERE id = ? AND user_id = ?').get(warningId, req.user.id);
+  if (!warning) return res.json({ success: false, message: 'Warning not found' });
+
+  db.prepare('UPDATE warnings SET read = 1 WHERE id = ?').run(warningId);
+  res.json({ success: true });
 });
 
 module.exports = router;

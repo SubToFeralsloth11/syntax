@@ -35,6 +35,14 @@ router.get('/profile', requireAuth, (req, res) => {
     "SELECT COUNT(DISTINCT game_id) as cnt FROM game_plays WHERE user_id = ?"
   ).get(userId).cnt;
 
+  const warnings = db.prepare(`
+    SELECT w.message, w.created_at, a.display_name as admin_name
+    FROM warnings w
+    JOIN users a ON a.id = w.admin_id
+    WHERE w.user_id = ?
+    ORDER BY w.created_at DESC
+  `).all(userId);
+
   res.render('profile', {
     user,
     transactions,
@@ -42,7 +50,8 @@ router.get('/profile', requireAuth, (req, res) => {
     achievements,
     totalCheckins,
     totalVisits,
-    totalPlays
+    totalPlays,
+    warnings
   });
 });
 

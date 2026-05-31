@@ -1,3 +1,38 @@
+<% if (typeof unreadWarnings !== 'undefined' && unreadWarnings.length > 0) { %>
+<div class="warning-banner">
+  <div class="container">
+    <% unreadWarnings.forEach(w => { %>
+      <div class="warning-banner-item" data-warnid="<%= w.id %>">
+        <span class="warning-banner-icon">&#9888;</span>
+        <span class="warning-banner-text"><strong><%= w.admin_name %></strong>: <%= w.message %></span>
+        <span class="warning-banner-date"><%= new Date(w.created_at).toLocaleDateString() %></span>
+        <button class="warning-dismiss" onclick="dismissWarning(<%= w.id %>, this.parentElement)" title="Dismiss">&times;</button>
+      </div>
+    <% }) %>
+  </div>
+</div>
+<script>
+function dismissWarning(id, el) {
+  fetch('/dismiss-warning', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ warningId: id })
+  }).then(r => r.json()).then(data => {
+    if (data.success) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(20px)';
+      setTimeout(() => el.remove(), 300);
+      const banner = document.querySelector('.warning-banner');
+      if (banner && !banner.querySelector('.warning-banner-item')) {
+        banner.style.opacity = '0';
+        setTimeout(() => banner.remove(), 300);
+      }
+    }
+  });
+}
+</script>
+<% } %>
+
 <header class="site-header">
   <div class="container">
     <a href="/" class="logo"><img src="/images/logo.svg" alt="Syntax" class="logo-img"></a>

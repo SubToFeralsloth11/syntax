@@ -18,7 +18,15 @@
 
     <section class="settings-section">
       <div class="container">
+        <% if (message) { %>
+          <div class="alert alert-success"><%= message %></div>
+        <% } %>
+        <% if (error) { %>
+          <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
         <div class="settings-card">
+          <h2>Profile</h2>
           <form action="/settings/profile" method="POST" enctype="multipart/form-data">
             <div class="settings-avatar">
               <img src="<%= avatarUrl(user.avatar) %>" alt="Avatar" class="avatar-preview" id="avatarPreview" onerror="this.src='/images/default-avatar.svg'">
@@ -36,7 +44,42 @@
               <input type="text" value="<%= user.email %>" disabled class="input-disabled">
             </div>
 
+            <div class="form-group">
+              <label for="bio">Bio</label>
+              <textarea id="bio" name="bio" maxlength="200" placeholder="Tell others about yourself..."><%= user.bio || '' %></textarea>
+            </div>
+
             <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+
+        <div class="settings-card">
+          <h2>Preferences</h2>
+          <div class="form-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="rememberMe" <%= user.remember_me !== 0 ? 'checked' : '' %> onchange="toggleRemember(this)">
+              <span>Stay logged in</span>
+            </label>
+            <p class="setting-hint">When disabled, you'll be logged out when you close your browser.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h2>Change Password</h2>
+          <form action="/settings/password" method="POST">
+            <div class="form-group">
+              <label for="current">Current Password</label>
+              <input type="password" id="current" name="current" required>
+            </div>
+            <div class="form-group">
+              <label for="newpass">New Password</label>
+              <input type="password" id="newpass" name="newpass" required minlength="4">
+            </div>
+            <div class="form-group">
+              <label for="confirm">Confirm New Password</label>
+              <input type="password" id="confirm" name="confirm" required minlength="4">
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
           </form>
         </div>
       </div>
@@ -54,6 +97,14 @@
         reader.readAsDataURL(e.target.files[0]);
       }
     });
+
+    function toggleRemember(cb) {
+      fetch('/settings/remember', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remember_me: cb.checked ? '1' : '0' })
+      });
+    }
   </script>
 </body>
 </html>

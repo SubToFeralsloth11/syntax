@@ -111,6 +111,69 @@ a:hover {
   color: #333;
 }
 
+/* Warning notification banner */
+.warning-banner {
+  background: linear-gradient(135deg, rgba(255, 85, 102, 0.15), rgba(255, 85, 102, 0.05));
+  border-bottom: 1px solid rgba(255, 85, 102, 0.3);
+  padding: 0;
+  transition: opacity 0.3s;
+}
+
+.warning-banner .container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.warning-banner-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 85, 102, 0.1);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.warning-banner-item:last-child {
+  border-bottom: none;
+}
+
+.warning-banner-icon {
+  color: #ffcc44;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.warning-banner-text {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.warning-banner-text strong {
+  color: var(--error);
+}
+
+.warning-banner-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.warning-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.warning-dismiss:hover {
+  color: var(--error);
+}
+
 .site-header {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
@@ -824,6 +887,84 @@ a:hover {
   color: var(--gold);
   font-style: italic;
   margin-bottom: 16px;
+}
+
+.profile-bio {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  text-align: center;
+  padding: 0 8px;
+}
+
+/* Warnings in profile */
+.warning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.warning-item {
+  background: rgba(255, 85, 102, 0.08);
+  border-left: 3px solid var(--error);
+  padding: 10px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.warning-from {
+  font-weight: 600;
+  color: var(--error);
+  font-size: 0.8rem;
+}
+
+.warning-msg {
+  display: block;
+  color: var(--text);
+  font-size: 0.85rem;
+  margin: 4px 0;
+}
+
+.warning-date {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Settings extras */
+.settings-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.setting-hint {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 4px;
+  margin-left: 28px;
+}
+
+.alert-success {
+  background: rgba(68, 221, 136, 0.12);
+  color: var(--success);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 0.9rem;
 }
 
 .profile-stats-mini {

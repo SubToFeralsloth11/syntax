@@ -19,8 +19,14 @@
                 <img src="<%= avatarUrl(user.avatar) %>" alt="<%= user.display_name %>" class="avatar-profile" onerror="this.src='/images/default-avatar.svg'">
               </div>
               <h2><%= user.display_name %></h2>
+              <% if (user.role === 'admin') { %>
+                <span class="owner-badge">Owner</span>
+              <% } %>
               <% if (user.equipped_title) { %>
                 <p class="equipped-title">"<%= user.equipped_title %>"</p>
+              <% } %>
+              <% if (user.bio) { %>
+                <p class="profile-bio"><%= user.bio %></p>
               <% } %>
               <div class="profile-stats-mini">
                 <div class="stat">
@@ -85,6 +91,21 @@
                 </div>
               <% } %>
             </div>
+
+            <% if (warnings && warnings.length > 0) { %>
+            <div class="profile-section">
+              <h2>Warnings (<%= warnings.length %>)</h2>
+              <div class="warning-list">
+                <% warnings.forEach(w => { %>
+                  <div class="warning-item">
+                    <span class="warning-from">From <%= w.admin_name %>:</span>
+                    <span class="warning-msg"><%= w.message %></span>
+                    <span class="warning-date"><%= new Date(w.created_at).toLocaleDateString() %></span>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+            <% } %>
 
             <div class="profile-section">
               <h2>Recent Transactions</h2>

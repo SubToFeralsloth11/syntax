@@ -9,9 +9,15 @@ const { checkAchievement } = require('../middleware/achievements');
 const { addToLog } = require('../db/accounts');
 
 router.post('/login', (req, res, next) => {
-  req.session.cookie.maxAge = req.body.remember
-    ? 30 * 24 * 60 * 60 * 1000
-    : 24 * 60 * 60 * 1000;
+  const user = db.prepare('SELECT remember_me FROM users WHERE email = ?').get(req.body.email);
+  const rememberMe = user ? user.remember_me : 1;
+  if (!rememberMe) {
+    req.session.cookie.maxAge = undefined;
+  } else {
+    req.session.cookie.maxAge = req.body.remember
+      ? 30 * 24 * 60 * 60 * 1000
+      : 24 * 60 * 60 * 1000;
+  }
   next();
 }, passport.authenticate('local', {
   successRedirect: '/',

@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
   role TEXT DEFAULT 'user',
   banned_until TEXT DEFAULT NULL,
   password TEXT DEFAULT NULL,
+  remember_me INTEGER DEFAULT 1,
+  bio TEXT DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -153,6 +155,7 @@ CREATE TABLE IF NOT EXISTS warnings (
   user_id INTEGER NOT NULL,
   admin_id INTEGER NOT NULL,
   message TEXT NOT NULL,
+  read INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (admin_id) REFERENCES users(id)

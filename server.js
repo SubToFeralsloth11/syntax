@@ -36,6 +36,15 @@ app.use(passport.session());
 
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
+  if (req.user) {
+    const db = require('./db/database');
+    const unreadWarnings = db.prepare(
+      'SELECT w.id, w.message, w.created_at, a.display_name as admin_name FROM warnings w JOIN users a ON a.id = w.admin_id WHERE w.user_id = ? AND w.read = 0 ORDER BY w.created_at DESC'
+    ).all(req.user.id);
+    res.locals.unreadWarnings = unreadWarnings;
+  } else {
+    res.locals.unreadWarnings = [];
+  }
   next();
 });
 
