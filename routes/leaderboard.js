@@ -6,7 +6,7 @@ const { requireAuth } = require('../middleware/auth');
 router.get('/leaderboard', requireAuth, (req, res) => {
   const users = db.prepare(`
     SELECT id, display_name, avatar, coins, total_coins_earned,
-      equipped_frame, equipped_badge, equipped_title
+      equipped_frame, equipped_badge, equipped_title, role
     FROM users
     ORDER BY total_coins_earned DESC
     LIMIT 100

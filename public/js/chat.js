@@ -62,8 +62,9 @@ function appendMessage(m) {
   const div = document.createElement('div');
   div.className = 'chat-msg';
   div.dataset.id = m.id;
+  const badge = m.role === 'admin' ? ' <span class="owner-badge-sm">Owner</span>' : '';
   div.innerHTML =
-    '<span class="chat-user" data-userid="' + m.user_id + '">' + escapeHtml(m.display_name) + '</span>' +
+    '<span class="chat-user" data-userid="' + m.user_id + '">' + escapeHtml(m.display_name) + badge + '</span>' +
     ' <span class="chat-time">' + formatTime(m.created_at) + '</span>' +
     '<div class="chat-text">' + linkify(escapeHtml(m.message)) + '</div>';
   container.appendChild(div);

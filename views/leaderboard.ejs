@@ -45,7 +45,7 @@
                   <img src="<%= avatarUrl(u.avatar) %>" alt="" class="lb-avatar-img" onerror="this.parentElement.classList.add('fallback');this.outerHTML='<span class=lb-letter><%= u.display_name[0] %></span>'">
                 </span>
                 <span class="lb-player">
-                  <span class="lb-name"><%= u.display_name %></span>
+                  <span class="lb-name"><%= u.display_name %><% if (u.role === 'admin') { %> <span class="owner-badge-sm">Owner</span><% } %></span>
                   <% if (u.equipped_badge) { %>
                     <span class="lb-badge"><%= u.equipped_badge %></span>
                   <% } %>

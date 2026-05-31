@@ -46,7 +46,7 @@ function checkBanned(message) {
 
 router.get('/chat', requireAuth, (req, res) => {
   const messages = db.prepare(`
-    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id
+    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id, u.role
     FROM chat_messages cm
     JOIN users u ON u.id = cm.user_id
     ORDER BY cm.id DESC
@@ -76,7 +76,7 @@ router.post('/chat/send', requireAuth, (req, res) => {
   db.prepare('INSERT INTO chat_messages (user_id, message) VALUES (?, ?)').run(req.user.id, clean);
 
   const msg = db.prepare(`
-    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id
+    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id, u.role
     FROM chat_messages cm
     JOIN users u ON u.id = cm.user_id
     WHERE cm.id = last_insert_rowid()
@@ -88,7 +88,7 @@ router.post('/chat/send', requireAuth, (req, res) => {
 router.get('/chat/messages', requireAuth, (req, res) => {
   const after = parseInt(req.query.after) || 0;
   const messages = db.prepare(`
-    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id
+    SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id, u.role
     FROM chat_messages cm
     JOIN users u ON u.id = cm.user_id
     WHERE cm.id > ?

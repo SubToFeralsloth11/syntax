@@ -30,7 +30,7 @@
             <% } else { %>
               <% messages.forEach(m => { %>
                 <div class="chat-msg" data-id="<%= m.id %>">
-                  <span class="chat-user" data-userid="<%= m.user_id %>"><%= m.display_name %></span>
+                  <span class="chat-user" data-userid="<%= m.user_id %>"><%= m.display_name %><% if (m.role === 'admin') { %> <span class="owner-badge-sm">Owner</span><% } %></span>
                   <span class="chat-time"><%= new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
                   <div class="chat-text"><%= m.message %></div>
                 </div>
