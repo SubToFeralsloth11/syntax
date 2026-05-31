@@ -53,18 +53,6 @@ function dismissAllWarnings() {
       <span></span>
     </button>
     <div class="header-right">
-      <nav class="nav" id="mainNav">
-        <a href="/" onclick="closeNav()">Home</a>
-        <a href="/games" onclick="closeNav()">Games</a>
-        <a href="/shop" onclick="closeNav()">Shop</a>
-        <a href="/bank" onclick="closeNav()">Bank</a>
-        <a href="/trivia" onclick="closeNav()">Trivia</a>
-        <a href="/wheel" onclick="closeNav()">Wheel</a>
-        <a href="/leaderboard" onclick="closeNav()">Leaderboard</a>
-        <a href="/chat" onclick="closeNav()">Chat</a>
-        <a href="/lottery" onclick="closeNav()">Lottery</a>
-        <a href="/refer" onclick="closeNav()">Refer</a>
-      </nav>
       <div class="user-section">
         <% if (typeof user !== 'undefined' && user) { %>
           <span class="coins-display"><%= user.coins %> coins</span>
@@ -80,10 +68,24 @@ function dismissAllWarnings() {
               <span class="owner-badge" title="Owner">Owner</span>
             <% } %>
           </a>
-          <a href="/logout" class="btn btn-sm">Logout</a>
         <% } else { %>
           <a href="/login" class="btn btn-sm">Login</a>
           <a href="/signup" class="btn btn-sm btn-primary">Sign Up</a>
+        <% } %>
+        <nav class="nav" id="mainNav">
+          <a href="/" onclick="closeNav()">Home</a>
+          <a href="/games" onclick="closeNav()">Games</a>
+          <a href="/shop" onclick="closeNav()">Shop</a>
+          <a href="/bank" onclick="closeNav()">Bank</a>
+          <a href="/trivia" onclick="closeNav()">Trivia</a>
+          <a href="/wheel" onclick="closeNav()">Wheel</a>
+          <a href="/leaderboard" onclick="closeNav()">Leaderboard</a>
+          <a href="/chat" onclick="closeNav()">Chat</a>
+          <a href="/lottery" onclick="closeNav()">Lottery</a>
+          <a href="/refer" onclick="closeNav()">Refer</a>
+        </nav>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/logout" class="btn btn-sm">Logout</a>
         <% } %>
       </div>
     </div>
