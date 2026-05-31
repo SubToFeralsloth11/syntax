@@ -1,0 +1,34 @@
+[
+  {
+    "id": "clicker",
+    "name": "Clicker",
+    "description": "Click as fast as you can in 10 seconds!",
+    "thumbnail": "/images/game-covers/clicker.svg",
+    "url": "/games/clicker",
+    "status": "coming-soon"
+  },
+  {
+    "id": "memory",
+    "name": "Memory Match",
+    "description": "Flip cards and find matching pairs.",
+    "thumbnail": "/images/game-covers/memory.svg",
+    "url": "/games/memory",
+    "status": "coming-soon"
+  },
+  {
+    "id": "rps",
+    "name": "Rock Paper Scissors",
+    "description": "Play rock paper scissors against the computer.",
+    "thumbnail": "/images/game-covers/rps.svg",
+    "url": "/games/rps",
+    "status": "coming-soon"
+  },
+  {
+    "id": "echoes",
+    "name": "Echoes of the Forgotten",
+    "description": "An epic adventure awaits...",
+    "thumbnail": "/images/game-covers/echoes.svg",
+    "url": "/games/echoes",
+    "status": "active"
+  }
+]

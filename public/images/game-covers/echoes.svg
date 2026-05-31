@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" width="120" height="80">
+  <rect width="120" height="80" rx="8" fill="#120d1f"/>
+  <rect x="2" y="2" width="116" height="76" rx="7" fill="none" stroke="#3d2a6e" stroke-width="1" opacity="0.6"/>
+  <circle cx="60" cy="30" r="8" fill="none" stroke="#7c5cfc" stroke-width="1.5" opacity="0.9"/>
+  <circle cx="60" cy="30" r="15" fill="none" stroke="#5b3fcc" stroke-width="1" opacity="0.5"/>
+  <circle cx="60" cy="30" r="22" fill="none" stroke="#3d2a99" stroke-width="0.8" opacity="0.25"/>
+  <text x="60" y="38" font-family="Arial,sans-serif" font-size="9" fill="#ab8ee6" text-anchor="middle" opacity="0.8">⟳</text>
+  <text x="60" y="62" font-family="Arial,sans-serif" font-size="8" fill="#7a68b4" text-anchor="middle">ECHOES</text>
+  <text x="60" y="73" font-family="Arial,sans-serif" font-size="6" fill="#554a80" text-anchor="middle">of the Forgotten</text>
+</svg>

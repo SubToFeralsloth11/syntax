@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Trivia — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Daily Trivia</h1>
+        <p>Answer correctly to earn 15 coins!</p>
+      </div>
+    </section>
+
+    <section class="trivia-section">
+      <div class="container">
+        <div class="trivia-card">
+          <% if (answered) { %>
+            <div class="trivia-result">
+              <h2><%= correct ? 'Correct!' : 'Wrong!' %></h2>
+              <p><%= correct ? 'You earned 15 coins! Come back tomorrow for a new question.' : 'Better luck tomorrow!' %></p>
+              <a href="/" class="btn btn-primary">Back to Home</a>
+            </div>
+          <% } else if (!question) { %>
+            <div class="trivia-loading">
+              <h2>Loading question...</h2>
+              <p>Please wait while we fetch today's question.</p>
+              <a href="/trivia" class="btn">Try Again</a>
+            </div>
+          <% } else { %>
+            <div class="trivia-question">
+              <div class="trivia-meta">
+                <span class="badge badge-category"><%= question.category %></span>
+                <span class="badge badge-difficulty"><%= question.difficulty %></span>
+              </div>
+              <h2><%- question.question %></h2>
+              <div class="trivia-answers" id="trivia-answers">
+                <% question.answers.forEach(ans => { %>
+                  <button class="btn trivia-btn" onclick="submitTriviaAnswer('<%= ans.replace(/'/g, "\\'") %>')">
+                    <%- ans %>
+                  </button>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

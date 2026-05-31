@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= game.name %> — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="game-detail-page">
+      <div class="container">
+        <a href="/games" class="btn back-link">← Back to Games</a>
+        <div class="game-detail-card">
+          <div class="game-detail-icon"><%= game.name[0] %></div>
+          <h1><%= game.name %></h1>
+          <p class="game-detail-desc"><%= game.description %></p>
+
+          <% if (game.status === 'coming-soon') { %>
+            <div class="coming-soon-banner">
+              <h2>Coming Soon</h2>
+              <p>This game is being built. Check back later!</p>
+            </div>
+          <% } else { %>
+            <% if (playedToday) { %>
+              <p class="played-msg">You've played this game today ✓</p>
+            <% } else { %>
+              <button class="btn btn-primary btn-lg" onclick="playGame('<%= game.id %>')">Play Now</button>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

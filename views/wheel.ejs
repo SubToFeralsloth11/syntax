@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Wheel — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Lucky Wheel</h1>
+        <p>Costs <%= spinCost %> coins per spin. Win up to 50 coins!</p>
+      </div>
+    </section>
+
+    <section class="wheel-section">
+      <div class="container">
+        <div class="wheel-card">
+          <div class="wheel-wrapper">
+            <canvas id="wheelCanvas"></canvas>
+          </div>
+          <div class="wheel-controls">
+            <button class="btn btn-primary btn-lg" id="spinBtn" onclick="spinWheel()">
+              SPIN (<%= spinCost %> coins)
+            </button>
+            <div class="wheel-balance">Balance: <strong id="wheelBalance"><%= userCoins %></strong> coins</div>
+          </div>
+          <div class="wheel-legend">
+            <% const tierDots = { low: '#e74c3c', mid: '#f39c12', high: '#2ecc71', epic: '#0e8c5f' }; %>
+            <% const tierNames = { low: 'Low', mid: 'Mid', high: 'High', epic: 'Jackpot' }; %>
+            <% Object.keys(tierDots).forEach(t => { %>
+              <span class="legend-item"><span class="legend-dot" style="background:<%= tierDots[t] %>"></span><%= tierNames[t] %></span>
+            <% }) %>
+          </div>
+          <p class="wheel-hint" id="wheelHint">Click SPIN to try your luck!</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="wheelResultOverlay" class="result-overlay" style="display:none">
+    <div class="result-card">
+      <div class="result-glow"></div>
+      <div class="result-label" id="resultLabel">You won</div>
+      <div class="result-amount" id="resultAmount">0</div>
+      <div class="result-sub" id="resultSub">coins!</div>
+      <button class="btn btn-primary" onclick="closeResult()">Nice!</button>
+    </div>
+    <canvas id="confettiCanvas"></canvas>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script>
+    window.WHEEL_SEGMENTS = <%- JSON.stringify(segments) %>;
+    window.SPIN_COST = <%= spinCost %>;
+  </script>
+  <script src="/js/wheel.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

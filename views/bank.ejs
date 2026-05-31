@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Bank</h1>
+        <p>Invest your coins and earn guaranteed profit. Funds are locked until the timer ends.</p>
+      </div>
+    </section>
+
+    <section class="bank-balance-section">
+      <div class="container">
+        <div class="bank-balance-card">
+          <span class="bank-balance-label">Your Balance</span>
+          <span class="bank-balance-amount" id="bankBalance"><%= coins %></span>
+          <span class="bank-balance-unit">coins available</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="bank-plans-section">
+      <div class="container">
+        <h2 class="section-title">Investment Plans</h2>
+        <div class="bank-plans">
+          <% Object.entries(plans).forEach(([key, plan]) => { %>
+            <div class="plan-card" style="--plan-color: <%= plan.color %>">
+              <div class="plan-header">
+                <h3><%= plan.label %></h3>
+                <span class="plan-duration"><%= plan.duration %> <%= plan.unit %></span>
+              </div>
+              <div class="plan-profit-display">+<%= Math.round(plan.profitPct * 100) %>% profit</div>
+              <div class="plan-detail">Lock coins for <%= plan.duration %> <%= plan.unit %>, get back with <strong><%= Math.round(plan.profitPct * 100) %>%</strong> guaranteed profit.</div>
+              <div class="plan-input-row">
+                <div class="plan-quick-btns">
+                  <button class="btn btn-xs quick-btn" data-plan="<%= key %>" data-frac="0.5">½</button>
+                  <button class="btn btn-xs quick-btn" data-plan="<%= key %>" data-frac="1">All</button>
+                </div>
+                <input type="number" class="plan-input" data-plan="<%= key %>" data-pct="<%= plan.profitPct %>" data-lock="<%= plan.lockMs %>" data-label="<%= plan.label %>" data-duration="<%= plan.duration %>" data-unit="<%= plan.unit %>" min="10" placeholder="Amount">
+              </div>
+              <div class="plan-preview" id="preview-<%= key %>">
+                <span class="preview-profit">Profit: <strong>0</strong></span>
+                <span class="preview-return">Return: <strong>0</strong></span>
+                <span class="preview-time">Lock: <strong><%= plan.duration %> <%= plan.unit %></strong></span>
+              </div>
+              <button class="btn btn-primary btn-full invest-btn" data-plan="<%= key %>">Invest</button>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+
+    <section class="bank-active-section">
+      <div class="container">
+        <h2 class="section-title">Current Investments</h2>
+        <% if (active.length === 0) { %>
+          <div class="empty-state">No active investments. Start one above!</div>
+        <% } else { %>
+          <div class="investments-list" id="investmentsList">
+            <% active.forEach(inv => { %>
+              <div class="investment-item" data-id="<%= inv.id %>" data-started="<%= new Date(inv.started_at).getTime() %>" data-lock="<%= inv.planData.lockMs %>">
+                <div class="inv-top">
+                  <div>
+                    <span class="inv-plan-badge" style="--plan-color: <%= inv.planData.color %>"><%= inv.planData.label %></span>
+                    <span class="inv-amount"><%= inv.amount %> coins</span>
+                  </div>
+                  <span class="inv-profit">+<%= inv.profit %> coins</span>
+                </div>
+                <div class="inv-progress-bar">
+                  <div class="inv-progress-fill" style="width: <%= inv.progress %>%"></div>
+                </div>
+                <div class="inv-bottom">
+                  <span class="inv-countdown" id="countdown-<%= inv.id %>"><%= inv.remainingLabel %></span>
+                  <button class="btn btn-sm claim-btn" data-id="<%= inv.id %>" <%= inv.ready ? '' : 'disabled' %>>
+                    <%= inv.ready ? 'Claim' : 'Locked' %>
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/bank.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

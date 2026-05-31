@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Connection — Syntax</title>
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --text: #e0e0f0;
+      --text-muted: #8888aa;
+      --accent: #7c5cfc;
+      --radius-sm: 8px;
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .card {
+      max-width: 460px;
+      padding: 56px 40px 48px;
+    }
+    .icon-block {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c5cfc22, #9b59b622);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .icon {
+      font-size: 2.5rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 32px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.15s;
+    }
+    .btn:hover { filter: brightness(1.15); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .status-bar {
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e74c3c;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+    }
+    .dot.connected { background: #2ecc71; animation: none; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-block">
+      <span class="icon">&#128225;</span>
+    </div>
+    <h1>No Connection</h1>
+    <p>Syntax is unreachable right now. The server may be offline or restarting. Your data is safe — nothing has been lost.</p>
+    <div class="actions">
+      <button class="btn" onclick="retry()">&#x21bb; Try Again</button>
+      <button class="btn btn-outline" onclick="location.reload()">Refresh</button>
+    </div>
+    <div class="status-bar">
+      <span class="dot" id="dot"></span>
+      <span id="status">Checking connection...</span>
+    </div>
+  </div>
+  <script>
+    var attempts = 0;
+    var interval = null;
+
+    function update(status, connected) {
+      var s = document.getElementById('status');
+      var d = document.getElementById('dot');
+      s.textContent = status;
+      d.className = connected ? 'dot connected' : 'dot';
+    }
+
+    function retry() {
+      var btn = document.querySelector('.btn');
+      btn.disabled = true;
+      btn.innerHTML = '&#x21bb; Trying...';
+      fetch('/')
+        .then(function(r) {
+          if (r.ok) location.reload();
+          else update('Server returned ' + r.status + ' — still down', false);
+        })
+        .catch(function() {
+          update('Still no connection — keep waiting', false);
+        })
+        .finally(function() {
+          btn.disabled = false;
+          btn.innerHTML = '&#x21bb; Try Again';
+        });
+    }
+
+    function poll() {
+      attempts++;
+      if (!navigator.onLine) {
+        update('No internet connection', false);
+        return;
+      }
+      update('Server unreachable — checking... (' + attempts + ')', false);
+      fetch('/')
+        .then(function(r) {
+          if (r.ok) {
+            update('Server is back online! Redirecting...', true);
+            clearInterval(interval);
+            setTimeout(function() { location.reload(); }, 800);
+          }
+        })
+        .catch(function() {
+          update('Server offline — retry #' + attempts, false);
+        });
+    }
+
+    update('Checking connection...', false);
+    poll();
+    interval = setInterval(poll, 8000);
+  </script>
+</body>
+</html>

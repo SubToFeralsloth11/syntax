@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Games</h1>
+        <p>Choose a game to play. Visit pages to earn coins!</p>
+      </div>
+    </section>
+
+    <section class="games-list">
+      <div class="container">
+        <div class="game-grid">
+          <% games.forEach(game => { %>
+            <% const visited = visitedPaths.includes('/games/' + game.id) %>
+            <% const played = playedIds.includes(game.id) %>
+            <a href="/games/<%= game.id %>" class="game-card <%= game.status === 'coming-soon' ? 'coming-soon' : '' %>">
+              <div class="game-thumbnail">
+                <div class="game-placeholder"><%= game.name[0] %></div>
+              </div>
+              <div class="game-info">
+                <h3><%= game.name %></h3>
+                <p><%= game.description %></p>
+                <div class="game-status">
+                  <% if (game.status === 'coming-soon') { %>
+                    <span class="badge badge-coming">Coming Soon</span>
+                  <% } else { %>
+                    <span class="badge badge-active">Active</span>
+                  <% } %>
+                  <% if (visited) { %>
+                    <span class="badge badge-visited">Visited ✓</span>
+                  <% } %>
+                  <% if (played) { %>
+                    <span class="badge badge-played">Played ✓</span>
+                  <% } %>
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

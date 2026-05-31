@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Leaderboard</h1>
+        <p>Your rank: #<%= rank %> — <%= currentUser.total_coins_earned %> all-time · <%= currentUser.coins %> current</p>
+      </div>
+    </section>
+
+    <section class="leaderboard-section">
+      <div class="container">
+        <% if (users.length === 0) { %>
+          <p class="empty-state">No players yet. Be the first!</p>
+        <% } else { %>
+          <div class="lb-list">
+            <div class="lb-header">
+              <span class="lb-h-rank">#</span>
+              <span class="lb-h-avatar"></span>
+              <span class="lb-h-player">Player</span>
+              <span class="lb-h-coins">All Time</span>
+              <span class="lb-h-balance">Current</span>
+            </div>
+            <% users.forEach((u, i) => {
+              const frameColor = u.equipped_frame
+                ? u.equipped_frame.includes('Bronze') ? '#cd7f32'
+                : u.equipped_frame.includes('Silver') ? '#c0c0c0'
+                : u.equipped_frame.includes('Gold') ? '#ffd700'
+                : u.equipped_frame.includes('Diamond') ? '#b9f2ff'
+                : 'transparent'
+                : 'transparent';
+            %>
+              <div class="lb-row <%= u.id === user.id ? 'highlight' : '' %>">
+                <span class="lb-rank"><%= i + 1 %></span>
+                <span class="lb-avatar-wrap" <% if (frameColor !== 'transparent') { %>style="border-color:<%= frameColor %>;border-width:3px;border-style:solid"<% } %>>
+                  <img src="<%= avatarUrl(u.avatar) %>" alt="" class="lb-avatar-img" onerror="this.parentElement.classList.add('fallback');this.outerHTML='<span class=lb-letter><%= u.display_name[0] %></span>'">
+                </span>
+                <span class="lb-player">
+                  <span class="lb-name"><%= u.display_name %></span>
+                  <% if (u.equipped_badge) { %>
+                    <span class="lb-badge"><%= u.equipped_badge %></span>
+                  <% } %>
+                  <% if (u.equipped_title) { %>
+                    <span class="lb-title">"<%= u.equipped_title %>"</span>
+                  <% } %>
+                </span>
+                <span class="lb-coins"><%= u.total_coins_earned %></span>
+                <span class="lb-balance"><%= u.coins %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

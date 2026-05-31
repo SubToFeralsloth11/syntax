@@ -1,0 +1,146 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT,
+  google_id TEXT UNIQUE,
+  display_name TEXT DEFAULT 'Player',
+  avatar TEXT DEFAULT 'default.png',
+  coins INTEGER DEFAULT 0,
+  total_coins_earned INTEGER DEFAULT 0,
+  equipped_frame TEXT DEFAULT NULL,
+  equipped_badge TEXT DEFAULT NULL,
+  equipped_title TEXT DEFAULT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS daily_checkins (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  checkin_date TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS page_visits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  page_path TEXT NOT NULL,
+  visited_date TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_streaks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER UNIQUE NOT NULL,
+  current_streak INTEGER DEFAULT 0,
+  last_checkin_date TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS achievements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE NOT NULL,
+  description TEXT NOT NULL,
+  reward_coins INTEGER NOT NULL DEFAULT 0,
+  icon TEXT DEFAULT 'default.png'
+);
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  achievement_id INTEGER NOT NULL,
+  earned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (achievement_id) REFERENCES achievements(id)
+);
+
+CREATE TABLE IF NOT EXISTS shop_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  price INTEGER NOT NULL,
+  image_url TEXT DEFAULT 'default.png',
+  description TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS purchases (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
+  purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (item_id) REFERENCES shop_items(id)
+);
+
+CREATE TABLE IF NOT EXISTS coin_transactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  amount INTEGER NOT NULL,
+  reason TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS referrals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  referrer_id INTEGER NOT NULL,
+  referred_id INTEGER UNIQUE NOT NULL,
+  reward_given INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (referrer_id) REFERENCES users(id),
+  FOREIGN KEY (referred_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS wheel_spins (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  spin_date TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS trivia_answers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  question_date TEXT NOT NULL,
+  correct INTEGER NOT NULL,
+  answered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS inventory_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  item_name TEXT NOT NULL,
+  item_type TEXT NOT NULL,
+  rarity TEXT DEFAULT 'common',
+  equipped INTEGER DEFAULT 0,
+  acquired_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS game_plays (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  game_id TEXT NOT NULL,
+  play_date TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS investments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  plan TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  profit INTEGER NOT NULL,
+  started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  claimed INTEGER DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

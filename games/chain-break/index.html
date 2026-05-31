@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chain Break</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="hud">
+      <div id="title">&#x1F529; CHAIN BREAK</div>
+      <div id="level-info">Level 1 — The Workshop</div>
+      <div id="controls">
+        <button id="btn-test" class="btn">&#x25B6; TEST</button>
+        <button id="btn-reset" class="btn">&#x21BA; RESET</button>
+        <button id="btn-speed" class="btn">&#x23E9; FASTER</button>
+        <div id="message"></div>
+      </div>
+    </div>
+    <div id="main-area">
+      <canvas id="game"></canvas>
+      <div id="palette">
+        <div class="palette-title">INVENTORY</div>
+        <div id="palette-items"></div>
+        <div class="palette-title">LEGEND</div>
+        <div id="legend">
+          <div class="legend-item"><span class="dot wall"></span> Wall (immovable)</div>
+          <div class="legend-item"><span class="dot domino"></span> Domino (falls on trigger)</div>
+          <div class="legend-item"><span class="dot ball"></span> Ball (rolls directionally)</div>
+          <div class="legend-item"><span class="dot spring"></span> Spring (launches objects)</div>
+          <div class="legend-item"><span class="dot bomb"></span> Bomb (area explosion)</div>
+          <div class="legend-item"><span class="dot gate"></span> Gate (opens on trigger)</div>
+          <div class="legend-item"><span class="dot goal"></span> Goal (win condition)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

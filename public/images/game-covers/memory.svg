@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" width="120" height="80">
+  <rect width="120" height="80" rx="8" fill="#1a1a2e"/>
+  <rect x="30" y="22" width="18" height="18" rx="3" fill="none" stroke="#44dd88" stroke-width="2"/>
+  <rect x="56" y="22" width="18" height="18" rx="3" fill="none" stroke="#44dd88" stroke-width="2"/>
+  <rect x="43" y="44" width="18" height="18" rx="3" fill="none" stroke="#44dd88" stroke-width="2"/>
+  <text x="60" y="65" font-family="Arial,sans-serif" font-size="11" fill="#8888aa" text-anchor="middle">Memory</text>
+  <text x="60" y="74" font-family="Arial,sans-serif" font-size="11" fill="#8888aa" text-anchor="middle">Match</text>
+</svg>

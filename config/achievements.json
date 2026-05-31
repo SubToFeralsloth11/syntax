@@ -1,0 +1,16 @@
+[
+  { "name": "First Steps", "description": "Complete your first daily check-in", "reward_coins": 25, "icon": "star.png" },
+  { "name": "Streak Starter", "description": "Reach a 3-day check-in streak", "reward_coins": 50, "icon": "fire.png" },
+  { "name": "Week Warrior", "description": "Reach a 7-day check-in streak", "reward_coins": 100, "icon": "trophy.png" },
+  { "name": "Explorer", "description": "Visit 5 different game pages", "reward_coins": 25, "icon": "compass.png" },
+  { "name": "Globetrotter", "description": "Visit 10 different game pages", "reward_coins": 50, "icon": "globe.png" },
+  { "name": "Lucky Spinner", "description": "Spin the wheel for the first time", "reward_coins": 25, "icon": "wheel.png" },
+  { "name": "Trivia Novice", "description": "Answer your first trivia question", "reward_coins": 25, "icon": "brain.png" },
+  { "name": "Trivia Master", "description": "Answer 5 trivia questions correctly", "reward_coins": 50, "icon": "genius.png" },
+  { "name": "Box Opener", "description": "Open your first mystery box", "reward_coins": 50, "icon": "gift.png" },
+  { "name": "High Roller", "description": "Open 10 mystery boxes", "reward_coins": 100, "icon": "diamond.png" },
+  { "name": "Shopaholic", "description": "Make your first purchase", "reward_coins": 25, "icon": "cart.png" },
+  { "name": "Social Butterfly", "description": "Refer your first friend", "reward_coins": 50, "icon": "users.png" },
+  { "name": "Centurion", "description": "Earn a total of 100 coins", "reward_coins": 25, "icon": "coin.png" },
+  { "name": "Millionaire", "description": "Earn a total of 500 coins", "reward_coins": 100, "icon": "bag.png" }
+]

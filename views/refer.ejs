@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refer a Friend — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Refer a Friend</h1>
+        <p>Share your link and earn 50 coins for each friend who joins! (max <%= maxReferrals %> referrals)</p>
+      </div>
+    </section>
+
+    <section class="refer-section">
+      <div class="container">
+        <div class="refer-card">
+          <h2>Your Referral Link</h2>
+          <div class="ref-link-box">
+            <input type="text" id="refLink" value="<%= `${process.env.BASE_URL || 'http://localhost:3000'}/ref/${refCode}` %>" readonly>
+            <button class="btn btn-primary" onclick="copyRefLink()">Copy</button>
+          </div>
+          <p class="ref-earnings">
+            You've earned <strong><%= totalEarned %></strong> coins from <strong><%= Math.min(referralCount, maxReferrals) %></strong> referral(s)
+            <% if (referralCount >= maxReferrals) { %>
+              — max reached!
+            <% } else if (referralCount > 0) { %>
+              (<%= maxReferrals - referralCount %> left)
+            <% } %>
+          </p>
+
+          <% if (referrals.length > 0) { %>
+            <div class="referral-list">
+              <h3>Your Referrals</h3>
+              <% referrals.forEach(r => { %>
+                <div class="referral-item">
+                  <span><%= r.display_name %></span>
+                  <span class="ref-date"><%= new Date(r.created_at).toLocaleDateString() %></span>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="empty-state">No referrals yet. Share your link to start earning!</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

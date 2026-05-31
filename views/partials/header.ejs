@@ -1,0 +1,29 @@
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="logo"><img src="/images/logo.svg" alt="Syntax" class="logo-img"></a>
+    <nav class="nav">
+      <a href="/">Home</a>
+      <a href="/games">Games</a>
+      <a href="/shop">Shop</a>
+      <a href="/bank">Bank</a>
+      <a href="/trivia">Trivia</a>
+      <a href="/wheel">Wheel</a>
+      <a href="/leaderboard">Leaderboard</a>
+      <a href="/chat">Chat</a>
+      <a href="/refer">Refer</a>
+    </nav>
+    <div class="user-section">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <span class="coins-display"><%= user.coins %> coins</span>
+        <a href="/settings" class="settings-link" title="Settings">
+          <img src="<%= avatarUrl(user.avatar) %>" alt="" class="avatar-small" onerror="this.onerror=null;this.src='/images/default-avatar.svg'">
+        </a>
+        <a href="/profile" class="profile-link"><%= user.display_name %></a>
+        <a href="/logout" class="btn btn-sm">Logout</a>
+      <% } else { %>
+        <a href="/login" class="btn btn-sm">Login</a>
+        <a href="/signup" class="btn btn-sm btn-primary">Sign Up</a>
+      <% } %>
+    </div>
+  </div>
+</header>

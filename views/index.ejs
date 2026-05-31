@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntax — Game Portal</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-logo">
+            <img src="/images/logo.svg" alt="Syntax" class="hero-logo-img">
+          </div>
+          <p class="hero-sub">Earn coins. Unlock rewards. Compete with friends.</p>
+
+          <% if (user) { %>
+            <div class="checkin-section">
+              <% if (checkedIn) { %>
+                <button class="btn btn-primary btn-lg" disabled>Checked In +<%= streak >= 5 ? 25 : 10 %> coins</button>
+                <p class="streak-info">Streak: <%= streak %> days</p>
+              <% } else { %>
+                <button class="btn btn-glow btn-lg" id="checkin-btn" onclick="dailyCheckin()">
+                  Daily Check-in
+                  <span class="btn-sub">+<%= streak >= 4 ? 25 : 10 %> coins</span>
+                </button>
+                <p class="streak-info"><%= streak > 0 ? 'Streak: ' + streak + ' days' : 'Start your streak today!' %></p>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="cta-buttons">
+              <a href="/signup" class="btn btn-glow btn-lg">Get Started</a>
+              <a href="/login" class="btn btn-outline btn-lg">Login</a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <div class="features-grid">
+          <a href="/wheel" class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#e74c3c,#f39c12)">W</div>
+            <h3>Lucky Wheel</h3>
+            <p>Spin to win up to 50 coins. How lucky are you?</p>
+          </a>
+          <a href="/trivia" class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#3498db,#2ecc71)">T</div>
+            <h3>Daily Trivia</h3>
+            <p>Test your knowledge and earn 15 coins per correct answer.</p>
+          </a>
+          <a href="/shop" class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#f1c40f,#e67e22)">S</div>
+            <h3>Mystery Box</h3>
+            <p>Open mystery boxes with 50+ unique items to collect.</p>
+          </a>
+          <a href="/chat" class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#9b59b6,#e84393)">C</div>
+            <h3>Live Chat</h3>
+            <p>Chat with other players and tag your friends.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="games-preview">
+      <div class="container">
+        <div class="section-header">
+          <h2>Featured Games</h2>
+          <a href="/games" class="btn btn-sm">View All</a>
+        </div>
+        <div class="game-grid">
+          <% games.forEach(game => { %>
+            <div class="game-card <%= game.status === 'coming-soon' ? 'coming-soon' : '' %>">
+              <div class="game-thumbnail">
+                <img src="<%= game.thumbnail %>" alt="<%= game.name %>">
+              </div>
+              <div class="game-info">
+                <h3><%= game.name %></h3>
+                <p><%= game.description %></p>
+                <% if (game.status === 'coming-soon') { %>
+                  <span class="badge badge-coming">Coming Soon</span>
+                <% } else { %>
+                  <a href="<%= game.url %>" class="btn btn-sm">Play</a>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

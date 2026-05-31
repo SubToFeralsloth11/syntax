@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= user.display_name %> — Profile</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="profile-page">
+      <div class="container">
+        <div class="profile-layout">
+          <div class="profile-sidebar">
+            <div class="profile-card">
+              <div class="profile-avatar">
+                <img src="<%= avatarUrl(user.avatar) %>" alt="<%= user.display_name %>" class="avatar-profile" onerror="this.src='/images/default-avatar.svg'">
+              </div>
+              <h2><%= user.display_name %></h2>
+              <% if (user.equipped_title) { %>
+                <p class="equipped-title">"<%= user.equipped_title %>"</p>
+              <% } %>
+              <div class="profile-stats-mini">
+                <div class="stat">
+                  <span class="stat-value"><%= user.coins %></span>
+                  <span class="stat-label">Coins</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-value"><%= totalCheckins %></span>
+                  <span class="stat-label">Check-ins</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-value"><%= totalVisits %></span>
+                  <span class="stat-label">Games Visited</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-value"><%= totalPlays %></span>
+                  <span class="stat-label">Games Played</span>
+                </div>
+              </div>
+              <div class="profile-achievements">
+                <h3>Achievements</h3>
+                <% if (achievements.length === 0) { %>
+                  <p class="empty-state">No achievements yet</p>
+                <% } else { %>
+                  <% achievements.slice(0, 5).forEach(ach => { %>
+                    <div class="achievement-badge">
+                      <span class="ach-icon">★</span>
+                      <div>
+                        <strong><%= ach.name %></strong>
+                        <p><%= ach.description %></p>
+                      </div>
+                    </div>
+                  <% }) %>
+                  <% if (achievements.length > 5) { %>
+                    <p class="more-achievements">+<%= achievements.length - 5 %> more</p>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-main">
+            <div class="profile-section">
+              <h2>Inventory</h2>
+              <% if (inventory.length === 0) { %>
+                <p class="empty-state">Your inventory is empty. Try opening a mystery box in the Shop!</p>
+              <% } else { %>
+                <div class="inventory-grid">
+                  <% inventory.forEach(item => { %>
+                    <div class="inventory-item <%= item.equipped ? 'equipped' : '' %>" data-id="<%= item.id %>" data-type="<%= item.item_type %>">
+                      <div class="item-icon">
+                        <%= item.item_type === 'frame' ? '[Frame]' : item.item_type === 'badge' ? '[Badge]' : '[Title]' %>
+                      </div>
+                      <div class="item-name"><%= item.item_name %></div>
+                      <% if (item.equipped) { %>
+                        <button class="btn btn-sm" onclick="unequipItem('<%= item.item_type %>')">Unequip</button>
+                      <% } else { %>
+                        <button class="btn btn-sm btn-primary" onclick="equipItem(<%= item.id %>)">Equip</button>
+                      <% } %>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="profile-section">
+              <h2>Recent Transactions</h2>
+              <% if (transactions.length === 0) { %>
+                <p class="empty-state">No transactions yet</p>
+              <% } else { %>
+                <div class="transaction-list">
+                  <% transactions.forEach(tx => { %>
+                    <div class="transaction <%= tx.amount > 0 ? 'positive' : 'negative' %>">
+                      <span class="tx-reason"><%= tx.reason.replace(/_/g, ' ') %></span>
+                      <span class="tx-amount"><%= tx.amount > 0 ? '+' : '' %><%= tx.amount %></span>
+                      <span class="tx-date"><%= new Date(tx.created_at).toLocaleDateString() %></span>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>
