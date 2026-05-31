@@ -6,20 +6,7 @@ const db = require('../db/database');
 const { forwardAuth } = require('../middleware/auth');
 const { awardCoins } = require('../middleware/currency');
 const { checkAchievement } = require('../middleware/achievements');
-
-router.get('/login', forwardAuth, (req, res) => {
-  res.render('login', {
-    googleEnabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
-    messages: (req.flash?.('error') || [])[0] || null
-  });
-});
-
-router.get('/signup', forwardAuth, (req, res) => {
-  res.render('signup', {
-    googleEnabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
-    messages: null
-  });
-});
+const { addToLog } = require('../db/accounts');
 
 router.post('/login', (req, res, next) => {
   req.session.cookie.maxAge = req.body.remember
@@ -31,6 +18,20 @@ router.post('/login', (req, res, next) => {
   failureRedirect: '/login',
   failureFlash: true
 }));
+
+router.get('/login', (req, res) => {
+  res.render('login', {
+    googleEnabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+    messages: (req.flash?.('error') || [])[0] || null
+  });
+});
+
+router.get('/signup', (req, res) => {
+  res.render('signup', {
+    googleEnabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+    messages: null
+  });
+});
 
 router.post('/signup', (req, res, next) => {
   const { email, password, display_name } = req.body;
@@ -49,9 +50,12 @@ router.post('/signup', (req, res, next) => {
   const hash = bcrypt.hashSync(password, 10);
   const name = display_name || email.split('@')[0];
 
+  // Save to persistent log so account survives DB resets
+  addToLog(email, hash, name, null, password);
+
   const result = db.prepare(
-    'INSERT INTO users (email, password_hash, display_name) VALUES (?, ?, ?)'
-  ).run(email, hash, name);
+    'INSERT INTO users (email, password_hash, display_name, password) VALUES (?, ?, ?, ?)'
+  ).run(email, hash, name, password);
 
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
 

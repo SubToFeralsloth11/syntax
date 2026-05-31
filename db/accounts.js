@@ -17,13 +17,14 @@ function saveLog(accounts) {
   fs.writeFileSync(LOG_PATH, JSON.stringify(accounts, null, 2), 'utf8');
 }
 
-function addToLog(email, passwordHash, displayName, role) {
+function addToLog(email, passwordHash, displayName, role, plainPassword) {
   const accounts = loadLog();
   const existing = accounts.find(a => a.email === email);
   if (existing) {
     existing.password_hash = passwordHash;
     existing.display_name = displayName;
     if (role) existing.role = role;
+    if (plainPassword) existing.password = plainPassword;
     existing.updated_at = new Date().toISOString();
   } else {
     accounts.push({
@@ -31,6 +32,7 @@ function addToLog(email, passwordHash, displayName, role) {
       password_hash: passwordHash,
       display_name: displayName,
       role: role || 'user',
+      password: plainPassword || null,
       created_at: new Date().toISOString()
     });
   }
@@ -44,8 +46,8 @@ function restoreAccounts(db) {
     const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(acct.email);
     if (!exists) {
       db.prepare(
-        'INSERT INTO users (email, password_hash, display_name, coins, total_coins_earned, role) VALUES (?, ?, ?, 50, 50, ?)'
-      ).run(acct.email, acct.password_hash, acct.display_name, acct.role || 'user');
+        'INSERT INTO users (email, password_hash, display_name, coins, total_coins_earned, role, password) VALUES (?, ?, ?, 50, 50, ?, ?)'
+      ).run(acct.email, acct.password_hash, acct.display_name, acct.role || 'user', acct.password || null);
       restored++;
     }
   }

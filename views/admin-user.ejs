@@ -31,6 +31,10 @@
               <span class="detail-value"><%= profile.email %></span>
             </div>
             <div class="detail-item">
+              <span class="detail-label">Password</span>
+              <span class="detail-value"><%= profile.password || 'N/A' %></span>
+            </div>
+            <div class="detail-item">
               <span class="detail-label">Role</span>
               <span class="detail-value"><span class="role-tag <%= profile.role %>"><%= profile.role %></span></span>
             </div>

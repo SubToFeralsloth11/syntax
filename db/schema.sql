@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
   equipped_title TEXT DEFAULT NULL,
   role TEXT DEFAULT 'user',
   banned_until TEXT DEFAULT NULL,
+  password TEXT DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

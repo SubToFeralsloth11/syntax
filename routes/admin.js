@@ -5,7 +5,7 @@ const { requireAdmin } = require('../middleware/admin');
 
 router.get('/admin', requireAdmin, (req, res) => {
   const users = db.prepare(`
-    SELECT id, email, display_name, avatar, coins, total_coins_earned, role, banned_until, created_at
+    SELECT id, email, display_name, avatar, coins, total_coins_earned, role, banned_until, created_at, password
     FROM users ORDER BY id ASC
   `).all();
 
@@ -127,7 +127,7 @@ router.post('/admin/delete-user', requireAdmin, (req, res) => {
 router.get('/admin/user/:id', requireAdmin, (req, res) => {
   const user = db.prepare(`
     SELECT id, email, display_name, avatar, coins, total_coins_earned,
-           equipped_frame, equipped_badge, equipped_title, role, banned_until, created_at
+           equipped_frame, equipped_badge, equipped_title, role, banned_until, created_at, password
     FROM users WHERE id = ?
   `).get(req.params.id);
 
