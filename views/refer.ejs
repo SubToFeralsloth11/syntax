@@ -53,6 +53,20 @@
   </main>
 
   <%- include('partials/footer') %>
+  <script>
+    function copyRefLink() {
+      var input = document.getElementById('refLink');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(function() {
+        var btn = document.querySelector('.ref-link-box .btn');
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+      }).catch(function() {
+        alert('Failed to copy. Please copy manually.');
+      });
+    }
+  </script>
   <script src="/js/main.js"></script>
 </body>
 </html>
