@@ -21,6 +21,9 @@
       <div class="container">
         <div class="admin-detail-card">
           <h2><%= profile.display_name %> <% if (profile.role === 'admin') { %><span class="owner-badge-sm">Owner</span><% } %></h2>
+          <% if (profile.id !== user.id) { %>
+            <button class="btn btn-glow" style="background:#7c5cfc;color:#fff;border:none;display:inline-block;margin-bottom:16px" onclick="loginAsUser(<%= profile.id %>)">Login as this user</button>
+          <% } %>
           <div class="detail-grid">
             <div class="detail-item">
               <span class="detail-label">ID</span>
@@ -141,6 +144,18 @@
 
   <%- include('partials/footer') %>
   <script>
+    function loginAsUser(id) {
+      fetch('/admin/impersonate-token/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          window.open('/auth/impersonate?token=' + data.token, '_blank');
+        } else {
+          alert(data.message);
+        }
+      });
+    }
     function deleteMessage(id) {
       if (!confirm('Delete message #' + id + '?')) return;
       fetch('/admin/delete-message', {

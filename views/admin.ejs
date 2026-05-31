@@ -64,6 +64,7 @@
                     <td><%= new Date(u.created_at).toLocaleDateString() %></td>
                     <td class="admin-actions">
                       <% if (u.id !== user.id) { %>
+                        <button class="btn btn-sm btn-glow" style="background:#7c5cfc;color:#fff;border:none" onclick="loginAsUser(<%= u.id %>)">Login As</button>
                         <button class="btn btn-sm btn-warn" onclick="warnUser(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Warn</button>
                         <% if (u.banned_until && new Date(u.banned_until) > new Date()) { %>
                           <button class="btn btn-sm btn-success" onclick="unbanUser(<%= u.id %>)">Unban</button>
@@ -154,6 +155,19 @@
   <script>
     let banUserId = null;
     let warnUserId = null;
+
+    function loginAsUser(id) {
+      fetch('/admin/impersonate-token/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          window.open('/auth/impersonate?token=' + data.token, '_blank');
+        } else {
+          alert(data.message);
+        }
+      });
+    }
     function switchTab(tab) {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');

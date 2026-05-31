@@ -161,6 +161,59 @@ router.get('/admin/user/:id', requireAdmin, (req, res) => {
   res.render('admin-user', { profile: user, warnings, transactions, messages });
 });
 
+const crypto = require('crypto');
+
+const impersonationTokens = new Map();
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [token, data] of impersonationTokens) {
+    if (now > data.expires) impersonationTokens.delete(token);
+  }
+}, 60000);
+
+router.post('/admin/impersonate-token/:id', requireAdmin, (req, res) => {
+  const targetId = parseInt(req.params.id);
+  if (targetId === req.user.id) {
+    return res.json({ success: false, message: 'Cannot impersonate yourself' });
+  }
+
+  const target = db.prepare('SELECT id FROM users WHERE id = ?').get(targetId);
+  if (!target) {
+    return res.json({ success: false, message: 'User not found' });
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+  impersonationTokens.set(token, { userId: targetId, expires: Date.now() + 300000 });
+
+  res.json({ success: true, token });
+});
+
+router.get('/auth/impersonate', (req, res, next) => {
+  const { token } = req.query;
+  if (!token || !impersonationTokens.has(token)) {
+    return res.status(403).render('403');
+  }
+
+  const data = impersonationTokens.get(token);
+  if (Date.now() > data.expires) {
+    impersonationTokens.delete(token);
+    return res.status(403).render('403');
+  }
+
+  impersonationTokens.delete(token);
+
+  const target = db.prepare('SELECT * FROM users WHERE id = ?').get(data.userId);
+  if (!target) {
+    return res.status(404).render('404');
+  }
+
+  req.login(target, (err) => {
+    if (err) return next(err);
+    res.redirect('/');
+  });
+});
+
 router.post('/dismiss-warning', requireAuth, (req, res) => {
   const { warningId } = req.body;
   if (!warningId) return res.json({ success: false, message: 'Warning ID required' });
