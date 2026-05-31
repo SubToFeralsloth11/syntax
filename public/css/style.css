@@ -241,7 +241,7 @@ a:hover {
 .site-header {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  padding: 12px 0;
+  padding: 16px 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -251,12 +251,14 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 24px;
+  flex-wrap: nowrap;
 }
 
 .logo {
   display: flex;
   align-items: center;
   line-height: 0;
+  flex-shrink: 0;
 }
 
 .logo-img {
@@ -271,14 +273,18 @@ a:hover {
 
 .nav {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   flex: 1;
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
 .nav a {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav a:hover {
@@ -288,28 +294,35 @@ a:hover {
 .user-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
 .coins-display {
   background: var(--bg);
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--gold);
   border: 1px solid rgba(255, 204, 68, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .profile-link {
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .settings-link {
   display: flex;
   align-items: center;
   line-height: 0;
+  flex-shrink: 0;
 }
 
 .avatar-small {
@@ -319,6 +332,7 @@ a:hover {
   object-fit: cover;
   border: 2px solid var(--border);
   transition: border-color 0.2s;
+  flex-shrink: 0;
 }
 
 .avatar-fallback {
@@ -2736,7 +2750,7 @@ main {
 @media (max-width: 768px) {
   .site-header .container {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
   }
 
   .logo {
@@ -2747,18 +2761,19 @@ main {
     order: 3;
     flex: 0 0 100%;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     overflow-x: auto;
-    padding: 4px 0;
+    padding: 6px 0;
   }
 
   .nav a {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     white-space: nowrap;
   }
 
   .user-section {
     margin-left: auto;
+    gap: 8px;
   }
 
   .hero h1 {
