@@ -1,33 +1,44 @@
 <% if (typeof unreadWarnings !== 'undefined' && unreadWarnings.length > 0) { %>
-<div class="warning-banner">
-  <div class="container">
-    <% unreadWarnings.forEach(w => { %>
-      <div class="warning-banner-item" data-warnid="<%= w.id %>">
-        <span class="warning-banner-icon">&#9888;</span>
-        <span class="warning-banner-text"><strong><%= w.admin_name %></strong>: <%= w.message %></span>
-        <span class="warning-banner-date"><%= new Date(w.created_at).toLocaleDateString() %></span>
-        <button class="warning-dismiss" onclick="dismissWarning(<%= w.id %>, this.parentElement)" title="Dismiss">&times;</button>
-      </div>
-    <% }) %>
+<div class="warning-overlay" id="warningOverlay">
+  <div class="warning-modal">
+    <div class="warning-modal-header">
+      <span class="warning-modal-icon">&#9888;</span>
+      <h2>OFFICIAL WARNING</h2>
+    </div>
+    <div class="warning-modal-body">
+      <p class="warning-modal-blurb">You have received the following warning(s) from site administration. Continued violations may result in a permanent ban.</p>
+      <% unreadWarnings.forEach(w => { %>
+        <div class="warning-modal-item" data-warnid="<%= w.id %>">
+          <div class="warning-modal-from">From: <strong><%= w.admin_name %></strong> &mdash; <%= new Date(w.created_at).toLocaleDateString() %></div>
+          <div class="warning-modal-msg"><%= w.message %></div>
+        </div>
+      <% }) %>
+    </div>
+    <div class="warning-modal-footer">
+      <p class="warning-ack-text">By dismissing this warning, you acknowledge that you have read and understood it.</p>
+      <button class="btn btn-danger btn-lg" onclick="dismissAllWarnings()">I Understand &mdash; Dismiss</button>
+    </div>
   </div>
 </div>
 <script>
-function dismissWarning(id, el) {
-  fetch('/dismiss-warning', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ warningId: id })
-  }).then(r => r.json()).then(data => {
-    if (data.success) {
-      el.style.opacity = '0';
-      el.style.transform = 'translateX(20px)';
-      setTimeout(() => el.remove(), 300);
-      const banner = document.querySelector('.warning-banner');
-      if (banner && !banner.querySelector('.warning-banner-item')) {
-        banner.style.opacity = '0';
-        setTimeout(() => banner.remove(), 300);
+function dismissAllWarnings() {
+  const items = document.querySelectorAll('.warning-modal-item');
+  let done = 0;
+  const total = items.length;
+  items.forEach(el => {
+    const id = el.dataset.warnid;
+    fetch('/dismiss-warning', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ warningId: parseInt(id) })
+    }).then(r => r.json()).then(data => {
+      done++;
+      if (done >= total) {
+        const overlay = document.getElementById('warningOverlay');
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 400);
       }
-    }
+    });
   });
 }
 </script>
