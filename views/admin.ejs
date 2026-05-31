@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3?v=2">
+  <link rel="stylesheet" href="/css/style.css?v=4">
 </head>
 <body>
   <%- include('partials/header') %>
@@ -18,97 +18,99 @@
     </section>
 
     <section class="admin-section">
-      <div class="container">
-        <div class="admin-tabs">
+      <div class="container admin-layout">
+        <aside class="admin-sidebar">
           <button class="admin-tab active" onclick="switchTab('users')">Users</button>
           <button class="admin-tab" onclick="switchTab('chat')">Chat Log</button>
-        </div>
+        </aside>
 
-        <div class="admin-panel" id="tab-users">
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Password</th>
-                  <th>Coins</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Joined</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% users.forEach(u => { %>
-                  <tr class="<%= u.banned_until && new Date(u.banned_until) > new Date() ? 'banned-row' : '' %>">
-                    <td><%= u.id %></td>
-                    <td>
-                      <a href="/admin/user/<%= u.id %>"><%= u.display_name %></a>
-                      <% if (u.role === 'admin') { %>
-                        <span class="owner-badge-sm">Owner</span>
-                      <% } %>
-                    </td>
-                    <td><%= u.email %></td>
-                    <td class="password-cell"><%= u.password || '—' %></td>
-                    <td><%= u.coins %> / <%= u.total_coins_earned %></td>
-                    <td><span class="role-tag <%= u.role %>"><%= u.role %></span></td>
-                    <td>
-                      <% if (u.banned_until && new Date(u.banned_until) > new Date()) { %>
-                        <span class="status-banned">Banned until <%= new Date(u.banned_until).toLocaleString() %></span>
-                      <% } else { %>
-                        <span class="status-active">Active</span>
-                      <% } %>
-                    </td>
-                    <td><%= new Date(u.created_at).toLocaleDateString() %></td>
-                    <td class="admin-actions">
-                      <% if (u.id !== user.id) { %>
-                        <button class="btn btn-sm btn-glow" style="background:#7c5cfc;color:#fff;border:none" onclick="loginAsUser(<%= u.id %>)">Login As</button>
-                        <button class="btn btn-sm btn-warn" onclick="warnUser(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Warn</button>
-                        <% if (u.banned_until && new Date(u.banned_until) > new Date()) { %>
-                          <button class="btn btn-sm btn-success" onclick="unbanUser(<%= u.id %>)">Unban</button>
-                        <% } else if (u.role !== 'admin') { %>
-                          <button class="btn btn-sm btn-danger" onclick="showBanModal(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Ban</button>
-                        <% } %>
-                        <% if (u.role !== 'admin') { %>
-                          <button class="btn btn-sm btn-danger-outline" onclick="deleteUser(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Delete</button>
-                        <% } %>
-                      <% } %>
-                    </td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="admin-panel" id="tab-chat" style="display:none">
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>User</th>
-                  <th>Message</th>
-                  <th>Time</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% chatMessages.forEach(m => { %>
+        <div class="admin-content">
+          <div class="admin-panel" id="tab-users">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
                   <tr>
-                    <td><%= m.id %></td>
-                    <td><%= m.display_name %></td>
-                    <td class="msg-preview"><%= m.message %></td>
-                    <td><%= new Date(m.created_at).toLocaleString() %></td>
-                    <td>
-                      <button class="btn btn-sm btn-danger" onclick="deleteMessage(<%= m.id %>)">Delete</button>
-                    </td>
+                    <th class="col-id">ID</th>
+                    <th class="col-name">Name</th>
+                    <th class="col-email">Email</th>
+                    <th class="col-pass">Password</th>
+                    <th class="col-coins">Coins</th>
+                    <th class="col-role">Role</th>
+                    <th class="col-status">Status</th>
+                    <th class="col-date">Joined</th>
+                    <th class="col-actions">Actions</th>
                   </tr>
-                <% }) %>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <% users.forEach(u => { %>
+                    <tr class="<%= u.banned_until && new Date(u.banned_until) > new Date() ? 'banned-row' : '' %>">
+                      <td class="col-id"><%= u.id %></td>
+                      <td class="col-name">
+                        <a href="/admin/user/<%= u.id %>"><%= u.display_name %></a>
+                        <% if (u.role === 'admin') { %>
+                          <span class="owner-badge-sm">Owner</span>
+                        <% } %>
+                      </td>
+                      <td class="col-email"><span class="cell-truncate"><%= u.email %></span></td>
+                      <td class="col-pass"><span class="cell-truncate"><%= u.password || '—' %></span></td>
+                      <td class="col-coins"><%= u.coins %> / <%= u.total_coins_earned %></td>
+                      <td class="col-role"><span class="role-tag <%= u.role %>"><%= u.role %></span></td>
+                      <td class="col-status">
+                        <% if (u.banned_until && new Date(u.banned_until) > new Date()) { %>
+                          <span class="status-banned">Banned</span>
+                        <% } else { %>
+                          <span class="status-active">Active</span>
+                        <% } %>
+                      </td>
+                      <td class="col-date"><%= new Date(u.created_at).toLocaleDateString() %></td>
+                      <td class="col-actions admin-actions">
+                        <% if (u.id !== user.id) { %>
+                          <button class="btn btn-sm btn-glow" style="background:#7c5cfc;color:#fff;border:none" onclick="loginAsUser(<%= u.id %>)">Login As</button>
+                          <button class="btn btn-sm btn-warn" onclick="warnUser(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Warn</button>
+                          <% if (u.banned_until && new Date(u.banned_until) > new Date()) { %>
+                            <button class="btn btn-sm btn-success" onclick="unbanUser(<%= u.id %>)">Unban</button>
+                          <% } else if (u.role !== 'admin') { %>
+                            <button class="btn btn-sm btn-danger" onclick="showBanModal(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Ban</button>
+                          <% } %>
+                          <% if (u.role !== 'admin') { %>
+                            <button class="btn btn-sm btn-danger-outline" onclick="deleteUser(<%= u.id %>, '<%= u.display_name.replace(/'/g, "\\'") %>')">Delete</button>
+                          <% } %>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-panel" id="tab-chat" style="display:none">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th class="col-id">ID</th>
+                    <th class="col-name">User</th>
+                    <th class="col-msg">Message</th>
+                    <th class="col-date">Time</th>
+                    <th class="col-act">Act</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% chatMessages.forEach(m => { %>
+                    <tr>
+                      <td class="col-id"><%= m.id %></td>
+                      <td class="col-name"><%= m.display_name %></td>
+                      <td class="col-msg"><span class="cell-truncate"><%= m.message %></span></td>
+                      <td class="col-date"><%= new Date(m.created_at).toLocaleString() %></td>
+                      <td class="col-act">
+                        <button class="btn btn-sm btn-danger" onclick="deleteMessage(<%= m.id %>)">Del</button>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
