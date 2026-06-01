@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT DEFAULT NULL,
   remember_me INTEGER DEFAULT 1,
   bio TEXT DEFAULT NULL,
+  xp INTEGER DEFAULT 0,
+  level INTEGER DEFAULT 1,
+  last_active DATETIME DEFAULT CURRENT_TIMESTAMP,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -178,4 +181,71 @@ CREATE TABLE IF NOT EXISTS warnings (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (admin_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS friends (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  friend_id INTEGER NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (friend_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS friend_dms (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  from_id INTEGER NOT NULL,
+  to_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  read INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (from_id) REFERENCES users(id),
+  FOREIGN KEY (to_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS trades (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  from_id INTEGER NOT NULL,
+  to_id INTEGER NOT NULL,
+  from_coins INTEGER DEFAULT 0,
+  to_coins INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'pending',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (from_id) REFERENCES users(id),
+  FOREIGN KEY (to_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS trade_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  trade_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  inventory_item_id INTEGER NOT NULL,
+  FOREIGN KEY (trade_id) REFERENCES trades(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(id)
+);
+
+CREATE TABLE IF NOT EXISTS quests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  requirement_type TEXT NOT NULL,
+  requirement_count INTEGER DEFAULT 1,
+  reward_coins INTEGER DEFAULT 0,
+  reward_xp INTEGER DEFAULT 0,
+  reset_type TEXT DEFAULT 'daily',
+  icon TEXT DEFAULT 'quest.png'
+);
+
+CREATE TABLE IF NOT EXISTS user_quests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  quest_id INTEGER NOT NULL,
+  progress INTEGER DEFAULT 0,
+  completed INTEGER DEFAULT 0,
+  quest_date TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (quest_id) REFERENCES quests(id)
 );

@@ -30,6 +30,23 @@
                 </button>
                 <p class="streak-info"><%= streak > 0 ? 'Streak: ' + streak + ' days' : 'Start your streak today!' %></p>
               <% } %>
+              <div class="hero-xp">
+                <div class="xp-bar-wrap">
+                  <div class="xp-bar"><div class="xp-fill" style="width:<%= lvl ? lvl.progress : 0 %>%"></div></div>
+                  <span class="xp-text">Level <%= lvl ? lvl.level : 1 %> — <%= lvl ? lvl.xp : 0 %> XP</span>
+                </div>
+              </div>
+              <% if (questProgress.length > 0) { %>
+                <div class="hero-quests">
+                  <% questProgress.forEach(q => { %>
+                    <div class="hero-quest-item">
+                      <span class="hq-name"><%= q.name %></span>
+                      <span class="hq-progress"><%= q.progress %>/<%= q.requirement_count %></span>
+                    </div>
+                  <% }) %>
+                  <a href="/quests" class="btn btn-sm">View All Quests</a>
+                </div>
+              <% } %>
             </div>
           <% } else { %>
             <div class="cta-buttons">

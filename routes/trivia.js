@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 const { awardCoins } = require('../middleware/currency');
+const { awardXP } = require('../middleware/xp');
+const { updateQuestProgress } = require('../middleware/quests');
 const { checkAchievement } = require('../middleware/achievements');
 
 const TRIVIA_CACHE = {};
@@ -105,6 +107,8 @@ router.post('/trivia/answer', requireAuth, async (req, res) => {
 
   if (correct) {
     awardCoins(userId, 25, 'trivia');
+    awardXP(userId, 30, 'trivia');
+    updateQuestProgress(userId, 'trivia');
 
     const totalQuestions = db.prepare(
       "SELECT COUNT(*) as cnt FROM trivia_answers WHERE user_id = ?"

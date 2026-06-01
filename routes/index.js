@@ -3,12 +3,15 @@ const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 const { awardCoins } = require('../middleware/currency');
+const { awardXP } = require('../middleware/xp');
+const { updateQuestProgress } = require('../middleware/quests');
 const games = require('../config/games.json');
 
 router.get('/', (req, res) => {
   let user = null;
   let checkedIn = false;
   let streak = 0;
+  let questProgress = [];
 
   if (req.isAuthenticated()) {
     const today = new Date().toISOString().split('T')[0];
@@ -20,9 +23,15 @@ router.get('/', (req, res) => {
 
     const streakRow = db.prepare('SELECT current_streak FROM daily_streaks WHERE user_id = ?').get(req.user.id);
     streak = streakRow ? streakRow.current_streak : 0;
+
+    const { getUserQuests } = require('../middleware/quests');
+    const { getLevelProgress } = require('../middleware/xp');
+    const allQuests = getUserQuests(req.user.id);
+    questProgress = allQuests.filter(q => !q.completed).slice(0, 3);
+    var lvl = getLevelProgress(req.user.id);
   }
 
-  res.render('index', { user, games, checkedIn, streak });
+  res.render('index', { user, games, checkedIn, streak, questProgress, lvl });
 });
 
 router.post('/checkin', requireAuth, (req, res) => {
@@ -61,6 +70,8 @@ router.post('/checkin', requireAuth, (req, res) => {
   }
 
   awardCoins(userId, coins, 'checkin');
+  awardXP(userId, 25, 'checkin');
+  updateQuestProgress(userId, 'checkin');
 
   if (streak === 3) {
     const ach = db.prepare('SELECT id FROM achievements WHERE name = ?').get('Streak Starter');

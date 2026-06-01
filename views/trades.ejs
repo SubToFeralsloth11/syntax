@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trades — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css?v=5">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <section class="page-header">
+      <div class="container"><h1>Trades</h1></div>
+    </section>
+    <section class="trades-section">
+      <div class="container">
+        <div class="trades-layout">
+          <div>
+            <h2>Propose Trade</h2>
+            <div class="form-group"><label>Trade with (User ID)</label><input type="number" id="tradeToId" placeholder="Enter user ID"></div>
+            <div class="form-group"><label>Your coins offer</label><input type="number" id="tradeFromCoins" value="0" min="0"></div>
+            <div class="form-group"><label>Request their coins</label><input type="number" id="tradeToCoins" value="0" min="0"></div>
+            <% if (inventory.length > 0) { %>
+              <div class="form-group"><label>Your items to offer</label>
+                <div class="trade-items">
+                  <% inventory.forEach(item => { %>
+                    <label class="trade-item-check"><input type="checkbox" value="<%= item.id %>" class="trade-item-cb"> <%= item.item_name %></label>
+                  <% }) %>
+                </div>
+              </div>
+            <% } %>
+            <button class="btn btn-primary" onclick="proposeTrade()">Send Trade</button>
+          </div>
+          <div>
+            <h2>Active Trades</h2>
+            <% if (activeTrades.length === 0) { %><p class="empty-state">No active trades</p><% } %>
+            <% activeTrades.forEach(t => { %>
+              <div class="trade-card">
+                <p><strong><%= t.from_name %></strong> &rarr; <strong><%= t.to_name %></strong></p>
+                <p>Offers: <%= t.from_coins %> coins | Wants: <%= t.to_coins %> coins</p>
+                <% if (t.to_id === user.id) { %>
+                  <button class="btn btn-sm btn-primary" onclick="acceptTrade(<%= t.id %>)">Accept</button>
+                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)">Reject</button>
+                <% } else { %>
+                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)">Cancel</button>
+                <% } %>
+              </div>
+            <% }) %>
+            <% if (tradeHistory.length > 0) { %>
+              <h2>History</h2>
+              <% tradeHistory.forEach(t => { %>
+                <div class="trade-card past"><strong><%= t.from_name %></strong> &harr; <strong><%= t.to_name %></strong> — <%= t.status %></div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script>
+    function proposeTrade() {
+      var toId = parseInt(document.getElementById('tradeToId').value);
+      var fromCoins = parseInt(document.getElementById('tradeFromCoins').value)||0;
+      var toCoins = parseInt(document.getElementById('tradeToCoins').value)||0;
+      var items = [];
+      document.querySelectorAll('.trade-item-cb:checked').forEach(cb => items.push(parseInt(cb.value)));
+      if(!toId) return alert('Enter a user ID');
+      fetch('/trades/propose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toId,fromCoins,toCoins,items})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()});
+    }
+    function acceptTrade(id) { fetch('/trades/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+    function rejectTrade(id) { fetch('/trades/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+  </script>
+</body>
+</html>

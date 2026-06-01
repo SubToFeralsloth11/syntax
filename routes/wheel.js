@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 const { awardCoins } = require('../middleware/currency');
+const { awardXP } = require('../middleware/xp');
+const { updateQuestProgress } = require('../middleware/quests');
 const { checkAchievement } = require('../middleware/achievements');
 const fs = require('fs');
 const path = require('path');
@@ -143,6 +145,9 @@ router.post('/wheel/spin', requireAuth, (req, res) => {
     const coins = checkAchievement(userId, 'Lucky Spinner');
     if (coins) awardCoins(userId, coins, 'achievement');
   }
+
+  awardXP(userId, 15, 'wheel');
+  updateQuestProgress(userId, 'wheel');
 
   res.json({
     success: true,

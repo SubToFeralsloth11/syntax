@@ -38,6 +38,7 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   if (req.user) {
     const db = require('./db/database');
+    db.prepare("UPDATE users SET last_active = datetime('now') WHERE id = ?").run(req.user.id);
     const unreadWarnings = db.prepare(
       'SELECT w.id, w.message, w.created_at, a.display_name as admin_name FROM warnings w JOIN users a ON a.id = w.admin_id WHERE w.user_id = ? AND w.read = 0 ORDER BY w.created_at DESC'
     ).all(req.user.id);
@@ -66,6 +67,9 @@ const settingsRoutes = require('./routes/settings');
 const bankRoutes = require('./routes/bank');
 const lotteryRoutes = require('./routes/lottery');
 const earnRoutes = require('./routes/earn');
+const questRoutes = require('./routes/quests');
+const friendRoutes = require('./routes/friends');
+const tradeRoutes = require('./routes/trades');
 const adminRoutes = require('./routes/admin');
 
 function avatarUrl(avatar) {
@@ -109,6 +113,9 @@ app.use('/', settingsRoutes);
 app.use('/', bankRoutes);
 app.use('/', lotteryRoutes);
 app.use('/', earnRoutes);
+app.use('/', questRoutes);
+app.use('/', friendRoutes);
+app.use('/', tradeRoutes);
 app.use('/', adminRoutes);
 
 // Custom error pages

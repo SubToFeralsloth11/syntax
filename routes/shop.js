@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 const { awardCoins, getBalance } = require('../middleware/currency');
+const { awardXP } = require('../middleware/xp');
+const { updateQuestProgress } = require('../middleware/quests');
 const { checkAchievement } = require('../middleware/achievements');
 const mysteryBoxItems = require('../config/mystery-box-items.json');
 
@@ -105,6 +107,9 @@ router.post('/shop/mystery-box/open', requireAuth, (req, res) => {
     const coins = checkAchievement(userId, 'Box Opener');
     if (coins) awardCoins(userId, coins, 'achievement');
   }
+
+  awardXP(userId, 20, 'mystery_box');
+  updateQuestProgress(userId, 'mystery_box');
 
   if (boxesOpened >= 10) {
     const coins = checkAchievement(userId, 'High Roller');

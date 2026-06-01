@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quests — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css?v=5">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Quests</h1>
+        <p>Level <%= lvl.level %> — <%= lvl.xp %> XP (<%= lvl.progress %>% to next level)</p>
+      </div>
+    </section>
+    <section class="quests-section">
+      <div class="container">
+        <div class="xp-bar-wrap">
+          <div class="xp-bar"><div class="xp-fill" style="width:<%= lvl.progress %>%"></div></div>
+          <span class="xp-text"><%= lvl.xp %> / <%= lvl.nextXP %> XP</span>
+        </div>
+        <h2>Daily Quests</h2>
+        <div class="quest-grid">
+          <% quests.filter(q => q.reset_type === 'daily').forEach(q => { %>
+            <div class="quest-card <%= q.completed ? 'completed' : '' %>">
+              <span class="quest-icon"><%= q.completed ? '?' : '?' %></span>
+              <div class="quest-info">
+                <strong><%= q.name %></strong>
+                <p><%= q.description %></p>
+                <div class="quest-progress">
+                  <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:<%= Math.min(100, (q.progress/q.requirement_count)*100) %>%"></div></div>
+                  <span><%= q.progress %>/<%= q.requirement_count %></span>
+                </div>
+                <span class="quest-reward">+<%= q.reward_coins %> coins +<%= q.reward_xp %> XP</span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+        <h2>Weekly Quests</h2>
+        <div class="quest-grid">
+          <% quests.filter(q => q.reset_type === 'weekly').forEach(q => { %>
+            <div class="quest-card <%= q.completed ? 'completed' : '' %>">
+              <span class="quest-icon"><%= q.completed ? '?' : '?' %></span>
+              <div class="quest-info">
+                <strong><%= q.name %></strong>
+                <p><%= q.description %></p>
+                <div class="quest-progress">
+                  <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:<%= Math.min(100, (q.progress/q.requirement_count)*100) %>%"></div></div>
+                  <span><%= q.progress %>/<%= q.requirement_count %></span>
+                </div>
+                <span class="quest-reward">+<%= q.reward_coins %> coins +<%= q.reward_xp %> XP</span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

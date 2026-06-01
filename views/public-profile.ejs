@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= profile.display_name %> — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css?v=5">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1><%= profile.display_name %><% if (profile.role === 'admin') { %> <span class="owner-badge-sm">Owner</span><% } %></h1>
+        <p>Level <%= profile.level %> — <%= profile.coins %> coins</p>
+      </div>
+    </section>
+    <section class="profile-page">
+      <div class="container">
+        <div class="profile-layout">
+          <div class="profile-sidebar">
+            <div class="profile-card">
+              <div class="profile-avatar">
+                <img src="<%= avatarUrl(profile.avatar) %>" alt="" class="avatar-profile" onerror="this.src='/images/default-avatar.svg'">
+              </div>
+              <% if (profile.equipped_title) { %><p class="equipped-title">"<%= profile.equipped_title %>"</p><% } %>
+              <% if (profile.bio) { %><p class="profile-bio"><%= profile.bio %></p><% } %>
+              <div class="xp-bar-wrap"><div class="xp-bar"><div class="xp-fill" style="width:<%= lvl.progress %>%"></div></div><span class="xp-text">Level <%= lvl.level %> — <%= lvl.xp %> XP</span></div>
+              <div class="profile-stats-mini">
+                <div class="stat"><span class="stat-value"><%= profile.coins %></span><span class="stat-label">Coins</span></div>
+                <div class="stat"><span class="stat-value"><%= profile.level %></span><span class="stat-label">Level</span></div>
+                <div class="stat"><span class="stat-value"><%= new Date(profile.created_at).toLocaleDateString() %></span><span class="stat-label">Joined</span></div>
+                <div class="stat"><span class="stat-value"><%= profile.last_active ? new Date(profile.last_active).toLocaleDateString() : '—' %></span><span class="stat-label">Last Active</span></div>
+              </div>
+              <% if (profile.id !== user.id) { %>
+                <div class="profile-actions">
+                  <% if (isFriend) { %>
+                    <button class="btn btn-sm" onclick="removeFriend(<%= profile.id %>)">Remove Friend</button>
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href='/friends?dm=<%= profile.id %>'">Message</button>
+                  <% } else if (friendRequest && friendRequest.status === 'pending' && friendRequest.user_id === user.id) { %>
+                    <button class="btn btn-sm" disabled>Request Sent</button>
+                  <% } else if (friendRequest && friendRequest.status === 'pending') { %>
+                    <button class="btn btn-sm btn-primary" onclick="acceptFriend(<%= friendRequest.id %>)">Accept Request</button>
+                  <% } else { %>
+                    <button class="btn btn-sm btn-primary" onclick="addFriend(<%= profile.id %>)">Add Friend</button>
+                  <% } %>
+                  <a href="/trades?with=<%= profile.id %>" class="btn btn-sm">Trade</a>
+                </div>
+              <% } %>
+              <% if (inventory.length > 0) { %>
+                <h3 style="margin:16px 0 8px">Equipped</h3>
+                <% inventory.forEach(item => { %>
+                  <div class="mini-equipped"><%= item.item_type === 'frame' ? '[Frame]' : item.item_type === 'badge' ? '[Badge]' : '[Title]' %> <%= item.item_name %></div>
+                <% }) %>
+              <% } %>
+            </div>
+          </div>
+          <div class="profile-main">
+            <% if (achievements.length > 0) { %>
+              <div class="profile-section"><h2>Achievements</h2>
+                <% achievements.forEach(ach => { %>
+                  <div class="achievement-badge"><span class="ach-icon">?</span><div><strong><%= ach.name %></strong><p><%= ach.description %></p></div></div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script>
+    function addFriend(id) { fetch('/friends/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+    function removeFriend(id) { if(confirm('Remove friend?')){fetch('/friends/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()})} }
+    function acceptFriend(id) { fetch('/friends/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+  </script>
+</body>
+</html>

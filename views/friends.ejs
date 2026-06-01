@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends — Syntax</title>
+  <link rel="stylesheet" href="/css/style.css?v=5">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <section class="page-header">
+      <div class="container"><h1>Friends</h1></div>
+    </section>
+    <section class="friends-section">
+      <div class="container">
+        <% if (pendingReceived.length > 0) { %>
+          <h2>Requests (<%= pendingReceived.length %>)</h2>
+          <div class="friend-list">
+            <% pendingReceived.forEach(r => { %>
+              <div class="friend-row">
+                <a href="/profile/<%= r.id %>"><%= r.display_name %></a>
+                <span>Level <%= r.level %></span>
+                <button class="btn btn-sm btn-primary" onclick="acceptRequest(<%= r.id %>)">Accept</button>
+                <button class="btn btn-sm" onclick="rejectRequest(<%= r.id %>)">Reject</button>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+        <h2>Friends (<%= friends.length %>)</h2>
+        <% if (friends.length === 0) { %>
+          <p class="empty-state">No friends yet. Visit someone's profile to add them!</p>
+        <% } else { %>
+          <div class="friend-list">
+            <% friends.forEach(f => { %>
+              <div class="friend-row">
+                <a href="/profile/<%= f.id %>"><%= f.display_name %></a>
+                <span>Level <%= f.level %></span>
+                <span class="online-dot <%= (f.last_active && (Date.now() - new Date(f.last_active).getTime()) < 300000) ? 'online' : '' %>"></span>
+                <button class="btn btn-sm btn-primary" onclick="openDM(<%= f.id %>,'<%= f.display_name.replace(/'/g,"\\\\\'") %>')">Message</button>
+                <button class="btn btn-sm" onclick="removeFriend(<%= f.id %>)">Remove</button>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+        <div class="modal-overlay hidden" id="dmOverlay">
+          <div class="modal" style="max-width:500px">
+            <h3 id="dmTitle">Message</h3>
+            <div class="dm-messages" id="dmMessages" style="max-height:300px;overflow-y:auto;margin-bottom:12px"></div>
+            <div class="dm-input" style="display:flex;gap:8px">
+              <input type="text" id="dmInput" placeholder="Type a message..." style="flex:1" maxlength="500">
+              <button class="btn btn-primary btn-sm" onclick="sendDM()">Send</button>
+            </div>
+            <button class="btn btn-sm" onclick="closeDM()" style="margin-top:8px">Close</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
+  <script>
+    var dmFriendId = null;
+    var dmInterval = null;
+    function acceptRequest(id) { fetch('/friends/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+    function rejectRequest(id) { fetch('/friends/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+    function removeFriend(id) { if(confirm('Remove friend?')){fetch('/friends/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()})} }
+    function openDM(id,name) {
+      dmFriendId = id;
+      document.getElementById('dmTitle').textContent = 'DM: ' + name;
+      document.getElementById('dmOverlay').classList.remove('hidden');
+      loadDMs();
+      dmInterval = setInterval(loadDMs, 3000);
+    }
+    function closeDM() { document.getElementById('dmOverlay').classList.add('hidden'); dmFriendId = null; if(dmInterval)clearInterval(dmInterval); }
+    function loadDMs() {
+      if(!dmFriendId) return;
+      fetch('/friends/dm/'+dmFriendId).then(r=>r.json()).then(data=>{
+        var el = document.getElementById('dmMessages');
+        el.innerHTML = data.dms.map(m=>'<div class="dm-msg"><strong>'+m.from_name+':</strong> '+m.message+' <small>'+new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</small></div>').join('');
+        el.scrollTop = el.scrollHeight;
+      });
+    }
+    function sendDM() {
+      var msg = document.getElementById('dmInput').value.trim();
+      if(!msg || !dmFriendId) return;
+      fetch('/friends/dm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:dmFriendId,message:msg})}).then(r=>r.json()).then(d=>{
+        if(d.success) { document.getElementById('dmInput').value = ''; loadDMs(); } else alert(d.message);
+      });
+    }
+    <% if (typeof query !== 'undefined' && query.dm) { %>setTimeout(function(){ openDM(<%= query.dm %>, 'Friend'); }, 500);<% } %>
+  </script>
+</body>
+</html>

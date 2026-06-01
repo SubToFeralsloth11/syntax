@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../db/database');
 const path = require('path');
 const { requireAuth } = require('../middleware/auth');
+const { awardXP } = require('../middleware/xp');
+const { updateQuestProgress } = require('../middleware/quests');
 
 const BANNED = require(path.join(__dirname, '..', 'config', 'banned-words.json'));
 
@@ -74,6 +76,8 @@ router.post('/chat/send', requireAuth, (req, res) => {
 
   const clean = message.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
   db.prepare('INSERT INTO chat_messages (user_id, message) VALUES (?, ?)').run(req.user.id, clean);
+  awardXP(req.user.id, 5, 'chat');
+  updateQuestProgress(req.user.id, 'chat');
 
   const msg = db.prepare(`
     SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id, u.role

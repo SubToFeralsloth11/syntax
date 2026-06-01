@@ -487,8 +487,38 @@ a:hover {
 }
 
 .checkin-section {
-  margin-top: 24px;
-  animation: heroFadeIn 0.8s ease-out 0.2s both;
+  margin-top: 16px;
+}
+
+.hero-xp {
+  margin-top: 14px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-quests {
+  margin-top: 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-quest-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  padding: 3px 0;
+}
+
+.hq-name { color: var(--text-muted); }
+.hq-progress { color: var(--accent); font-weight: 600; }
+
+.hero-quests .btn-sm {
+  margin-top: 6px;
 }
 
 .streak-info {
@@ -1158,6 +1188,223 @@ a:hover {
   flex-wrap: wrap;
 }
 .investment-row:last-child { border-bottom: none; }
+
+/* XP Bar */
+.xp-bar-wrap {
+  margin-bottom: 12px;
+}
+
+.xp-bar {
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #a882ff);
+  border-radius: 3px;
+  transition: width 0.5s;
+}
+
+.xp-text {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Quests */
+.quests-section {
+  padding: 20px 0 60px;
+}
+
+.quests-section h2 {
+  margin: 24px 0 12px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.quest-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.quest-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  align-items: center;
+}
+
+.quest-card.completed {
+  opacity: 0.5;
+  border-color: var(--success);
+}
+
+.quest-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.quest-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.quest-info strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.quest-info p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.quest-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.quest-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.quest-progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 2px;
+}
+
+.quest-progress span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.quest-reward {
+  font-size: 0.72rem;
+  color: var(--gold);
+}
+
+/* Friends */
+.friends-section {
+  padding: 20px 0 60px;
+}
+
+.friends-section h2 {
+  margin: 20px 0 10px;
+  font-size: 1rem;
+}
+
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+
+.friend-row a {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.online-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.dm-msg {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.dm-msg strong { color: var(--accent); }
+.dm-msg small { color: var(--text-muted); font-size: 0.7rem; }
+
+/* Trades */
+.trades-section {
+  padding: 20px 0 60px;
+}
+
+.trades-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.trade-card {
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.trade-card.past {
+  opacity: 0.5;
+}
+
+.trade-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.trade-item-check {
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+/* Profile actions */
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.mini-equipped {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 3px 0;
+}
+
+@media (max-width: 768px) {
+  .trades-layout {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* Lottery */
 .lottery-section {
