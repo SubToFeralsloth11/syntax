@@ -116,11 +116,11 @@ router.get('/wheel', requireAuth, (req, res) => {
 router.post('/wheel/spin', requireAuth, (req, res) => {
   const userId = req.user.id;
   const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId);
-  const displayed = req.session.wheelSegments;
+  let displayed = req.session.wheelSegments;
   let freeSpin = false;
 
   if (!displayed || displayed.length === 0) {
-    return res.json({ success: false, message: 'Please refresh the wheel page' });
+    displayed = pickSegments(12);
   }
 
   const picked = pickFromDisplayed(displayed);
