@@ -27,7 +27,7 @@ function awardXP(userId, amount, reason) {
   const newXP = user.xp + amount;
   const newLevel = getLevel(newXP);
 
-  db.prepare('UPDATE users SET xp = ?, level = ?, last_active = datetime("now") WHERE id = ?').run(newXP, newLevel, userId);
+  db.prepare("UPDATE users SET xp = ?, level = ?, last_active = datetime('now') WHERE id = ?").run(newXP, newLevel, userId);
 
   if (newLevel > user.level) {
     const bonus = newLevel * 50;

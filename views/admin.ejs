@@ -43,7 +43,7 @@
                 </thead>
                 <tbody>
                   <% users.forEach(u => { %>
-                    <tr class="<%= u.banned_until && new Date(u.banned_until) > new Date() ? 'banned-row' : '' %>">
+                    <tr class="user-row <%= u.banned_until && new Date(u.banned_until) > new Date() ? 'banned-row' : '' %>" data-uid="<%= u.id %>">
                       <td class="col-id"><%= u.id %></td>
                       <td class="col-name">
                         <a href="/admin/user/<%= u.id %>"><%= u.display_name %></a>
@@ -178,7 +178,7 @@
     }
     function showBanModal(id, name) {
       banUserId = id;
-      document.getElementById('banTargetName').textContent = name;
+      document.getElementById('banTargetName').textContent = name || ('User #' + id);
       document.getElementById('banModal').style.display = 'flex';
     }
     function closeBanModal() {
@@ -192,8 +192,19 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: banUserId, hours: parseInt(hours) })
       }).then(r => r.json()).then(data => {
-        alert(data.message);
-        location.reload();
+        if (data.success) {
+          closeBanModal();
+          var row = document.querySelector('.user-row[data-uid="' + banUserId + '"]');
+          if (row) {
+            row.classList.add('banned-row');
+            var statusCell = row.querySelector('.col-status');
+            if (statusCell) statusCell.innerHTML = '<span class="status-banned">Banned</span>';
+            var actionsCell = row.querySelector('.admin-actions');
+            if (actionsCell) {
+              actionsCell.innerHTML = '<button class="btn btn-sm btn-warn" onclick="warnUser(' + banUserId + ')">Warn</button><button class="btn btn-sm btn-success" onclick="unbanUser(' + banUserId + ')">Unban</button><button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + banUserId + ')">Delete</button>';
+            }
+          }
+        }
       });
     }
     function unbanUser(id) {
@@ -203,13 +214,23 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: id })
       }).then(r => r.json()).then(data => {
-        alert(data.message);
-        location.reload();
+        if (data.success) {
+          var row = document.querySelector('.user-row[data-uid="' + id + '"]');
+          if (row) {
+            row.classList.remove('banned-row');
+            var statusCell = row.querySelector('.col-status');
+            if (statusCell) statusCell.innerHTML = '<span class="status-active">Active</span>';
+            var actionsCell = row.querySelector('.admin-actions');
+            if (actionsCell) {
+              actionsCell.innerHTML = '<button class="btn btn-sm btn-glow" style="background:#7c5cfc;color:#fff;border:none" onclick="loginAsUser(' + id + ')">Login As</button><button class="btn btn-sm btn-warn" onclick="warnUser(' + id + ')">Warn</button><button class="btn btn-sm btn-danger" onclick="showBanModal(' + id + ')">Ban</button><button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + id + ')">Delete</button>';
+            }
+          }
+        }
       });
     }
     function warnUser(id, name) {
       warnUserId = id;
-      document.getElementById('warnTargetName').textContent = name;
+      document.getElementById('warnTargetName').textContent = name || ('User #' + id);
       document.getElementById('warnMessage').value = '';
       document.getElementById('warnModal').style.display = 'flex';
     }
@@ -225,9 +246,51 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: warnUserId, message })
       }).then(r => r.json()).then(data => {
-        alert(data.message);
-        location.reload();
+        closeWarnModal();
       });
+    }
+    function deleteMessage(id) {
+      if (!confirm('Delete message #' + id + '?')) return;
+      fetch('/admin/delete-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messageId: id })
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          var row = document.querySelector('.admin-table tr[data-uid="' + id + '"]');
+          if (!row) {
+            var rows = document.querySelectorAll('#tab-chat .admin-table tbody tr');
+            rows.forEach(function(r) {
+              if (r.cells[0] && r.cells[0].textContent.trim() === String(id)) r.remove();
+            });
+          }
+        }
+      });
+    }
+    function deleteUser(id, name) {
+      if (!confirm('PERMANENTLY delete user "' + name + '" (ID: ' + id + ')? This cannot be undone!')) return;
+      if (!confirm('Are you ABSOLUTELY sure? All data will be lost.')) return;
+
+      fetch('/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: id })
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          var row = document.querySelector('.user-row[data-uid="' + id + '"]');
+          if (row) row.remove();
+          var countEl = document.querySelector('.page-header p');
+          if (countEl) {
+            var parts = countEl.textContent.split('·');
+            if (parts.length >= 1) {
+              var userCount = parseInt(parts[0]) - 1;
+              parts[0] = userCount + ' users';
+              countEl.textContent = parts.join('·');
+            }
+          }
+        }
+      });
+    }
     }
     function deleteMessage(id) {
       if (!confirm('Delete message #' + id + '?')) return;
@@ -241,7 +304,8 @@
       });
     }
     function deleteUser(id, name) {
-      if (!confirm('PERMANENTLY delete user "' + name + '" (ID: ' + id + ')? This cannot be undone!')) return;
+      var displayName = name || ('User #' + id);
+      if (!confirm('PERMANENTLY delete user "' + displayName + '" (ID: ' + id + ')? This cannot be undone!')) return;
       if (!confirm('Are you ABSOLUTELY sure? All data will be lost.')) return;
       fetch('/admin/delete-user', {
         method: 'POST',
