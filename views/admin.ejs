@@ -201,7 +201,7 @@
             if (statusCell) statusCell.innerHTML = '<span class="status-banned">Banned</span>';
             var actionsCell = row.querySelector('.admin-actions');
             if (actionsCell) {
-              actionsCell.innerHTML = '<button class="btn btn-sm btn-warn" onclick="warnUser(' + banUserId + ')">Warn</button><button class="btn btn-sm btn-success" onclick="unbanUser(' + banUserId + ')">Unban</button><button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + banUserId + ')">Delete</button>';
+              actionsCell.innerHTML = '<button class="btn btn-sm btn-glow" style="background:#7c5cfc;color:#fff;border:none" onclick="loginAsUser(' + banUserId + ')">Login As</button><button class="btn btn-sm btn-warn" onclick="warnUser(' + banUserId + ')">Warn</button><button class="btn btn-sm btn-success" onclick="unbanUser(' + banUserId + ')">Unban</button><button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + banUserId + ')">Delete</button>';
             }
           }
         }
