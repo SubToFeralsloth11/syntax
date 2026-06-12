@@ -38,7 +38,7 @@ function initCanvas() {
   const canvas = document.getElementById('wheelCanvas');
   if (!canvas) return null;
   const dpr = window.devicePixelRatio || 1;
-  const W = 500;
+  const W = 520;
   const H = 520;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
@@ -114,7 +114,7 @@ function buildOffscreen(W, H) {
 function drawWheel(angle) {
   const info = initCanvas();
   if (!info) return;
-  const { ctx, canvas, W, H } = info;
+  const { ctx, W, H } = info;
 
   ctx.clearRect(0, 0, W, H);
   ctx.save();
