@@ -2291,8 +2291,8 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 40px;
-  max-width: 560px;
+  padding: 24px;
+  max-width: 580px;
   margin: 0 auto;
   text-align: center;
 }
