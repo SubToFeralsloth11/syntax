@@ -2785,7 +2785,6 @@ main {
 
 .wheel-wrapper canvas {
   max-width: 100%;
-  height: auto;
 }
 
 .wheel-pointer {
@@ -3320,6 +3319,7 @@ main {
   /* Wheel */
   .wheel-wrapper {
     max-width: 280px;
+    overflow: hidden;
   }
 
   .modal {
