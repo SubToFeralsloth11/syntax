@@ -2779,12 +2779,16 @@ main {
 
 .wheel-wrapper {
   position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
   margin-bottom: 24px;
 }
 
 .wheel-wrapper canvas {
+  width: 520px;
+  height: 520px;
   max-width: 100%;
+  aspect-ratio: 1;
 }
 
 .wheel-pointer {
