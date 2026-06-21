@@ -30,5 +30,13 @@
     "thumbnail": "/images/game-covers/echoes.png",
     "url": "/games/echoes",
     "status": "active"
+  },
+  {
+    "id": "funny-shooter",
+    "name": "Funny Shooter",
+    "description": "A cartoon mini shooter — pick a character and blast away!",
+    "thumbnail": "/images/game-covers/funny-shooter.svg",
+    "url": "/games/funny-shooter",
+    "status": "active"
   }
 ]

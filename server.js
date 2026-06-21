@@ -140,6 +140,26 @@ app.get('/games/echoes', (req, res) => {
 const echoGameDir = path.join(__dirname, 'games', 'Echoes of the Forgotten');
 app.get('/games/echoes/script.js', (req, res) => res.type('js').sendFile(path.join(echoGameDir, 'script.js')));
 app.get('/games/echoes/style.css', (req, res) => res.type('css').sendFile(path.join(echoGameDir, 'style.css')));
+
+app.get('/games/funny-shooter', (req, res) => {
+  if (req.isAuthenticated()) {
+    const db = require('./db/database');
+    const { awardCoins } = require('./middleware/currency');
+    const today = new Date().toISOString().split('T')[0];
+    const already = db.prepare(
+      "SELECT id FROM page_visits WHERE user_id = ? AND page_path = '/games/funny-shooter' AND visited_date = ?"
+    ).get(req.user.id, today);
+    if (!already) {
+      db.prepare('INSERT INTO page_visits (user_id, page_path, visited_date) VALUES (?, ?, ?)').run(req.user.id, '/games/funny-shooter', today);
+      awardCoins(req.user.id, 2, 'visit');
+    }
+  }
+  const fs = require('fs');
+  let html = fs.readFileSync(path.join(__dirname, 'games', 'funny-shooter', 'index.html'), 'utf8');
+  html = injectGameNav(html);
+  res.type('html').send(html);
+});
+
 app.use('/', indexRoutes);
 app.use('/', authRoutes);
 app.use('/', gamesRoutes);
