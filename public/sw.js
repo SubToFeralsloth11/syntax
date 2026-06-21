@@ -1,4 +1,4 @@
-const CACHE = 'syntax-v4';
+const CACHE = 'syntax-v5';
 const OFFLINE = '/offline.html';
 
 const PRECACHE = [
@@ -22,14 +22,9 @@ const PRECACHE = [
   '/favicon.svg',
 ];
 
-const ERROR_PAGES = {
-  '404': '/error-404',
-  '500': '/error-500',
-};
-
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(PRECACHE))
+    caches.open(CACHE).then(c => c.addAll(PRECACHE).catch(() => {}))
   );
   self.skipWaiting();
 });
@@ -38,9 +33,12 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim()).then(() =>
+      self.clients.matchAll({ type: 'window' }).then(clients =>
+        clients.forEach(c => c.postMessage({ type: 'SW_UPDATED' }))
+      )
     )
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
@@ -48,35 +46,30 @@ self.addEventListener('fetch', (e) => {
 
   const url = new URL(e.request.url);
 
-  // Don't interfere with non-localhost or chrome-extension requests
   if (!['localhost', '127.0.0.1'].includes(url.hostname.replace(/:.*$/, ''))) return;
 
-  // Cache-first for static assets
   if (
     url.pathname.startsWith('/css/') ||
     url.pathname.startsWith('/js/') ||
     url.pathname.startsWith('/images/') ||
     url.pathname === '/offline.html' ||
-    url.pathname === '/favicon.svg'
+    url.pathname === '/favicon.svg' ||
+    url.pathname === '/favicon.ico' ||
+    url.pathname === '/images/logo.png'
   ) {
     e.respondWith(
-      caches.match(e.request).then(cached => {
-        const network = fetch(e.request).then(response => {
-          const clone = response.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return response;
-        }).catch(() => cached);
-        return cached || network;
-      })
+      fetch(e.request).then(response => {
+        const clone = response.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return response;
+      }).catch(() => caches.match(e.request).then(c => c || Response.error()))
     );
     return;
   }
 
-  // Navigation: try network, fallback to offline
   if (e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request).then(response => {
-        // Cache successful page loads
         if (response.ok || response.status === 404 || response.status === 500) {
           const clone = response.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
