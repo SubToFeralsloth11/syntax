@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lucky Wheel — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=6">
-</head>
+<%- include('partials/head', { title: 'Lucky Wheel — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,7 +8,7 @@
     <section class="page-header">
       <div class="container">
         <h1>Lucky Wheel</h1>
-        <p>Costs <%= spinCost %> coins per spin. Win up to 1000 coins!</p>
+        <p>Costs <%= spinCost %> coins per spin · win up to 1000 coins</p>
       </div>
     </section>
 
@@ -25,18 +20,18 @@
           </div>
           <div class="wheel-controls">
             <button class="btn btn-primary btn-lg" id="spinBtn" onclick="spinWheel()">
-              SPIN (<%= spinCost %> coins)
+              <i data-lucide="disc-3"></i> SPIN (<%= spinCost %> coins)
             </button>
             <div class="wheel-balance">Balance: <strong id="wheelBalance"><%= userCoins %></strong> coins</div>
           </div>
           <div class="wheel-legend">
-            <% const tierDots = { low: '#e74c3c', mid: '#f39c12', high: '#2ecc71', epic: '#0e8c5f' }; %>
+            <% const tierDots = { low: '#4fa8ff', mid: '#44dd88', high: '#ffae00', epic: 'var(--magenta)' }; %>
             <% const tierNames = { low: 'Low', mid: 'Mid', high: 'High', epic: 'Jackpot' }; %>
             <% Object.keys(tierDots).forEach(t => { %>
-              <span class="legend-item"><span class="legend-dot" style="background:<%= tierDots[t] %>"></span><%= tierNames[t] %></span>
+              <span class="legend-item"><span class="legend-dot" style="background:<%= tierDots[t] %>;color:<%= tierDots[t] %>"></span><%= tierNames[t] %></span>
             <% }) %>
           </div>
-          <p class="wheel-hint" id="wheelHint">Click SPIN to try your luck!</p>
+          <p class="wheel-hint" id="wheelHint">// click SPIN to try your luck //</p>
         </div>
       </div>
     </section>
@@ -45,20 +40,23 @@
   <div id="wheelResultOverlay" class="result-overlay" style="display:none">
     <div class="result-card">
       <div class="result-glow"></div>
-      <div class="result-label" id="resultLabel">You won</div>
-      <div class="result-amount" id="resultAmount">0</div>
-      <div class="result-sub" id="resultSub">coins!</div>
-      <button class="btn btn-primary" onclick="closeResult()">Nice!</button>
+      <div class="result-content">
+        <div class="result-label" id="resultLabel">You won</div>
+        <div class="result-amount" id="resultAmount">0</div>
+        <div class="result-sub" id="resultSub">coins!</div>
+        <button class="btn btn-primary" onclick="closeResult()"><i data-lucide="check"></i> Nice!</button>
+      </div>
     </div>
     <canvas id="confettiCanvas"></canvas>
   </div>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     window.WHEEL_SEGMENTS = <%- JSON.stringify(segments) %>;
     window.SPIN_COST = <%= spinCost %>;
   </script>
-  <script src="/js/wheel.js?v=2"></script>
-  <script src="/js/main.js?v=2"></script>
+  <script src="/js/wheel.js?v=3"></script>
+  <script src="/js/main.js"></script>
 </body>
 </html>

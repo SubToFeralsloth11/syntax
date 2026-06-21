@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bank — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Bank — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,14 +8,14 @@
     <section class="page-header">
       <div class="container">
         <h1>Bank</h1>
-        <p>Invest your coins and earn guaranteed profit. Funds are locked until the timer ends.</p>
+        <p>Invest your coins and earn guaranteed profit · funds locked until timer ends</p>
       </div>
     </section>
 
     <section class="bank-balance-section">
       <div class="container">
         <div class="bank-balance-card">
-          <span class="bank-balance-label">Your Balance</span>
+          <span class="bank-balance-label"><i data-lucide="wallet"></i> Your Balance</span>
           <span class="bank-balance-amount" id="bankBalance"><%= coins %></span>
           <span class="bank-balance-unit">coins available</span>
         </div>
@@ -29,7 +24,7 @@
 
     <section class="bank-plans-section">
       <div class="container">
-        <h2 class="section-title">Investment Plans</h2>
+        <h2 class="section-title"><i data-lucide="trending-up"></i> Investment Plans</h2>
         <div class="bank-plans">
           <% Object.entries(plans).forEach(([key, plan]) => { %>
             <div class="plan-card" style="--plan-color: <%= plan.color %>">
@@ -51,7 +46,7 @@
                 <span class="preview-return">Return: <strong>0</strong></span>
                 <span class="preview-time">Lock: <strong><%= plan.duration %> <%= plan.unit %></strong></span>
               </div>
-              <button class="btn btn-primary btn-full invest-btn" data-plan="<%= key %>">Invest</button>
+              <button class="btn btn-primary btn-full invest-btn" data-plan="<%= key %>"><i data-lucide="lock"></i> Invest</button>
             </div>
           <% }) %>
         </div>
@@ -60,9 +55,9 @@
 
     <section class="bank-active-section">
       <div class="container">
-        <h2 class="section-title">Current Investments</h2>
+        <h2 class="section-title"><i data-lucide="hourglass"></i> Current Investments</h2>
         <% if (active.length === 0) { %>
-          <div class="empty-state">No active investments. Start one above!</div>
+          <%- include('partials/empty-state', { icon: 'hourglass', title: 'No active investments', subtitle: 'Start one above!' }) %>
         <% } else { %>
           <div class="investments-list" id="investmentsList">
             <% active.forEach(inv => { %>
@@ -80,7 +75,7 @@
                 <div class="inv-bottom">
                   <span class="inv-countdown" id="countdown-<%= inv.id %>"><%= inv.remainingLabel %></span>
                   <button class="btn btn-sm claim-btn" data-id="<%= inv.id %>" <%= inv.ready ? '' : 'disabled' %>>
-                    <%= inv.ready ? 'Claim' : 'Locked' %>
+                    <i data-lucide="<%= inv.ready ? 'unlock' : 'lock' %>"></i> <%= inv.ready ? 'Claim' : 'Locked' %>
                   </button>
                 </div>
               </div>
@@ -92,6 +87,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/bank.js"></script>
   <script src="/js/main.js"></script>
 </body>

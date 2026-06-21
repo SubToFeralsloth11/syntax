@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trades — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=5">
-</head>
+<%- include('partials/head', { title: 'Trades — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
   <main>
@@ -16,7 +11,7 @@
       <div class="container">
         <div class="trades-layout">
           <div>
-            <h2>Propose Trade</h2>
+            <h2><i data-lucide="send"></i> Propose Trade</h2>
             <div class="form-group"><label>Trade with (User ID)</label><input type="number" id="tradeToId" placeholder="Enter user ID"></div>
             <div class="form-group"><label>Your coins offer</label><input type="number" id="tradeFromCoins" value="0" min="0"></div>
             <div class="form-group"><label>Request their coins</label><input type="number" id="tradeToCoins" value="0" min="0"></div>
@@ -29,27 +24,27 @@
                 </div>
               </div>
             <% } %>
-            <button class="btn btn-primary" onclick="proposeTrade()">Send Trade</button>
+            <button class="btn btn-primary" onclick="proposeTrade()"><i data-lucide="send"></i> Send Trade</button>
           </div>
           <div>
-            <h2>Active Trades</h2>
-            <% if (activeTrades.length === 0) { %><p class="empty-state">No active trades</p><% } %>
+            <h2><i data-lucide="repeat"></i> Active Trades</h2>
+            <% if (activeTrades.length === 0) { %><%- include('partials/empty-state', { icon: 'repeat', title: 'No active trades', subtitle: '' }) %><% } %>
             <% activeTrades.forEach(t => { %>
               <div class="trade-card">
                 <p><strong><%= t.from_name %></strong> &rarr; <strong><%= t.to_name %></strong></p>
-                <p>Offers: <%= t.from_coins %> coins | Wants: <%= t.to_coins %> coins</p>
+                <p class="mono">Offers: <%= t.from_coins %> coins | Wants: <%= t.to_coins %> coins</p>
                 <% if (t.to_id === user.id) { %>
-                  <button class="btn btn-sm btn-primary" onclick="acceptTrade(<%= t.id %>)">Accept</button>
-                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)">Reject</button>
+                  <button class="btn btn-sm btn-primary" onclick="acceptTrade(<%= t.id %>)"><i data-lucide="check"></i> Accept</button>
+                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)"><i data-lucide="x"></i> Reject</button>
                 <% } else { %>
-                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)">Cancel</button>
+                  <button class="btn btn-sm" onclick="rejectTrade(<%= t.id %>)"><i data-lucide="x"></i> Cancel</button>
                 <% } %>
               </div>
             <% }) %>
             <% if (tradeHistory.length > 0) { %>
-              <h2>History</h2>
+              <h2><i data-lucide="history"></i> History</h2>
               <% tradeHistory.forEach(t => { %>
-                <div class="trade-card past"><strong><%= t.from_name %></strong> &harr; <strong><%= t.to_name %></strong> — <%= t.status %></div>
+                <div class="trade-card past"><strong><%= t.from_name %></strong> &harr; <strong><%= t.to_name %></strong> — <span class="mono"><%= t.status %></span></div>
               <% }) %>
             <% } %>
           </div>
@@ -58,6 +53,7 @@
     </section>
   </main>
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     function proposeTrade() {
       var toId = parseInt(document.getElementById('tradeToId').value);
@@ -65,11 +61,12 @@
       var toCoins = parseInt(document.getElementById('tradeToCoins').value)||0;
       var items = [];
       document.querySelectorAll('.trade-item-cb:checked').forEach(cb => items.push(parseInt(cb.value)));
-      if(!toId) return alert('Enter a user ID');
-      fetch('/trades/propose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toId,fromCoins,toCoins,items})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()});
+      if(!toId) return showNotification('Enter a user ID', false);
+      fetch('/trades/propose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toId,fromCoins,toCoins,items})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)setTimeout(()=>location.reload(),900)});
     }
-    function acceptTrade(id) { fetch('/trades/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
-    function rejectTrade(id) { fetch('/trades/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{alert(d.message);location.reload()}) }
+    function acceptTrade(id) { fetch('/trades/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)setTimeout(()=>location.reload(),900)}) }
+    function rejectTrade(id) { fetch('/trades/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tradeId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)setTimeout(()=>location.reload(),900)}) }
   </script>
+  <script src="/js/main.js"></script>
 </body>
 </html>

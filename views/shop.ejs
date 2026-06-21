@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Shop — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,14 +8,14 @@
     <section class="page-header">
       <div class="container">
         <h1>Shop</h1>
-        <p>Spend your hard-earned coins!</p>
+        <p>Spend your hard-earned coins</p>
       </div>
     </section>
 
     <section class="shop-section">
       <div class="container">
         <div class="mystery-box-card">
-          <h2>Mystery Box</h2>
+          <h2><i data-lucide="gift"></i> Mystery Box</h2>
           <p class="mb-desc">A mysterious gift box with over 50 possible items. What will you get?</p>
           <div class="mystery-box-preview" id="mysteryBoxPreview">
             <div class="gift-box-icon">
@@ -31,8 +26,8 @@
           </div>
           <p class="mb-price">250 coins</p>
           <div class="mb-buttons">
-            <button class="btn" onclick="showLootTable()">Show All Items</button>
-            <button class="btn btn-primary" onclick="buyMysteryBox()">Buy Mystery Box</button>
+            <button class="btn" onclick="showLootTable()"><i data-lucide="list"></i> Show All Items</button>
+            <button class="btn btn-primary" onclick="buyMysteryBox()"><i data-lucide="shopping-bag"></i> Buy Mystery Box</button>
           </div>
         </div>
 
@@ -43,15 +38,15 @@
               <% const owned = ownedIds.includes(item.id) %>
               <div class="shop-item <%= owned ? 'owned' : '' %>">
                 <div class="shop-item-icon">
-                  <%= item.type === 'frame' ? '[F]' : item.type === 'badge' ? '[B]' : '[T]' %>
+                  <i data-lucide="<%= item.type === 'frame' ? 'square' : item.type === 'badge' ? 'medal' : 'quote' %>"></i>
                 </div>
                 <h3><%= item.name %></h3>
                 <p class="shop-item-desc"><%= item.description %></p>
                 <p class="shop-item-price"><%= item.price %> coins</p>
                 <% if (owned) { %>
-                  <button class="btn btn-sm" disabled>Owned</button>
+                  <button class="btn btn-sm" disabled><i data-lucide="check"></i> Owned</button>
                 <% } else { %>
-                  <button class="btn btn-sm btn-primary" onclick="buyShopItem(<%= item.id %>)">Buy</button>
+                  <button class="btn btn-sm btn-primary" onclick="buyShopItem(<%= item.id %>)"><i data-lucide="shopping-bag"></i> Buy</button>
                 <% } %>
               </div>
             <% }) %>
@@ -65,7 +60,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2>Possible Mystery Box Items</h2>
-        <button class="modal-close" onclick="hideLootTable()">x</button>
+        <button class="modal-close" onclick="hideLootTable()">&times;</button>
       </div>
       <div class="modal-body">
         <p class="modal-subtitle"><%= mysteryBoxItems.length %> possible items — pure luck!</p>
@@ -89,13 +84,14 @@
       <div class="gift-result hidden" id="giftResult">
         <h2 id="giftResultTitle"></h2>
         <p id="giftResultDesc"></p>
-        <button class="btn btn-primary" onclick="closeGiftBox()">Nice!</button>
+        <button class="btn btn-primary" onclick="closeGiftBox()"><i data-lucide="check"></i> Nice!</button>
       </div>
       <canvas id="confettiCanvas" class="confetti-canvas hidden"></canvas>
     </div>
   </div>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/shop.js"></script>
   <script src="/js/gift-box.js"></script>
   <script src="/js/main.js"></script>

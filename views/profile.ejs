@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= user.display_name %> — Profile</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: user.display_name + ' — Profile' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -29,31 +24,19 @@
                 <p class="profile-bio"><%= user.bio %></p>
               <% } %>
               <div class="profile-stats-mini">
-                <div class="stat">
-                  <span class="stat-value"><%= user.coins %></span>
-                  <span class="stat-label">Coins</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-value"><%= totalCheckins %></span>
-                  <span class="stat-label">Check-ins</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-value"><%= totalVisits %></span>
-                  <span class="stat-label">Games Visited</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-value"><%= totalPlays %></span>
-                  <span class="stat-label">Games Played</span>
-                </div>
+                <%- include('partials/stat', { value: user.coins, label: 'Coins', icon: '' }) %>
+                <%- include('partials/stat', { value: totalCheckins, label: 'Check-ins', icon: '' }) %>
+                <%- include('partials/stat', { value: totalVisits, label: 'Visited', icon: '' }) %>
+                <%- include('partials/stat', { value: totalPlays, label: 'Played', icon: '' }) %>
               </div>
               <div class="profile-achievements">
                 <h3>Achievements</h3>
                 <% if (achievements.length === 0) { %>
-                  <p class="empty-state">No achievements yet</p>
+                  <p class="empty-state">// no achievements yet //</p>
                 <% } else { %>
                   <% achievements.slice(0, 5).forEach(ach => { %>
                     <div class="achievement-badge">
-                      <span class="ach-icon">★</span>
+                      <span class="ach-icon"><i data-lucide="award"></i></span>
                       <div>
                         <strong><%= ach.name %></strong>
                         <p><%= ach.description %></p>
@@ -70,21 +53,21 @@
 
           <div class="profile-main">
             <div class="profile-section">
-              <h2>Inventory</h2>
+              <h2><i data-lucide="backpack"></i> Inventory</h2>
               <% if (inventory.length === 0) { %>
-                <p class="empty-state">Your inventory is empty. Try opening a mystery box in the Shop!</p>
+                <%- include('partials/empty-state', { icon: 'package-open', title: 'Your inventory is empty', subtitle: 'Try opening a mystery box in the Shop!' }) %>
               <% } else { %>
                 <div class="inventory-grid">
                   <% inventory.forEach(item => { %>
                     <div class="inventory-item <%= item.equipped ? 'equipped' : '' %>" data-id="<%= item.id %>" data-type="<%= item.item_type %>">
                       <div class="item-icon">
-                        <%= item.item_type === 'frame' ? '[Frame]' : item.item_type === 'badge' ? '[Badge]' : '[Title]' %>
+                        <i data-lucide="<%= item.item_type === 'frame' ? 'square' : item.item_type === 'badge' ? 'medal' : 'quote' %>"></i>
                       </div>
                       <div class="item-name"><%= item.item_name %></div>
                       <% if (item.equipped) { %>
-                        <button class="btn btn-sm" onclick="unequipItem('<%= item.item_type %>')">Unequip</button>
+                        <button class="btn btn-sm" onclick="unequipItem('<%= item.item_type %>')"><i data-lucide="x"></i> Unequip</button>
                       <% } else { %>
-                        <button class="btn btn-sm btn-primary" onclick="equipItem(<%= item.id %>)">Equip</button>
+                        <button class="btn btn-sm btn-primary" onclick="equipItem(<%= item.id %>)"><i data-lucide="check"></i> Equip</button>
                       <% } %>
                     </div>
                   <% }) %>
@@ -94,7 +77,7 @@
 
             <% if (warnings && warnings.length > 0) { %>
             <div class="profile-section">
-              <h2>Warnings (<%= warnings.length %>)</h2>
+              <h2><i data-lucide="alert-triangle"></i> Warnings (<%= warnings.length %>)</h2>
               <div class="warning-list">
                 <% warnings.forEach(w => { %>
                   <div class="warning-item">
@@ -108,9 +91,9 @@
             <% } %>
 
             <div class="profile-section">
-              <h2>Recent Transactions</h2>
+              <h2><i data-lucide="receipt"></i> Recent Transactions</h2>
               <% if (transactions.length === 0) { %>
-                <p class="empty-state">No transactions yet</p>
+                <p class="empty-state">// no transactions yet //</p>
               <% } else { %>
                 <div class="transaction-list">
                   <% transactions.forEach(tx => { %>
@@ -130,6 +113,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

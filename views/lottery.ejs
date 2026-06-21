@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lottery — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Lottery — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,7 +8,7 @@
     <section class="page-header">
       <div class="container">
         <h1>Lottery</h1>
-        <p>0.05% chance per ticket. Jackpot grows over time!</p>
+        <p>0.05% chance per ticket · jackpot grows over time</p>
       </div>
     </section>
 
@@ -21,21 +16,21 @@
       <div class="container">
         <div class="lottery-jackpot-card">
           <div class="jackpot-glow"></div>
-          <span class="jackpot-label">CURRENT JACKPOT</span>
+          <span class="jackpot-label">Current Jackpot</span>
           <span class="jackpot-amount" id="jackpotAmount"><%= jackpot.toLocaleString() %></span>
           <span class="jackpot-sub">coins</span>
-          <p class="jackpot-growing" id="jackpotGrowing">Growing in real-time...</p>
+          <p class="jackpot-growing" id="jackpotGrowing"><i data-lucide="trending-up" style="width:13px;height:13px"></i> Growing in real-time...</p>
         </div>
 
         <div class="lottery-card">
           <div class="lottery-info">
             <div class="lottery-stat">
               <span class="lotto-stat-value"><%= ticketCost %></span>
-              <span class="lotto-stat-label">Coins per ticket</span>
+              <span class="lotto-stat-label">Coins / ticket</span>
             </div>
             <div class="lottery-stat">
               <span class="lotto-stat-value">0.05%</span>
-              <span class="lotto-stat-label">Win chance per ticket</span>
+              <span class="lotto-stat-label">Chance / ticket</span>
             </div>
             <div class="lottery-stat">
               <span class="lotto-stat-value" id="myTicketCount"><%= myTickets || 0 %></span>
@@ -56,7 +51,7 @@
               </div>
               <p class="ticket-chance" id="chanceDisplay">Chance: 0.050%</p>
             </div>
-            <button class="btn btn-primary btn-lg btn-full" id="buyBtn" onclick="buyTickets()">Buy & Draw</button>
+            <button class="btn btn-primary btn-lg btn-full" id="buyBtn" onclick="buyTickets()"><i data-lucide="ticket"></i> Buy & Draw</button>
           </div>
 
           <div class="lottery-result hidden" id="lotteryResult">
@@ -65,7 +60,7 @@
 
           <% if (recentWinners && recentWinners.length > 0) { %>
           <div class="lottery-winners">
-            <h3>Recent Winners</h3>
+            <h3><i data-lucide="history"></i> Recent Winners</h3>
             <% recentWinners.forEach(w => { %>
               <div class="winner-row">
                 <strong><%= w.display_name %></strong> won <span class="winner-amount"><%= w.won_amount.toLocaleString() %> coins</span>
@@ -80,6 +75,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     var ticketCost = <%= ticketCost %>;
     var jackpot = <%= jackpot %>;
@@ -94,7 +90,8 @@
       var count = parseInt(document.getElementById('ticketCount').value) || 1;
       var btn = document.getElementById('buyBtn');
       btn.disabled = true;
-      btn.textContent = 'Drawing...';
+      btn.innerHTML = '<i data-lucide="loader-circle"></i> Drawing...';
+      if (window.lucide) lucide.createIcons();
 
       fetch('/lottery/buy', {
         method: 'POST',
@@ -111,21 +108,25 @@
           var content = document.getElementById('resultContent');
 
           if (data.won) {
-            content.innerHTML = '<h2 class="winner-title">JACKPOT WINNER!</h2><p>You won <strong>' + data.wonAmount.toLocaleString() + ' coins</strong>!</p><p>Chance was ' + data.chance + '%</p>';
+            content.innerHTML = '<h2 class="winner-title"><i data-lucide=\"trophy\"></i> JACKPOT WINNER!</h2><p>You won <strong>' + data.wonAmount.toLocaleString() + ' coins</strong>!</p><p>Chance was ' + data.chance + '%</p>';
             resultDiv.className = 'lottery-result won';
+            if (typeof startConfetti === 'function') startConfetti();
           } else {
-            content.innerHTML = '<h2>No luck this time</h2><p>Bought ' + data.ticketsBought + ' ticket(s). Chance was ' + data.chance + '%</p><p class="hint">Try again - the jackpot keeps growing!</p>';
+            content.innerHTML = '<h2>No luck this time</h2><p>Bought ' + data.ticketsBought + ' ticket(s). Chance was ' + data.chance + '%</p><p class="hint">Try again — the jackpot keeps growing!</p>';
             resultDiv.className = 'lottery-result lost';
           }
           resultDiv.classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
         } else {
-          alert(data.message);
+          showNotification(data.message, false);
         }
         btn.disabled = false;
-        btn.textContent = 'Buy & Draw';
+        btn.innerHTML = '<i data-lucide="ticket"></i> Buy & Draw';
+        if (window.lucide) lucide.createIcons();
       }).catch(function() {
         btn.disabled = false;
-        btn.textContent = 'Buy & Draw';
+        btn.innerHTML = '<i data-lucide="ticket"></i> Buy & Draw';
+        if (window.lucide) lucide.createIcons();
       });
     }
 
@@ -134,5 +135,7 @@
       document.getElementById('jackpotAmount').textContent = jackpot.toLocaleString();
     }, 5000);
   </script>
+  <script src="/js/gift-box.js"></script>
+  <script src="/js/main.js"></script>
 </body>
 </html>
