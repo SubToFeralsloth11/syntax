@@ -18,4 +18,8 @@ db.pragma('foreign_keys = ON');
 const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 db.exec(schema);
 
+const { restoreAccounts } = require('./accounts');
+const restored = restoreAccounts(db);
+if (restored > 0) console.log(`Restored ${restored} account(s) from accounts.json`);
+
 module.exports = db;

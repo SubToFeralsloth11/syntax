@@ -36,6 +36,7 @@ app.use(passport.session());
 
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
+  res.locals.currentPath = req.path;
   if (req.user) {
     const db = require('./db/database');
     db.prepare("UPDATE users SET last_active = datetime('now') WHERE id = ?").run(req.user.id);

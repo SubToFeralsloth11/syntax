@@ -257,7 +257,7 @@ function showResult() {
   const desc = data.desc || '';
 
   const labelMap = { low: 'Not bad!', mid: 'Nice!', high: 'Awesome!', epic: 'JACKPOT!' };
-  const colorMap = { low: '#e74c3c', mid: '#f39c12', high: '#2ecc71', epic: '#0e8c5f' };
+  const colorMap = tierColors;
 
   if (data.freeSpin) {
     labelEl.textContent = 'FREE SPIN!';

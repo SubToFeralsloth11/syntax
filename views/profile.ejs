@@ -32,7 +32,7 @@
               <div class="profile-achievements">
                 <h3>Achievements</h3>
                 <% if (achievements.length === 0) { %>
-                  <p class="empty-state">// no achievements yet //</p>
+                  <%- include('partials/empty-state', { icon: 'award', title: 'No achievements yet', subtitle: '' }) %>
                 <% } else { %>
                   <% achievements.slice(0, 5).forEach(ach => { %>
                     <div class="achievement-badge">
@@ -93,7 +93,7 @@
             <div class="profile-section">
               <h2><i data-lucide="receipt"></i> Recent Transactions</h2>
               <% if (transactions.length === 0) { %>
-                <p class="empty-state">// no transactions yet //</p>
+                <%- include('partials/empty-state', { icon: 'receipt', title: 'No transactions yet', subtitle: '' }) %>
               <% } else { %>
                 <div class="transaction-list">
                   <% transactions.forEach(tx => { %>

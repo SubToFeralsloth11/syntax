@@ -26,8 +26,8 @@ function showNotification(message, type = 'success') {
   const existing = document.querySelector('.notification');
   if (existing) existing.remove();
 
-  const icon = variant === 'success' ? 'check-circle'
-    : variant === 'error' ? 'alert-circle'
+  const icon = variant === 'success' ? 'circle-check'
+    : variant === 'error' ? 'circle-alert'
     : 'info';
   const el = document.createElement('div');
   el.className = `notification notification-${variant}`;

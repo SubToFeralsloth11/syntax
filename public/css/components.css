@@ -97,13 +97,13 @@
 /* Glow button — animated gradient border (CTA) */
 .btn-glow {
   position: relative;
-  background: var(--grad-cyan-purple);
-  color: #04121a;
-  border: none;
+  background: rgba(5, 5, 12, 0.85);
+  color: var(--cyan);
+  border: 1px solid var(--border-strong);
   font-weight: 800;
-  overflow: hidden;
+  overflow: visible;
   z-index: 0;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 10px var(--accent-glow);
 }
 
 .btn-glow::before {
@@ -115,11 +115,13 @@
   border-radius: inherit;
   z-index: -1;
   animation: borderFlow 4s ease infinite, btnGlow 2.5s ease-in-out infinite;
-  opacity: 0.7;
+  opacity: 0.8;
+  filter: blur(2px);
 }
 
 .btn-glow:hover {
   transform: translateY(-2px);
+  color: var(--cyan-soft);
   box-shadow: 0 8px 28px rgba(0, 240, 255, 0.45);
 }
 
@@ -556,6 +558,39 @@
   border: 1px solid rgba(255, 85, 102, 0.4);
   color: var(--error);
   box-shadow: 0 0 24px rgba(255, 85, 102, 0.2);
+}
+
+.notification-info {
+  background: rgba(68, 170, 255, 0.15);
+  border: 1px solid rgba(68, 170, 255, 0.4);
+  color: var(--info);
+  box-shadow: 0 0 24px rgba(68, 170, 255, 0.2);
+}
+
+/* Global focus-visible for keyboard nav (dark-theme friendly) */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Icon sizing within small buttons */
+.btn-sm [data-lucide] {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-xs [data-lucide] {
+  width: 12px;
+  height: 12px;
+}
+
+.modal-close [data-lucide] {
+  width: 18px;
+  height: 18px;
 }
 
 /* ===================================================================
@@ -1059,7 +1094,13 @@ table {
 .settings-card h2 {
   font-size: 1.1rem;
   margin-bottom: 16px;
-  color: var(--text);
+  background: var(--grad-cyan-purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .settings-avatar {

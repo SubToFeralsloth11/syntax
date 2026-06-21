@@ -5,6 +5,14 @@ const TILE = 64;
 const RECORD_MAX_FRAMES = 180;
 const LINGER_MAX = 5;
 
+const VP_COLS = 15;
+const VP_ROWS = 11;
+const VP_W = VP_COLS * TILE;
+const VP_H = VP_ROWS * TILE;
+
+canvas.width = VP_W;
+canvas.height = VP_H;
+
 const T = {
   EMPTY: 0, WALL: 1, PLATE: 2, DOOR: 3, EXIT: 4, SPIKE: 5, ANTI_ECHO: 6, KEY: 7, LOCKED_DOOR: 8,
 };
@@ -12,399 +20,391 @@ const T = {
 const LEVELS = [
   {
     name: 'Awakening',
-    desc: 'Walk to the golden exit',
+    desc: 'Move through the chamber to the golden light',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWW',
+      'W..................W',
+      'W..................W',
+      'W.......E..........W',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W.......P..........W',
+      'WWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Echo\'s Calling',
+    desc: 'The gate closes too fast — leave an echo behind',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWW',
+      'W..................W',
+      'W.......E..........W',
+      'WWWWWWWWDWWWWWWWWWWW',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W..................W',
+      'W.......O..........W',
+      'W..................W',
+      'W.......P..........W',
+      'WWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Weight of Memory',
+    desc: 'The crate is heavy — push it onto the plate',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWW',
+      'W...................W',
+      'W........E..........W',
+      'WWWWWWWWDWWWWWWWWWWW',
+      'W..................W',
+      'W..................W',
+      'W.........O........W',
+      'W.........B........W',
+      'W..................W',
+      'W..................W',
+      'W.........P........W',
+      'WWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Twin Gates',
+    desc: 'Two gates, two plates — one echo, one crate',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWWW',
+      'W...................W',
+      'W.........E.........W',
+      'WWWWDWWWWWWWWWWDWWWWW',
+      'W...................W',
+      'W...................W',
+      'W...O...........O...W',
+      'W...B...............W',
+      'W...................W',
+      'W...................W',
+      'W...................W',
+      'W.........P.........W',
+      'WWWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Lock and Key',
+    desc: 'A locked gate blocks the way. Find the key beyond the echo door.',
     map: [
       'WWWWWWWWWWWWWWWWWWWWWW',
-      'W....................W',
-      'W....................W',
-      'W.........E..........W',
-      'W....................W',
-      'W....................W',
-      'W....................W',
-      'W....................W',
-      'W.........P..........W',
+      'W..................W.W',
+      'W........E.........W.W',
+      'WWWWWLWWWWWWDWWWWWWW.W',
+      'W..................W.W',
+      'W..................W.W',
+      'W.....O............W.W',
+      'W...........K......W.W',
+      'W..................W.W',
+      'W..................W.W',
+      'W..................W.W',
+      'W.....P............W.W',
       'WWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'The Gate',
-    desc: 'Record echo on the plate to hold the door',
+    name: 'Double Bolt',
+    desc: 'Two locked gates. Two keys. Choose your path.',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWWWWW',
+      'W.....................W',
+      'W..........E..........W',
+      'WWWWWLWWWWWWWWWWWLWWWWW',
+      'W.....................W',
+      'W..O.....O............W',
+      'W......WWWWWWW........W',
+      'W..B.......B..........W',
+      'W......K......K.......W',
+      'W.....................W',
+      'W.....................W',
+      'W..........P..........W',
+      'WWWWWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Silent Chamber',
+    desc: 'Anti-echo fields smother resonance. Use the crate.',
     map: [
       'WWWWWWWWWWWWWWWWWWWWWW',
       'W....................W',
-      'W........E...........W',
+      'W..........E.........W',
       'WWWWWWWWWWDWWWWWWWWWWW',
       'W....................W',
-      'W.........O..........W',
       'W....................W',
+      'W........AA.........W',
+      'W........AO.........W',
+      'W........A..........W',
+      'W....B...............W',
       'W....................W',
-      'W.........P..........W',
-      'WWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'Long Corridor',
-    desc: 'The door is far from the plate — echo is mandatory',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWW',
-      'W....................W',
-      'W...........E........W',
-      'WWWWDWWWWWWWWWWWWWWWWW',
-      'W....................W',
-      'W....O...............W',
-      'W....................W',
-      'W....................W',
-      'W....P...............W',
-      'WWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'The Crate',
-    desc: 'Push the crate onto the pressure plate',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWW',
-      'W....................W',
-      'W.........E..........W',
-      'WWWWWWWWWWWDWWWWWWWWWW',
-      'W....................W',
-      'W..........O.........W',
-      'W..........B.........W',
       'W....................W',
       'W..........P.........W',
       'WWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'Two Keys',
-    desc: 'Crate on one plate, echo on the other',
+    name: 'Spike Corridor',
+    desc: 'A narrow passage lined with death. Step carefully.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWW',
-      'W....................W',
-      'W.........E..........W',
-      'WWWWWDWWWWWWWWWDWWWWWW',
-      'W....................W',
-      'W....O....B....O.....W',
-      'W....................W',
-      'W....................W',
-      'W.........P..........W',
-      'WWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWW',
+      'W...................W',
+      'W.........E.........W',
+      'WWWWWWWWWWWWWWWWWWWWW',
+      'W...................W',
+      'W.S.S.S.S.S.S.S.S..W',
+      'W...................W',
+      'W.S.S.S.S.S.S.S.S..W',
+      'W...................W',
+      'W.S.S.S.S.S.S.S.S..W',
+      'W.........K.........W',
+      'W...................W',
+      'W.........P.........W',
+      'WWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'Lock and Key',
-    desc: 'A locked gate bars the way — find the key to open it',
+    name: 'The Crossroads',
+    desc: 'Three doors, three paths. Only one leads forward.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWWWW',
       'W....................W',
-      'W.........E..........W',
-      'WWWWWDWWWWWWWWWDWWWWWW',
+      'W...E................W',
+      'WWWDWWWWWWWWWWWWWWDWWW',
       'W....................W',
-      'W....O....B....O.....W',
-      'W....................W',
-      'WWWWWWWWWWLWWWWWWWWWWW',
-      'W.........K..........W',
-      'W....................W',
-      'W....................W',
-      'W.........P..........W',
-      'WWWWWWWWWWWWWWWWWWWWWW',
+      'W..WWWW.....WWWWW....W',
+      'W..W.............W...W',
+      'W..W...O.........W...W',
+      'W..W...B.........W...W',
+      'W..W.............W...W',
+      'W..WWDWW.........W...W',
+      'W.....O.........WW...W',
+      'W..................WW',
+      'W...........P......W',
+      'WWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'Two Locks',
-    desc: 'Two locked gates — find both keys before you can pass',
+    name: 'Echo Chamber',
+    desc: 'Record your path, then walk a different one.',
     map: [
       'WWWWWWWWWWWWWWWWWWWWWWWW',
       'W......................W',
       'W..........E...........W',
-      'WWWWDWWWWWWWWWWWWWDWWWWW',
-      'W......................W',
-      'W...O......B......O....W',
-      'W......................W',
-      'WWWWLWWWWWWWWWWWWWLWWWWW',
-      'W...K.............K....W',
+      'WWWWWWWWWWWWWWWDWWWWWWWW',
       'W......................W',
       'W......................W',
+      'W...WWWWWWWWWWWWWWW...W',
+      'W...W.............W...W',
+      'W...W...O.........W...W',
+      'W...W.............W...W',
+      'W...W.............W...W',
+      'W...W.............W...W',
+      'W...W.............W...W',
+      'W...O.............W...W',
+      'WWWWWWWWWWWWWWWWWWW...W',
       'W..........P...........W',
       'WWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'Key Chase',
-    desc: 'The key is beyond the locked gate — find another way through',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWW',
-      'W......................W',
-      'W..........E...........W',
-      'WWWWDWWWWWWWWWWWWWDWWWWW',
-      'W......................W',
-      'W...O.............O....W',
-      'W......................W',
-      'W..........K......B....W',
-      'W......................W',
-      'WWWWWWWWWWWLWWWWWWWWWWWW',
-      'W......................W',
-      'W..........B...........W',
-      'W......................W',
-      'W......................W',
-      'W..........P...........W',
-      'WWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'Two Box Shuffle',
-    desc: 'Two crates, two plates, one locked gate — plan every push',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W........................W',
-      'W...........E............W',
-      'WWWWWDWWWWWWWWWWWWWWDWWWWW',
-      'W........................W',
-      'W....O......B.......O....W',
-      'W........................W',
-      'W....B..............K....W',
-      'W........................W',
-      'WWWWWWWWWWWWLWWWWWWWWWWWWW',
-      'W........................W',
-      'W........................W',
-      'W........................W',
-      'W...........P............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'The Vault',
-    desc: 'Two locked gates, keys scattered — use every tool',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W........................W',
-      'W...........E............W',
-      'WWWWWDWWWWWWWWWWWWWWDWWWWW',
-      'W........................W',
-      'W....O......B.......O....W',
-      'W........................W',
-      'WWWWWWWWWWWWLWWWWWWWWWWWWW',
-      'W....K..............K....W',
-      'W........................W',
-      'WWWWWWWWWWWWWWWWWWWWLWWWWW',
-      'W........................W',
-      'W........................W',
-      'W........................W',
-      'W...........P............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
     name: 'The Maze',
-    desc: 'A twisting labyrinth — find the key before you can advance',
+    desc: 'Winding walls hide the path to the key.',
     map: [
       'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W........................W',
-      'W...........E............W',
-      'WWWWWDWWWWWWWWWWWWWWDWWWWW',
-      'W........................W',
-      'W....W..O...W...W...O....W',
-      'W....W..W...B...W...W....W',
-      'WWWWWWWWWWWWLWWWWWWWWWWWWW',
-      'W....W......O.......K....W',
-      'W........................W',
-      'W........................W',
-      'W........................W',
-      'W...........P............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W......................K.W',
+      'W.WWWWW.WWWWWWWWWWWWWW.W.W',
+      'W.W...W.W...........W.W.W',
+      'W.W...W.W.WWWWWWW.W.W.W.W',
+      'W.W...W.W.......W.W.W.W.W',
+      'W.W...W.WWWWWW.W.W.W.W.W',
+      'W.W...W.......W.W.W.W.W.W',
+      'W.WWWWWWWWWWW.W.W.W.W.W.W',
+      'W.............W.W.W.W.W.W',
+      'WWWWWLWWWWWWW.W.W.W.W.W.W',
+      'W..............W.W...W..W',
+      'W.WWWWWWWWWWWWW.W.WWWW..W',
+      'W.W.............W......W',
+      'W.WWWWWWWWWWWW.WWWWWWWWW',
+      'W.W...........W.........W',
+      'W.WWWWWWWWWWWWWWWWWWDWWW',
+      'W..................O...W',
+      'W...P..................W',
+      'WWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'Dead Echo',
-    desc: 'Anti-echo zones surround the plates — push crates instead',
+    name: 'Dead Zone',
+    desc: 'No echoes allowed. Crates are your only ally.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W........................W',
-      'W...........E............W',
-      'WWWWWDWWWWWWWWWWWWWWDWWWWW',
-      'W........................W',
-      'W....A......B.......A....W',
-      'W....O..............O....W',
-      'W........................W',
-      'WWWWWWWWWWWWLWWWWWWWWWWWWW',
-      'W...........K............W',
-      'W........................W',
-      'W........................W',
-      'W...........P............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWWWWW',
+      'W......................W',
+      'W...........E..........W',
+      'WWWWWWWWWWWWDWWWWWWWWWWW',
+      'W......................W',
+      'W....AAAAAAAAAA........W',
+      'W....AO.......A........W',
+      'W....AAAAAAAAAA........W',
+      'W......................W',
+      'W....B.........B.......W',
+      'W......................W',
+      'W......................W',
+      'W...........P..........W',
+      'WWWWWWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'The Vault',
+    desc: 'Layered defenses — each door guards another secret.',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W.....................W.W',
+      'W..........E..........W.W',
+      'WWWWWLWWWWWWWWDWWWWWWW.W',
+      'W.....................W.W',
+      'W....O.......O.......W.W',
+      'W....................W.W',
+      'W....B....K..........W.W',
+      'W....................W.W',
+      'WWWWWWWWWWLWWWWWWWWWWWWW',
+      'W....................W',
+      'W....K...............W',
+      'W....................W',
+      'W....................W',
+      'W..........P.........W',
+      'WWWWWWWWWWWWWWWWWWWWWW',
+    ],
+  },
+  {
+    name: 'Three Chambers',
+    desc: 'Three puzzles stand between you and escape.',
+    map: [
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W.........E...........W.W',
+      'WWWWWLWWWWWWWWDWWWWWWWWW.W',
+      'W.......................W',
+      'W.WWWWWW...WWWWWW...WWDW',
+      'W.W........W............W',
+      'W.W.B..K...W...B...O...W',
+      'W.W........W............W',
+      'W.WWWWWWWWWWWWWWWWWWWWWW',
+      'W.....A..........A......W',
+      'W...AAOAA......AAOAA....W',
+      'W.....A..........A......W',
+      'W.......................W',
+      'W...........P...........W',
+      'WWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
     name: 'The Gauntlet',
-    desc: 'Spikes line the path — find the safe route and the key',
+    desc: 'Run the narrow path. Hesitation is death.',
     map: [
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W..........E..............W',
+      'W.WWWWDWWWWWWWWWWWWWWWWWW.W',
+      'W.W..................S..W.W',
+      'W.W.WWWWWWWWWWWWWW.WWWS.W.W',
+      'W.W.W...............W.S.W.W',
+      'W.W.W.WWWWWWWWWWWW.W.WS.W.W',
+      'W.W.W.W........OO..W.W.S.W',
+      'W.W.W.W.WWWWWWWWW.W.W.WS.W',
+      'W.W.W.W.W.......W.W.W.W..W',
+      'W.W.W.W.WWWDWW.W.W.W.WWWW',
+      'W.W.W...W..O..W.W.W......W',
+      'W.W.WWWWW..B..W.W.WWWWWW.W',
+      'W.W.......K....W.......W.W',
+      'W.WWWWWWWWWWWWWWWWWWWWWW.W',
+      'W...................P....W',
       'WWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W........................W',
-      'W...........E............W',
-      'WWWWWDWWWWWWWWWWWWWWDWWWWW',
-      'W........................W',
-      'W....O......B.......O....W',
-      'W....S..S...S...S...S....W',
-      'WWWWWWWWWWWWLWWWWWWWWWWWWW',
-      'W....O......K.......B....W',
-      'W........................W',
-      'W........................W',
-      'W...........P............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'Overgrowth',
-    desc: 'Anti-echo fields and walls choke the path forward',
+    name: 'Resonance',
+    desc: 'Two plates, one echo. Time your recording perfectly.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWWWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....W..O....W....W...O....W',
-      'W....A..W....W....A...W....W',
-      'W....W.......B........W....W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W....K.......O........A....W',
-      'W..........................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W...........................W',
+      'W.............E.............W',
+      'WWWWWDWWWWWWWWWWWWWWWWWDWWWWW',
+      'W...........................W',
+      'W...O.................O.....W',
+      'W...........................W',
+      'W...WWWWWWWWWWWWWWWWWWW.....W',
+      'W...W.................W.....W',
+      'W...W...B.............W.....W',
+      'W...W.................W.....W',
+      'W...W.................W.....W',
+      'W...W.................W.....W',
+      'W...W.................W.....W',
+      'W...W.................W.....W',
+      'W...WWWWWWWWWWWWWWWWWWW.....W',
+      'W...........................W',
+      'W...........P...............W',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
-    name: 'The Fortress',
-    desc: 'Three plates, two crates, one locked gate',
+    name: 'Grand Archive',
+    desc: 'All the temple\'s secrets guard this final chamber.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W.............E.............W',
+      'WWWWWLWWWWWWWWWWDWWWWWWWWWWWW',
       'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWDWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....O.......B........O....W',
-      'W..........................W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W............O........B....W',
-      'W..........................W',
-      'W....K.....................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'The Depths',
-    desc: 'Chamber after chamber, gate after gate — push deeper',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWDWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....O.......B........O....W',
-      'W..........................W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W....O................K....W',
-      'W..........................W',
-      'WWWWWLWWWWWWWWWWWWWWWWWWWWWW',
-      'W............K........O....W',
-      'W..........................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'The Sieve',
-    desc: 'So many plates — only two matter. Find the truth.',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWWWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....O..O....B...O....O....W',
-      'W..........................W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W............K.............W',
-      'W..........................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'Grand Vault',
-    desc: 'Anti-echo, spikes, locks, crates — the temple's final test',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWDWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....O.......B........A....W',
-      'W....S.......W........A....W',
-      'W............W........O....W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W....K.......A........O....W',
-      'W..........................W',
-      'W....O.....................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    ],
-  },
-  {
-    name: 'The Labyrinth',
-    desc: 'Walls upon walls. Find the key. Open the gate. Escape.',
-    map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWWWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....W..W.O...W..W..W.O....W',
-      'W....W..W...W.W..W..W.W....W',
-      'W....O....B...W..W....K....W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W....K..W...O....W..W......W',
-      'W..........................W',
-      'WWWWWLWWWWWWWWWWWWWWWWWWWWWW',
-      'W.......B....K...W..O......W',
-      'W..........................W',
-      'W..........................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W.WWWWWW........WWWWWWWW..W',
+      'W.W.....W..............W..W',
+      'W.W.O...W...AA...K....W..W',
+      'W.W.....W...AO.........W..W',
+      'W.W.....W...AA.........W..W',
+      'W.W..B..W...........B..W..W',
+      'W.W.....W..............W..W',
+      'W.W.....WWWWWWWDWWWWWWWW..W',
+      'W.W..................W....W',
+      'W.W........L.........W....W',
+      'W.W..................W....W',
+      'W.WWWWWWWWWWWWWWWWWWWW....W',
+      'W............O.............W',
+      'W....B.......K............W',
+      'W..........P..............W',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
   {
     name: 'The Final Echo',
-    desc: 'Every lesson, every death, led to this. One last echo.',
+    desc: 'Every lesson, every death, led to this moment.',
     map: [
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W............E.............W',
-      'WWWWWDWWWWWWWWWWWWWWWWDWWWWW',
-      'W..........................W',
-      'W....W..W.O..B...W..W.O....W',
-      'W....S..W....W...A.........W',
-      'W............W........O....W',
-      'WWWWWWWWWWWWWLWWWWWWWWWWWWWW',
-      'W..........................W',
-      'W....O.......S......O......W',
-      'W..........................W',
-      'W.......K..................W',
-      'W..........................W',
-      'W............A........O....W',
-      'W....O.......K........W....W',
-      'W..........................W',
-      'W..........................W',
-      'W............P.............W',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W..............E................W',
+      'WWWWWWDWWWWWWWWWWWWWWWWDWWWWWWWW',
+      'W...............................W',
+      'W.WWWWW...WWWWW...WWWWW...WWDWW',
+      'W.W.............W..............W',
+      'W.W.B...A...K...W...S...O.....W',
+      'W.W.....A.......W..............W',
+      'W.W.....A.......W..............W',
+      'W.W.............W..............W',
+      'W.WWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+      'W.............O.........B......W',
+      'W.WWWWWWWWWWWWDWWWWWWWWWWWWWW.W',
+      'W.W.........A..........A......W',
+      'W.W....O..AAA........AAA......W',
+      'W.W....K..A..........A........W',
+      'W.W.......A...L.......A.......W',
+      'W.W.......A...........A.......W',
+      'W.WWWWWWWWWWWWWWWWWWWWWWWWW.W',
+      'W.............................W',
+      'W..............P..............W',
+      'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     ],
   },
-];  
+];
 
 const DIRS = {
   ArrowUp: { x: 0, y: -1 },
@@ -453,9 +453,6 @@ function parseLevel(levelIndex) {
     doors[i] = { ...d, plateId: i < plateList.length ? i : -1 };
   });
 
-  canvas.width = cols * TILE;
-  canvas.height = rows * TILE;
-
   return { tiles, cols, rows, playerStart, exitPos, plates, doors, boxes: boxList, name: data.name, desc: data.desc };
 }
 
@@ -483,7 +480,12 @@ function resetGame() {
   state.inputQueue = [];
   state.frame = 0;
 
-  document.getElementById('level-name').textContent = `L${state.currentLevel + 1}: ${levelData.name}`;
+  state.camera = {
+    x: (state.cols * TILE - VP_W) / 2,
+    y: (state.rows * TILE - VP_H) / 2,
+  };
+
+  document.getElementById('level-name').textContent = 'L' + (state.currentLevel + 1) + ': ' + levelData.name;
   document.getElementById('level-desc').textContent = levelData.desc;
   hideOverlay('victory-overlay');
   hideOverlay('death-overlay');
@@ -492,19 +494,21 @@ function resetGame() {
   document.getElementById('message').classList.remove('visible');
   document.getElementById('key-counter').textContent = '';
 
-  setTimeout(() => {
+  setTimeout(function () {
     if (state.currentLevel === 0) showMessage('Use Arrow Keys or WASD to move');
-    else if (state.currentLevel === 1) showMessage('The door closes fast! Record an echo to hold it open.');
-    else if (state.currentLevel === 5) showMessage('Walk into the crate to push it');
+    else if (state.currentLevel === 1) showMessage('Press R to record your echo, R again to stop');
+    else if (state.currentLevel === 2) showMessage('Walk into the crate to push it');
+    else if (state.currentLevel === 6) showMessage('Purple tiles are Anti-Echo — recording is blocked');
+    else if (state.currentLevel === 7) showMessage('Red triangles are spikes — instant death');
   }, 200);
 }
 
 function showMessage(text) {
-  const el = document.getElementById('message');
+  var el = document.getElementById('message');
   el.innerHTML = text.replace(/\n/g, '<br>');
   el.classList.add('visible');
   clearTimeout(el._timeout);
-  el._timeout = setTimeout(() => el.classList.remove('visible'), 3500);
+  el._timeout = setTimeout(function () { el.classList.remove('visible'); }, 3500);
 }
 
 function hideOverlay(id) { document.getElementById(id).classList.add('hidden'); }
@@ -512,11 +516,11 @@ function showOverlay(id) { document.getElementById(id).classList.remove('hidden'
 
 function isSolid(x, y) {
   if (x < 0 || x >= state.cols || y < 0 || y >= state.rows) return true;
-  const t = state.tiles[y][x];
+  var t = state.tiles[y][x];
   if (t === T.WALL) return true;
   if (t === T.LOCKED_DOOR) return true;
   if (t === T.DOOR) {
-    const door = Object.values(state.doors).find(d => d.x === x && d.y === y);
+    var door = Object.values(state.doors).find(function (d) { return d.x === x && d.y === y; });
     if (door && !door.open) return true;
   }
   return false;
@@ -526,9 +530,13 @@ function isSpike(x, y) {
   return state.tiles[y] && state.tiles[y][x] === T.SPIKE;
 }
 
+function getBox(x, y) {
+  return state.boxes.find(function (b) { return b.x === x && b.y === y; });
+}
+
 function canPushBox(box, dx, dy) {
-  const nx = box.x + dx;
-  const ny = box.y + dy;
+  var nx = box.x + dx;
+  var ny = box.y + dy;
   if (nx < 0 || nx >= state.cols || ny < 0 || ny >= state.rows) return false;
   if (isSolid(nx, ny)) return false;
   if (getBox(nx, ny)) return false;
@@ -537,11 +545,11 @@ function canPushBox(box, dx, dy) {
 
 function tryMove(dx, dy) {
   if (state.done || state.dead) return;
-  const p = state.player;
+  var p = state.player;
   if (p.moving) return;
 
-  const nx = p.x + dx;
-  const ny = p.y + dy;
+  var nx = p.x + dx;
+  var ny = p.y + dy;
 
   if (state.tiles[ny] && state.tiles[ny][nx] === T.KEY) {
     state.keys++;
@@ -549,7 +557,7 @@ function tryMove(dx, dy) {
     showMessage('Key collected!');
   }
 
-  const box = getBox(nx, ny);
+  var box = getBox(nx, ny);
   if (box) {
     if (!canPushBox(box, dx, dy)) return;
     box.x += dx;
@@ -564,7 +572,7 @@ function tryMove(dx, dy) {
           state.tiles[ny][nx] = T.EMPTY;
           showMessage('Lock opened!');
         } else {
-          showMessage('The door is locked — find a key');
+          showMessage('The door is locked \u2014 find a key');
           return;
         }
       } else {
@@ -586,7 +594,7 @@ function tryMove(dx, dy) {
 }
 
 function updatePlayer() {
-  const p = state.player;
+  var p = state.player;
   if (p.moving) {
     p.moveProgress += 0.08;
     if (p.moveProgress >= 1) {
@@ -597,12 +605,12 @@ function updatePlayer() {
       if (state.exitPos && p.x === state.exitPos.x && p.y === state.exitPos.y) { completeLevel(); return; }
       p.moving = false;
       while (state.inputQueue.length > 0) {
-        const dir = state.inputQueue.shift();
+        var dir = state.inputQueue.shift();
         tryMove(dir.x, dir.y);
         if (p.moving) break;
       }
     }
-    const t = easeInOutQuad(p.moveProgress);
+    var t = easeInOutQuad(p.moveProgress);
     p.px = (p.startX + (p.targetX - p.startX) * t) * TILE + TILE / 2;
     p.py = (p.startY + (p.targetY - p.startY) * t) * TILE + TILE / 2;
   } else {
@@ -620,7 +628,7 @@ function completeLevel() {
     document.getElementById('victory-stats').textContent = 'You escaped the echoes.\nThe forgotten temple remembers you no more.';
     document.getElementById('next-btn').textContent = 'Play Again';
   } else {
-    document.getElementById('victory-stats').textContent = `Level ${state.currentLevel + 1} — ${LEVELS[state.currentLevel].name}`;
+    document.getElementById('victory-stats').textContent = 'Level ' + (state.currentLevel + 1) + ' \u2014 ' + LEVELS[state.currentLevel].name;
     document.getElementById('next-btn').textContent = 'Next Level \u2192';
   }
   showOverlay('victory-overlay');
@@ -628,7 +636,7 @@ function completeLevel() {
 
 function startRecording() {
   if (state.tiles[state.player.y][state.player.x] === T.ANTI_ECHO) {
-    showMessage('Cannot record here — anti-echo field blocks resonance');
+    showMessage('Cannot record here \u2014 anti-echo field blocks resonance');
     return;
   }
   state.recording = { active: true, frames: [], startX: state.player.x, startY: state.player.y };
@@ -639,9 +647,9 @@ function stopRecording() {
   if (!state.recording || !state.recording.active) return;
   state.recording.active = false;
   document.getElementById('recording-bar-container').classList.remove('active');
-  const frames = state.recording.frames;
+  var frames = state.recording.frames;
   if (frames.length < 2) return;
-  state.echo = { frames, timer: 0, px: frames[0].px, py: frames[0].py, active: true, loopCount: 0 };
+  state.echo = { frames: frames, timer: 0, px: frames[0].px, py: frames[0].py, active: true, loopCount: 0 };
   state.recording = null;
 }
 
@@ -661,7 +669,7 @@ function updateRecording() {
 
 function updateEcho() {
   if (!state.echo || !state.echo.active) return;
-  const e = state.echo, frames = e.frames;
+  var e = state.echo, frames = e.frames;
   if (!frames || frames.length < 2) return;
   e.timer++;
   if (e.timer >= frames.length) { e.timer = 0; e.loopCount++; }
@@ -670,44 +678,78 @@ function updateEcho() {
 }
 
 function updateDoorsAndPlates() {
-  for (const id in state.plates) {
-    const plate = state.plates[id];
-    const playerOn = state.player.x === plate.x && state.player.y === plate.y;
-    let echoOn = false;
+  var id, plate, door, linkedPlate, ex, ey, box, idx;
+
+  for (id in state.plates) {
+    plate = state.plates[id];
+    var playerOn = state.player.x === plate.x && state.player.y === plate.y;
+    var echoOn = false;
     if (state.echo && state.echo.active && state.echo.frames.length > 0) {
-      const idx = Math.min(state.echo.timer, state.echo.frames.length - 1);
-      const ex = Math.round((state.echo.frames[idx].px - TILE / 2) / TILE);
-      const ey = Math.round((state.echo.frames[idx].py - TILE / 2) / TILE);
+      idx = Math.min(state.echo.timer, state.echo.frames.length - 1);
+      ex = Math.round((state.echo.frames[idx].px - TILE / 2) / TILE);
+      ey = Math.round((state.echo.frames[idx].py - TILE / 2) / TILE);
       if (ex === plate.x && ey === plate.y) echoOn = true;
     }
-    let boxOn = false;
-    for (const box of state.boxes) { if (box.x === plate.x && box.y === plate.y) { boxOn = true; break; } }
+    var boxOn = false;
+    for (var bi = 0; bi < state.boxes.length; bi++) {
+      box = state.boxes[bi];
+      if (box.x === plate.x && box.y === plate.y) { boxOn = true; break; }
+    }
     plate.pressed = playerOn || echoOn || boxOn;
   }
-  for (const id in state.doors) {
-    const door = state.doors[id];
-    const linkedPlate = state.plates[door.plateId];
+  for (id in state.doors) {
+    door = state.doors[id];
+    linkedPlate = state.plates[door.plateId];
     if (linkedPlate && linkedPlate.pressed) { door.open = true; door.linger = LINGER_MAX; }
     else if (door.linger > 0) { door.linger--; }
     else { door.open = false; }
   }
 }
 
+function updateCamera() {
+  var cam = state.camera;
+  if (state.cols * TILE <= VP_W) {
+    cam.x = (state.cols * TILE - VP_W) / 2;
+  } else {
+    var targetX = state.player.px - VP_W / 2;
+    cam.x += (targetX - cam.x) * 0.12;
+    if (cam.x < 0) cam.x = 0;
+    if (cam.x > state.cols * TILE - VP_W) cam.x = state.cols * TILE - VP_W;
+  }
+  if (state.rows * TILE <= VP_H) {
+    cam.y = (state.rows * TILE - VP_H) / 2;
+  } else {
+    var targetY = state.player.py - VP_H / 2;
+    cam.y += (targetY - cam.y) * 0.12;
+    if (cam.y < 0) cam.y = 0;
+    if (cam.y > state.rows * TILE - VP_H) cam.y = state.rows * TILE - VP_H;
+  }
+}
+
 function draw() {
   state.frame++;
+  var cam = state.camera;
+
   if ((state.keys || 0) > 0) {
     document.getElementById('key-counter').textContent = 'Keys: ' + state.keys;
   } else {
     document.getElementById('key-counter').textContent = '';
   }
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#090914';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  for (let y = 0; y < state.rows; y++) {
-    for (let x = 0; x < state.cols; x++) {
-      const t = state.tiles[y][x];
-      const rx = x * TILE, ry = y * TILE;
+  ctx.clearRect(0, 0, VP_W, VP_H);
+  ctx.fillStyle = '#090914';
+  ctx.fillRect(0, 0, VP_W, VP_H);
+
+  ctx.save();
+  ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
+
+  var x, y, t, rx, ry, id, plate, door, box, glint, wave, glow, lglow, pulse, i, s, sx, sy;
+
+  for (y = 0; y < state.rows; y++) {
+    for (x = 0; x < state.cols; x++) {
+      t = state.tiles[y][x];
+      rx = x * TILE;
+      ry = y * TILE;
 
       if (t === T.EMPTY) {
         ctx.fillStyle = (x + y) % 2 === 0 ? '#12122a' : '#161630';
@@ -727,8 +769,8 @@ function draw() {
       } else if (t === T.PLATE) {
         ctx.fillStyle = (x + y) % 2 === 0 ? '#12122a' : '#161630';
         ctx.fillRect(rx, ry, TILE, TILE);
-        const plate = Object.values(state.plates).find(p => p.x === x && p.y === y);
-        const pressed = plate && plate.pressed;
+        plate = Object.values(state.plates).find(function (p) { return p.x === x && p.y === y; });
+        var pressed = plate && plate.pressed;
         ctx.fillStyle = pressed ? '#664422' : '#443322';
         ctx.beginPath();
         ctx.arc(rx + TILE / 2, ry + TILE / 2, 20, 0, Math.PI * 2);
@@ -751,7 +793,7 @@ function draw() {
           ctx.shadowBlur = 0;
         }
       } else if (t === T.DOOR) {
-        const door = Object.values(state.doors).find(d => d.x === x && d.y === y);
+        door = Object.values(state.doors).find(function (d) { return d.x === x && d.y === y; });
         if (door && door.open) {
           ctx.fillStyle = (x + y) % 2 === 0 ? '#12122a' : '#161630';
           ctx.fillRect(rx, ry, TILE, TILE);
@@ -796,10 +838,10 @@ function draw() {
       } else if (t === T.SPIKE) {
         ctx.fillStyle = '#1a1a2e';
         ctx.fillRect(rx, ry, TILE, TILE);
-        const glint = Math.sin(state.frame / 10 + x + y) * 0.3 + 0.7;
-        ctx.fillStyle = `rgba(204, 34, 68, ${glint})`;
-        for (let s = 0; s < 3; s++) {
-          const sx = rx + 10 + s * 20;
+        glint = Math.sin(state.frame / 10 + x + y) * 0.3 + 0.7;
+        ctx.fillStyle = 'rgba(204, 34, 68, ' + glint + ')';
+        for (s = 0; s < 3; s++) {
+          sx = rx + 10 + s * 20;
           ctx.beginPath();
           ctx.moveTo(sx, ry + TILE - 6);
           ctx.lineTo(sx + 10, ry + 4);
@@ -807,9 +849,9 @@ function draw() {
           ctx.closePath();
           ctx.fill();
         }
-        ctx.fillStyle = `rgba(255, 68, 102, ${glint * 0.8})`;
-        for (let s = 0; s < 3; s++) {
-          const sx = rx + 12 + s * 20;
+        ctx.fillStyle = 'rgba(255, 68, 102, ' + (glint * 0.8) + ')';
+        for (s = 0; s < 3; s++) {
+          sx = rx + 12 + s * 20;
           ctx.beginPath();
           ctx.moveTo(sx, ry + TILE - 8);
           ctx.lineTo(sx + 8, ry + 6);
@@ -820,13 +862,13 @@ function draw() {
       } else if (t === T.ANTI_ECHO) {
         ctx.fillStyle = '#0a0a18';
         ctx.fillRect(rx, ry, TILE, TILE);
-        const wave = Math.sin(state.frame / 15 + x + y) * 0.5 + 0.5;
-        ctx.fillStyle = `rgba(80, 20, 80, ${0.3 + wave * 0.2})`;
+        wave = Math.sin(state.frame / 15 + x + y) * 0.5 + 0.5;
+        ctx.fillStyle = 'rgba(80, 20, 80, ' + (0.3 + wave * 0.2) + ')';
         ctx.fillRect(rx, ry, TILE, TILE);
-        ctx.strokeStyle = `rgba(200, 60, 200, ${0.4 + wave * 0.3})`;
+        ctx.strokeStyle = 'rgba(200, 60, 200, ' + (0.4 + wave * 0.3) + ')';
         ctx.lineWidth = 1.5;
-        for (let i = 0; i < 3; i++) {
-          const ringR = 10 + i * 8 + Math.sin(state.frame / 20 + i) * 3;
+        for (i = 0; i < 3; i++) {
+          var ringR = 10 + i * 8 + Math.sin(state.frame / 20 + i) * 3;
           ctx.beginPath();
           ctx.arc(rx + TILE / 2, ry + TILE / 2, ringR, 0, Math.PI * 2);
           ctx.stroke();
@@ -840,7 +882,7 @@ function draw() {
       } else if (t === T.KEY) {
         ctx.fillStyle = (x + y) % 2 === 0 ? '#12122a' : '#161630';
         ctx.fillRect(rx, ry, TILE, TILE);
-        const glow = Math.sin(state.frame / 12) * 0.3 + 0.7;
+        glow = Math.sin(state.frame / 12) * 0.3 + 0.7;
         ctx.shadowColor = '#ffd700';
         ctx.shadowBlur = 20 * glow;
         ctx.fillStyle = '#ffd700';
@@ -869,7 +911,7 @@ function draw() {
         ctx.fillStyle = '#0a0508';
         ctx.fillRect(rx + TILE - 3, ry, 3, TILE);
         ctx.fillRect(rx, ry + TILE - 3, TILE, 3);
-        const lglow = Math.sin(state.frame / 15 + x + y) * 0.4 + 0.6;
+        lglow = Math.sin(state.frame / 15 + x + y) * 0.4 + 0.6;
         ctx.shadowColor = '#ffaa00';
         ctx.shadowBlur = 10 * lglow;
         ctx.fillStyle = '#cc8822';
@@ -890,10 +932,11 @@ function draw() {
     }
   }
 
-  for (const id in state.plates) {
-    const plate = state.plates[id];
+  for (id in state.plates) {
+    plate = state.plates[id];
     if (plate.pressed) {
-      const rx = plate.x * TILE, ry = plate.y * TILE;
+      rx = plate.x * TILE;
+      ry = plate.y * TILE;
       ctx.shadowColor = '#ff8800';
       ctx.shadowBlur = 30;
       ctx.fillStyle = '#ff880044';
@@ -905,62 +948,66 @@ function draw() {
   }
 
   if (state.exitPos) {
-    const ex = state.exitPos.x * TILE + TILE / 2;
-    const ey = state.exitPos.y * TILE + TILE / 2;
-    const pulse = Math.sin(state.frame / 20) * 0.3 + 0.7;
+    var exx = state.exitPos.x * TILE + TILE / 2;
+    var eyy = state.exitPos.y * TILE + TILE / 2;
+    pulse = Math.sin(state.frame / 20) * 0.3 + 0.7;
     ctx.shadowColor = '#ffd700';
     ctx.shadowBlur = 35 * pulse;
-    ctx.fillStyle = `rgba(255, 215, 0, ${0.15 * pulse})`;
+    ctx.fillStyle = 'rgba(255, 215, 0, ' + (0.15 * pulse) + ')';
     ctx.beginPath();
-    ctx.arc(ex, ey, TILE * 0.55, 0, Math.PI * 2);
+    ctx.arc(exx, eyy, TILE * 0.55, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = `rgba(255, 215, 0, ${0.05 * pulse})`;
+    ctx.fillStyle = 'rgba(255, 215, 0, ' + (0.05 * pulse) + ')';
     ctx.beginPath();
-    ctx.arc(ex, ey, TILE * 0.75, 0, Math.PI * 2);
+    ctx.arc(exx, eyy, TILE * 0.75, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowColor = '#ffd700';
     ctx.shadowBlur = 20 * pulse;
     ctx.fillStyle = '#ffd700';
     ctx.beginPath();
-    ctx.arc(ex, ey, 7, 0, Math.PI * 2);
+    ctx.arc(exx, eyy, 7, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#ffed4a';
     ctx.beginPath();
-    ctx.arc(ex - 2, ey - 2, 4, 0, Math.PI * 2);
+    ctx.arc(exx - 2, eyy - 2, 4, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#ffd70088';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('EXIT', ex, ey + 10);
+    ctx.fillText('EXIT', exx, eyy + 10);
   }
 
-  for (const box of state.boxes) drawBox(box);
+  for (var bi2 = 0; bi2 < state.boxes.length; bi2++) drawBox(state.boxes[bi2]);
   if (state.echo && state.echo.active) drawEcho(state.echo);
   drawPlayer();
 
+  ctx.restore();
+
+  drawMinimap(cam);
+
   if (state.recording && state.recording.active) {
-    const pulse = Math.sin(state.frame / 4) * 0.5 + 0.5;
-    ctx.fillStyle = `rgba(255, 50, 50, ${0.06 + pulse * 0.08})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    pulse = Math.sin(state.frame / 4) * 0.5 + 0.5;
+    ctx.fillStyle = 'rgba(255, 50, 50, ' + (0.06 + pulse * 0.08) + ')';
+    ctx.fillRect(0, 0, VP_W, VP_H);
     ctx.fillStyle = '#ff4444';
     ctx.font = 'bold 14px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('\u25CF RECORDING', canvas.width / 2, 8);
+    ctx.fillText('\u25CF RECORDING', VP_W / 2, 8);
     ctx.fillStyle = '#ff444466';
     ctx.beginPath();
-    ctx.arc(state.player.px, state.player.py, 22 + pulse * 4, 0, Math.PI * 2);
+    ctx.arc(state.player.px - Math.round(cam.x), state.player.py - Math.round(cam.y), 22 + pulse * 4, 0, Math.PI * 2);
     ctx.stroke();
   }
 }
 
 function drawPlayer() {
-  const p = state.player, px = p.px, py = p.py;
+  var p = state.player, px = p.px, py = p.py;
   ctx.shadowColor = '#00ccff';
   ctx.shadowBlur = 25;
-  const pScale = state.recording && state.recording.active ? 1 + Math.sin(state.frame / 4) * 0.08 : 1;
+  var pScale = state.recording && state.recording.active ? 1 + Math.sin(state.frame / 4) * 0.08 : 1;
   ctx.fillStyle = '#006688';
   ctx.beginPath(); ctx.arc(px, py, 16 * pScale, 0, Math.PI * 2); ctx.fill();
   ctx.shadowBlur = 0;
@@ -973,12 +1020,12 @@ function drawPlayer() {
 }
 
 function drawEcho(echo) {
-  const px = echo.px, py = echo.py;
+  var px = echo.px, py = echo.py;
   if (px === undefined || py === undefined) return;
   ctx.save();
   ctx.globalAlpha = 0.55;
-  const drift = Math.sin(state.frame / 30 + echo.loopCount) * 2;
-  const ex = px + drift, ey = py + drift;
+  var drift = Math.sin(state.frame / 30 + echo.loopCount) * 2;
+  var ex = px + drift, ey = py + drift;
   ctx.shadowColor = '#7733ff';
   ctx.shadowBlur = 18;
   ctx.fillStyle = '#5522aa';
@@ -996,17 +1043,10 @@ function drawEcho(echo) {
   ctx.textBaseline = 'bottom';
   ctx.fillText('echo', ex, ey - 18);
   ctx.restore();
-  if (echo.loopCount > 0) {
-    ctx.fillStyle = '#8888aa66';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(`loop ${echo.loopCount}`, canvas.width / 2, canvas.height - 6);
-  }
 }
 
 function drawBox(box) {
-  const rx = box.x * TILE, ry = box.y * TILE;
+  var rx = box.x * TILE, ry = box.y * TILE;
   ctx.fillStyle = '#8B6914';
   ctx.fillRect(rx + 4, ry + 4, TILE - 8, TILE - 8);
   ctx.strokeStyle = '#6B4914';
@@ -1030,36 +1070,65 @@ function drawBox(box) {
   ctx.strokeRect(rx + 8, ry + 14, TILE - 16, TILE - 28);
 }
 
-function drawMinimap() {
-  const mmSize = 7;
-  const mmX = canvas.width - state.cols * mmSize - 8;
-  const mmY = 8;
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.fillRect(mmX - 3, mmY - 3, state.cols * mmSize + 6, state.rows * mmSize + 6);
-  for (let y = 0; y < state.rows; y++) {
-    for (let x = 0; x < state.cols; x++) {
-      const t = state.tiles[y][x];
-      const rx = mmX + x * mmSize, ry = mmY + y * mmSize;
+function drawMinimap(cam) {
+  var mmMaxW = 160, mmMaxH = 120;
+  var mmSize = Math.min(7, Math.floor(Math.min(mmMaxW / state.cols, mmMaxH / state.rows)));
+  var mmW = state.cols * mmSize;
+  var mmH = state.rows * mmSize;
+  var mmX = VP_W - mmW - 10;
+  var mmY = 10;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(mmX - 3, mmY - 3, mmW + 6, mmH + 6);
+
+  var x, y, t, rx, ry, d;
+  for (y = 0; y < state.rows; y++) {
+    for (x = 0; x < state.cols; x++) {
+      t = state.tiles[y][x];
+      rx = mmX + x * mmSize;
+      ry = mmY + y * mmSize;
       if (t === T.WALL) { ctx.fillStyle = '#2e2e50'; ctx.fillRect(rx, ry, mmSize, mmSize); }
       else if (t === T.EMPTY || t === T.PLATE) { ctx.fillStyle = '#12122a'; ctx.fillRect(rx, ry, mmSize, mmSize); }
-      else if (t === T.DOOR) { const d = Object.values(state.doors).find(d => d.x === x && d.y === y); ctx.fillStyle = d && d.open ? '#22cc4488' : '#cc335588'; ctx.fillRect(rx, ry, mmSize, mmSize); }
+      else if (t === T.DOOR) {
+        d = Object.values(state.doors).find(function (dd) { return dd.x === x && dd.y === y; });
+        ctx.fillStyle = d && d.open ? '#22cc4488' : '#cc335588';
+        ctx.fillRect(rx, ry, mmSize, mmSize);
+      }
       else if (t === T.ANTI_ECHO) { ctx.fillStyle = '#66228888'; ctx.fillRect(rx, ry, mmSize, mmSize); }
       else if (t === T.KEY) { ctx.fillStyle = '#ffd700'; ctx.fillRect(rx, ry, mmSize, mmSize); }
       else if (t === T.LOCKED_DOOR) { ctx.fillStyle = '#cc882288'; ctx.fillRect(rx, ry, mmSize, mmSize); }
       else if (t === T.SPIKE) { ctx.fillStyle = '#ff224466'; ctx.fillRect(rx, ry, mmSize, mmSize); }
     }
   }
-  for (const box of state.boxes) { ctx.fillStyle = '#b8860b'; ctx.fillRect(mmX + box.x * mmSize, mmY + box.y * mmSize, mmSize, mmSize); }
-  if (state.exitPos) { ctx.fillStyle = '#ffd700'; ctx.fillRect(mmX + state.exitPos.x * mmSize, mmY + state.exitPos.y * mmSize, mmSize, mmSize); }
+
+  var bi;
+  for (bi = 0; bi < state.boxes.length; bi++) {
+    ctx.fillStyle = '#b8860b';
+    ctx.fillRect(mmX + state.boxes[bi].x * mmSize, mmY + state.boxes[bi].y * mmSize, mmSize, mmSize);
+  }
+  if (state.exitPos) {
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(mmX + state.exitPos.x * mmSize, mmY + state.exitPos.y * mmSize, mmSize, mmSize);
+  }
+
   ctx.fillStyle = '#00bbff';
   ctx.fillRect(mmX + state.player.x * mmSize, mmY + state.player.y * mmSize, mmSize, mmSize);
   if (state.echo && state.echo.active && state.echo.frames.length > 0) {
-    const idx = Math.min(state.echo.timer, state.echo.frames.length - 1);
-    const ex = Math.round((state.echo.frames[idx].px - TILE / 2) / TILE);
-    const ey = Math.round((state.echo.frames[idx].py - TILE / 2) / TILE);
+    var idx = Math.min(state.echo.timer, state.echo.frames.length - 1);
+    var ex = Math.round((state.echo.frames[idx].px - TILE / 2) / TILE);
+    var ey = Math.round((state.echo.frames[idx].py - TILE / 2) / TILE);
     ctx.fillStyle = '#8844ff';
     ctx.fillRect(mmX + ex * mmSize, mmY + ey * mmSize, mmSize, mmSize);
   }
+
+  ctx.strokeStyle = '#ffffff66';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(
+    mmX + (cam.x / TILE) * mmSize,
+    mmY + (cam.y / TILE) * mmSize,
+    (VP_W / TILE) * mmSize,
+    (VP_H / TILE) * mmSize
+  );
 }
 
 function gameLoop() {
@@ -1068,37 +1137,37 @@ function gameLoop() {
     updateRecording();
     updateEcho();
     updateDoorsAndPlates();
+    updateCamera();
   }
   draw();
-  drawMinimap();
   requestAnimationFrame(gameLoop);
 }
 
-document.addEventListener('keydown', (e) => {
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+document.addEventListener('keydown', function (e) {
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) !== -1) e.preventDefault();
   if (e.key === 'r' || e.key === 'R') {
     if (state.dead || state.done) { resetGame(); return; }
     if (state.recording && state.recording.active) {
-      if (state.recording.frames.length > 0) showMessage('Echo created — it repeats your movement in a loop');
+      if (state.recording.frames.length > 0) showMessage('Echo created \u2014 it repeats your movement in a loop');
       stopRecording();
     } else { showMessage('Recording... (max 3s)'); startRecording(); }
     return;
   }
-  const dir = DIRS[e.key];
+  var dir = DIRS[e.key];
   if (dir) {
-    const p = state.player;
+    var p = state.player;
     if (p.moving) state.inputQueue.push(dir);
     else tryMove(dir.x, dir.y);
   }
 });
 
-document.getElementById('next-btn').addEventListener('click', () => {
+document.getElementById('next-btn').addEventListener('click', function () {
   if (state.currentLevel === LEVELS.length - 1) state.currentLevel = 0;
   else state.currentLevel++;
   resetGame();
 });
 
-document.getElementById('retry-btn').addEventListener('click', () => { resetGame(); });
+document.getElementById('retry-btn').addEventListener('click', function () { resetGame(); });
 
 state.currentLevel = 0;
 resetGame();

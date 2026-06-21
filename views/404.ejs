@@ -15,7 +15,7 @@
   </div>
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
-    if (window.lucide) lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', function(){ if(window.lucide) lucide.createIcons(); });
   </script>
 </body>
 </html>

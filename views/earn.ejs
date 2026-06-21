@@ -36,7 +36,7 @@
               <button class="btn btn-primary" onclick="buyMysteryBoxFlow()"><i data-lucide="shopping-bag"></i> Buy Mystery Box</button>
             </div>
           </div>
-          <h2>Profile Items</h2>
+          <h2 class="section-title">Profile Items</h2>
           <div class="shop-grid">
             <% shopItems.forEach(item => { %>
               <% const owned = ownedIds.includes(item.id) %>
@@ -57,14 +57,14 @@
 
         <!-- Bank -->
         <div class="earn-panel" id="tab-bank" style="display:none">
-          <h2>Investment Plans</h2>
+          <h2 class="section-title"><i data-lucide="landmark"></i> Investment Plans</h2>
           <div class="bank-plans" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px">
             <div class="bank-plan-card"><h3>Conservative</h3><p>100 coins — 20% return in 24h</p><button class="btn btn-primary" onclick="invest('conservative')">Invest 100</button></div>
             <div class="bank-plan-card"><h3>Balanced</h3><p>250 coins — 40% return in 48h</p><button class="btn btn-primary" onclick="invest('balanced')">Invest 250</button></div>
             <div class="bank-plan-card"><h3>Aggressive</h3><p>500 coins — 75% return in 72h</p><button class="btn btn-primary" onclick="invest('aggressive')">Invest 500</button></div>
           </div>
           <% if (investments && investments.length > 0) { %>
-            <h3>Your Investments</h3>
+            <h3 class="section-title" style="font-size:1rem"><i data-lucide="hourglass"></i> Your Investments</h3>
             <% investments.forEach(inv => { %>
               <div class="investment-row"><span><%= inv.plan %></span><span class="mono"><%= inv.amount %> coins</span><span class="mono">+<%= inv.profit %></span><span class="mono"><%= inv.claimed ? 'Claimed' : 'Active' %></span><% if (!inv.claimed) { %><button class="btn btn-sm btn-primary" onclick="claimInvestment(<%= inv.id %>)">Claim</button><% } %></div>
             <% }) %>

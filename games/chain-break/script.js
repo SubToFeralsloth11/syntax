@@ -18,10 +18,10 @@ const LEVELS = [
   {
     name: 'First Spark',
     desc: 'Place 2 dominoes beside S to start the chain',
-    grid: ['................','................','................','................','..............G.','..S...3..........','................','................','................','................','................'],
+    grid: ['................','................','................','................','................','..S..3.........G.','................','................','................','................','................'],
     inventory: { domino: 2 },
-    elements: [{x:6,y:4,t:T.BALL,d:DIR.E}],
-    goals: [{x:14,y:4}],
+    elements: [{x:5,y:5,t:T.BALL,d:DIR.E}],
+    goals: [{x:14,y:5}],
   },
   // L2: Vertical: S(2,10)→dominoes N→ball(2,5,N)→rolls N→goal(2,0)
   {
@@ -37,7 +37,7 @@ const LEVELS = [
     name: 'Bomb Breaker',
     desc: 'Bomb the wall blocking the goal',
     grid: ['..G.............','..W.............','..W.............','................','..3.............','................','................','................','................','................','..S.............'],
-    inventory: { domino: 3, bomb: 1 },
+    inventory: { domino: 6, bomb: 1 },
     elements: [{x:2,y:4,t:T.BALL,d:DIR.N}],
     goals: [{x:2,y:0}],
   },
@@ -354,6 +354,7 @@ class Game {
       if (tile===T.WALL) this._drawWall(rx,ry);
       else if (tile===T.DOMINO&&!this.fallen.has(dk)) this._drawDomino(rx,ry);
       else if (tile===T.BALL) this._drawBall(rx,ry);
+      else if (tile===T.SPRING) this._drawSpring(rx,ry);
       else if (tile===T.BOMB) this._drawBomb(rx,ry);
       else if (tile===T.GATE) this._drawGate(rx,ry);
       else if (tile===T.GOAL) this._drawGoal(rx,ry);
@@ -431,6 +432,14 @@ class Game {
     ctx.fillStyle='#4a90d9';ctx.fillRect(rx+8,ry+4,TILE-16,TILE-8);
     ctx.fillStyle='#3570b0';ctx.fillRect(rx+12,ry+8,TILE-24,TILE-16);
     ctx.strokeStyle='#6ab0f0';ctx.lineWidth=1;ctx.strokeRect(rx+8,ry+4,TILE-16,TILE-8);
+  }
+  _drawSpring(rx,ry) {
+    ctx.fillStyle='#5a5a30';ctx.fillRect(rx+8,ry+6,TILE-16,TILE-12);
+    ctx.strokeStyle='#8a8a30';ctx.lineWidth=1;ctx.strokeRect(rx+8,ry+6,TILE-16,TILE-12);
+    for (let i=0;i<3;i++) {
+      ctx.fillStyle='#7a7a20';
+      ctx.fillRect(rx+10,ry+10+i*8,12,4);
+    }
   }
   _drawBall(rx,ry) {
     ctx.fillStyle='#e85d3a';ctx.shadowColor='#e85d3a';ctx.shadowBlur=10;

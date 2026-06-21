@@ -44,23 +44,27 @@ function dismissAllWarnings() {
 </script>
 <% } %>
 
+<% var _p = typeof currentPath !== 'undefined' ? currentPath : ''; %>
 <header class="site-header">
   <div class="container">
     <a href="/" class="logo" aria-label="Syntax home"><img src="/images/logo.svg?v=1" alt="Syntax" class="logo-img"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </button>
     <nav class="nav" id="mainNav" aria-label="Primary">
-      <a href="/"><i data-lucide="home"></i>Home</a>
-      <a href="/games"><i data-lucide="gamepad-2"></i>Games</a>
-      <a href="/earn"><i data-lucide="coins"></i>Earn</a>
-      <a href="/quests"><i data-lucide="target"></i>Quests</a>
-      <a href="/friends"><i data-lucide="users"></i>Friends</a>
-      <a href="/trades"><i data-lucide="repeat"></i>Trades</a>
-      <a href="/leaderboard"><i data-lucide="trophy"></i>Ranks</a>
-      <a href="/chat"><i data-lucide="message-square"></i>Chat</a>
-      <a href="/refer"><i data-lucide="gift"></i>Refer</a>
+      <a href="/" aria-current="<%= _p === '/' ? 'page' : 'false' %>"><i data-lucide="home"></i>Home</a>
+      <a href="/games" aria-current="<%= _p.startsWith('/games') ? 'page' : 'false' %>"><i data-lucide="gamepad-2"></i>Games</a>
+      <a href="/quests" aria-current="<%= _p.startsWith('/quests') ? 'page' : 'false' %>"><i data-lucide="target"></i>Quests</a>
+      <a href="/leaderboard" aria-current="<%= _p.startsWith('/leaderboard') ? 'page' : 'false' %>"><i data-lucide="trophy"></i>Ranks</a>
+      <a href="/earn" aria-current="<%= _p.startsWith('/earn') ? 'page' : 'false' %>"><i data-lucide="coins"></i>Earn</a>
+      <a href="/trades" aria-current="<%= _p.startsWith('/trades') ? 'page' : 'false' %>"><i data-lucide="repeat"></i>Trades</a>
+      <a href="/refer" aria-current="<%= _p.startsWith('/refer') ? 'page' : 'false' %>"><i data-lucide="gift"></i>Refer</a>
+      <a href="/friends" aria-current="<%= _p.startsWith('/friends') || _p.startsWith('/profile/') ? 'page' : 'false' %>"><i data-lucide="users"></i>Friends</a>
+      <a href="/chat" aria-current="<%= _p.startsWith('/chat') ? 'page' : 'false' %>"><i data-lucide="message-square"></i>Chat</a>
     </nav>
     <div class="user-section">
       <% if (typeof user !== 'undefined' && user) { %>
-        <span class="coins-display"><i data-lucide="circle-dollar-sign"></i><%= user.coins %></span>
+        <span class="coins-display" aria-label="Coins: <%= user.coins %>"><i data-lucide="circle-dollar-sign"></i><%= user.coins %></span>
         <% if (user.role === 'admin') { %>
           <a href="/admin" class="btn btn-sm admin-nav-btn"><i data-lucide="shield"></i>Admin</a>
         <% } %>
@@ -73,7 +77,7 @@ function dismissAllWarnings() {
             <span class="owner-badge">Owner</span>
           <% } %>
         </a>
-        <a href="/logout" class="btn btn-sm"><i data-lucide="log-out"></i></a>
+        <a href="/logout" class="btn btn-sm" aria-label="Logout"><i data-lucide="log-out"></i></a>
       <% } else { %>
         <a href="/login" class="btn btn-sm"><i data-lucide="log-in"></i>Login</a>
         <a href="/signup" class="btn btn-sm btn-primary">Sign Up</a>

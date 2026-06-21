@@ -1,6 +1,6 @@
 <footer class="site-footer">
   <div class="container">
-    <p>&lt;SYNTAX/&gt; &mdash; &copy; 2024 All rights reserved</p>
+    <p>&lt;SYNTAX/&gt; &mdash; &copy; 2024&ndash;<%= new Date().getFullYear() %> All rights reserved</p>
   </div>
 </footer>
 <script>
@@ -8,12 +8,17 @@
     navigator.serviceWorker.register('/sw.js');
   }
   function toggleNav() {
-    document.getElementById('navToggle').classList.toggle('open');
-    document.getElementById('mainNav').classList.toggle('open');
+    var t = document.getElementById('navToggle');
+    var n = document.getElementById('mainNav');
+    var open = t.classList.toggle('open');
+    n.classList.toggle('open', open);
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   function closeNav() {
-    document.getElementById('navToggle').classList.remove('open');
+    var t = document.getElementById('navToggle');
+    t.classList.remove('open');
     document.getElementById('mainNav').classList.remove('open');
+    t.setAttribute('aria-expanded', 'false');
   }
   (function () {
     function initIcons() {
@@ -23,6 +28,5 @@
     }
     if (document.readyState !== 'loading') initIcons();
     else document.addEventListener('DOMContentLoaded', initIcons);
-    document.addEventListener('turbo:load', initIcons);
   })();
 </script>
