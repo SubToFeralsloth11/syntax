@@ -108,9 +108,9 @@
           <div class="lottery-card">
             <div class="lottery-info" style="grid-template-columns:1fr 1fr">
               <div class="lottery-stat"><span class="lotto-stat-value">50</span><span class="lotto-stat-label">Coins/ticket</span></div>
-              <div class="lottery-stat"><span class="lotto-stat-value">0.05%</span><span class="lotto-stat-label">Chance/ticket</span></div>
+              <div class="lottery-stat"><span class="lotto-stat-value">0.5%</span><span class="lotto-stat-label">Chance/ticket</span></div>
             </div>
-            <div class="form-group"><label>Number of tickets</label><div class="ticket-input-row"><input type="number" id="ticketCount" value="1" min="1" max="500"><span class="ticket-cost" id="ticketCostDisplay">= 50 coins</span></div><p class="ticket-chance" id="chanceDisplay">Chance: 0.050%</p></div>
+            <div class="form-group"><label>Number of tickets</label><div class="ticket-input-row"><input type="number" id="ticketCount" value="1" min="1" max="500"><span class="ticket-cost" id="ticketCostDisplay">= 50 coins</span></div><p class="ticket-chance" id="chanceDisplay">Chance: 0.500%</p></div>
             <button class="btn btn-primary btn-full" id="buyBtn2" onclick="buyTicketsInline()"><i data-lucide="ticket"></i> Buy & Draw</button>
           </div>
         </div>
@@ -191,7 +191,7 @@
         btn.disabled=false;
       });
     }
-    document.getElementById('ticketCount').addEventListener('input',function(){var c=parseInt(this.value)||1;document.getElementById('ticketCostDisplay').textContent='= '+(c*50)+' coins';document.getElementById('chanceDisplay').textContent='Chance: '+(c*0.05).toFixed(3)+'%'});
+    document.getElementById('ticketCount').addEventListener('input',function(){var c=parseInt(this.value)||1;document.getElementById('ticketCostDisplay').textContent='= '+(c*50)+' coins';document.getElementById('chanceDisplay').textContent='Chance: '+(c*0.5).toFixed(2)+'%'});
 
     var nextReset = <%= Math.floor((Math.floor(Date.now()/(20*60*1000))+1)*20*60*1000) %>;
     function updateTimer(){var r=Math.max(0,Math.floor((nextReset-Date.now())/1000));var el=document.getElementById('countdown');if(el)el.textContent=Math.floor(r/60)+':'+((r%60)<10?'0':'')+(r%60);if(r<=0){if(el)el.textContent='Now!';location.reload()}}updateTimer();setInterval(updateTimer,1000);

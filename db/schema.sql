@@ -151,7 +151,8 @@ CREATE TABLE IF NOT EXISTS lottery_state (
   base_jackpot INTEGER DEFAULT 500,
   ticket_cost INTEGER DEFAULT 50,
   last_tick INTEGER DEFAULT (cast(strftime('%s', 'now') as integer)),
-  total_tickets INTEGER DEFAULT 0
+  total_tickets INTEGER DEFAULT 0,
+  coins_toward_jackpot INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS lottery_tickets (

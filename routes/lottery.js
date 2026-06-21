@@ -4,7 +4,7 @@ const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
 const { awardCoins } = require('../middleware/currency');
 
-const WIN_CHANCE_PER_TICKET = 0.0005; // 0.05%
+const WIN_CHANCE_PER_TICKET = 0.005; // 0.5% per ticket
 const JACKPOT_GROWTH_PER_SECOND = 0.033; // ~2 coins per minute
 const TICKET_COST = 50;
 const HOUSE_CUT = 0.3; // 30% of ticket price goes to house, 70% to jackpot

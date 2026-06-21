@@ -8,7 +8,7 @@
     <section class="page-header">
       <div class="container">
         <h1>Lottery</h1>
-        <p>0.05% chance per ticket · jackpot grows over time</p>
+        <p>0.5% chance per ticket · jackpot grows with every coin earned</p>
       </div>
     </section>
 
@@ -29,7 +29,7 @@
               <span class="lotto-stat-label">Coins / ticket</span>
             </div>
             <div class="lottery-stat">
-              <span class="lotto-stat-value">0.05%</span>
+              <span class="lotto-stat-value">0.5%</span>
               <span class="lotto-stat-label">Chance / ticket</span>
             </div>
             <div class="lottery-stat">
@@ -49,7 +49,7 @@
                 <input type="number" id="ticketCount" value="1" min="1" max="500">
                 <span class="ticket-cost" id="ticketCostDisplay">= <%= ticketCost %> coins</span>
               </div>
-              <p class="ticket-chance" id="chanceDisplay">Chance: 0.050%</p>
+              <p class="ticket-chance" id="chanceDisplay">Chance: 0.500%</p>
             </div>
             <button class="btn btn-primary btn-lg btn-full" id="buyBtn" onclick="buyTickets()"><i data-lucide="ticket"></i> Buy & Draw</button>
           </div>
@@ -83,7 +83,7 @@
     document.getElementById('ticketCount').addEventListener('input', function() {
       var count = parseInt(this.value) || 1;
       document.getElementById('ticketCostDisplay').textContent = '= ' + (count * ticketCost) + ' coins';
-      document.getElementById('chanceDisplay').textContent = 'Chance: ' + (count * 0.05).toFixed(3) + '%';
+      document.getElementById('chanceDisplay').textContent = 'Chance: ' + (count * 0.5).toFixed(2) + '%';
     });
 
     function buyTickets() {

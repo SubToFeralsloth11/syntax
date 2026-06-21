@@ -18,6 +18,13 @@ db.pragma('foreign_keys = ON');
 const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 db.exec(schema);
 
+// Migrations: add coins_toward_jackpot column to lottery_state if missing
+try {
+  db.prepare('SELECT coins_toward_jackpot FROM lottery_state LIMIT 1').get();
+} catch (e) {
+  db.exec('ALTER TABLE lottery_state ADD COLUMN coins_toward_jackpot INTEGER DEFAULT 0');
+}
+
 const { restoreAccounts } = require('./accounts');
 const restored = restoreAccounts(db);
 if (restored > 0) console.log(`Restored ${restored} account(s) from accounts.json`);

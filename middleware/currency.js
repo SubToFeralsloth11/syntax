@@ -18,6 +18,21 @@ function awardCoins(userId, amount, reason) {
   const tx = db.transaction(() => {
     insertTx.run(userId, amount, reason);
     updateUser.run(amount, amount > 0 ? amount : 0, userId);
+
+    // Every 10 coins earned (positive) across all players → +1 to lottery jackpot
+    if (amount > 0) {
+      const state = db.prepare('SELECT coins_toward_jackpot FROM lottery_state WHERE id = 1').get();
+      if (state) {
+        const newAccum = state.coins_toward_jackpot + amount;
+        const bumps = Math.floor(newAccum / 10);
+        const remainder = newAccum % 10;
+        if (bumps > 0) {
+          db.prepare('UPDATE lottery_state SET jackpot = jackpot + ?, coins_toward_jackpot = ? WHERE id = 1').run(bumps, remainder);
+        } else {
+          db.prepare('UPDATE lottery_state SET coins_toward_jackpot = ? WHERE id = 1').run(remainder);
+        }
+      }
+    }
   });
 
   tx();
