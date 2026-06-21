@@ -1,302 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNTAX // Whack-a-Mole</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a14;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="12" y="2" width="8" height="18" rx="2" fill="%23b537f2"/><rect x="8" y="18" width="16" height="8" rx="1" fill="%23b537f2"/></svg>') 16 16, auto;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00f0ff, #b537f2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .subtitle { color: #888; margin-bottom: 20px; }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        button {
-            font-family: inherit;
-            padding: 8px 16px;
-            background: #1a1a2e;
-            color: #00f0ff;
-            border: 2px solid #00f0ff;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        button:hover { background: #00f0ff; color: #0a0a14; }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        .hud {
-            display: flex;
-            gap: 40px;
-        }
-        .hud-item { text-align: center; }
-        .hud-value { font-size: 2rem; color: #00f0ff; }
-        .hud-label { font-size: 0.8rem; color: #888; }
-        .timer-bar {
-            width: 324px;
-            height: 10px;
-            background: #1a1a2e;
-            border: 2px solid #333;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .timer-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00f0ff, #b537f2);
-            transition: width 0.1s linear;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 20px;
-            background: #1a1a2e;
-            border: 3px solid #b537f2;
-            border-radius: 15px;
-        }
-        .hole {
-            width: 100px;
-            height: 100px;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .hole-bg {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 30px;
-            background: #0a0a14;
-            border-radius: 50%;
-            border: 3px solid #333;
-            z-index: 2;
-        }
-        .mole {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
-            background: #8B4513;
-            border-radius: 50%;
-            transition: bottom 0.2s ease;
-            z-index: 1;
-        }
-        .mole::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 40px;
-            background: #A0522D;
-            border-radius: 50%;
-        }
-        .mole::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 12px;
-            background: #D2691E;
-            border-radius: 50%;
-        }
-        .mole.up { bottom: 25px; }
-        .mole.hit {
-            background: #ff4444 !important;
-            animation: whack 0.3s ease;
-        }
-        .mole.hit::before { background: #ff6666; }
-        .mole.hit::after { background: #ff8888; }
-        @keyframes whack {
-            0% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.3); }
-            100% { transform: translateX(-50%) scale(1); }
-        }
-        .eyes {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            z-index: 3;
-        }
-        .eye {
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-        }
-        .message {
-            font-size: 1.5rem;
-            min-height: 40px;
-        }
-        .message.win { color: #44ff44; }
-        .message.lose { color: #ff4444; }
-        .high-score { color: #b537f2; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-A-Mole</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>SYNTAX // Whack-a-Mole</h1>
-    <div class="subtitle">Whack the moles before time runs out!</div>
-    <div class="controls"><button onclick="startGame()">START GAME</button></div>
-    <div class="game-container">
-        <div class="hud">
-            <div class="hud-item"><div class="hud-value" id="score">0</div><div class="hud-label">SCORE</div></div>
-            <div class="hud-item"><div class="hud-value" id="timer">30</div><div class="hud-label">TIME</div></div>
-        </div>
-        <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%"></div></div>
-        <div class="grid" id="grid"></div>
-        <div class="message" id="message"></div>
-        <div class="high-score" id="highScore"></div>
+  <!-- Start Screen -->
+  <div id="start-screen">
+    <h1>Welcome to Whack-A-Mole 🐹</h1>
+    <p>Click 'Start' to play the game and whack as many moles as you can!</p>
+    <button id="start-btn">Start</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="game-container" style="display: none;">
+    <h1>Whack-A-Mole 🐹</h1>
+    <h2>Score: <span id="score">0</span></h2>
+    <div id="timer">Time Left: 30</div>
+    <div class="grid">
+      <div class="hole" id="hole1"></div>
+      <div class="hole" id="hole2"></div>
+      <div class="hole" id="hole3"></div>
+      <div class="hole" id="hole4"></div>
+      <div class="hole" id="hole5"></div>
+      <div class="hole" id="hole6"></div>
+      <div class="hole" id="hole7"></div>
+      <div class="hole" id="hole8"></div>
+      <div class="hole" id="hole9"></div>
     </div>
+  </div>
 
-    <script>
-        let score = 0, timeLeft = 30, gameInterval, moleInterval;
-        let highScore = parseInt(localStorage.getItem('whackHighScore')) || 0;
-        let activeMoles = new Set();
-        let moleSpeed = 1500;
-        let running = false;
+  <!-- End Screen -->
+  <div id="end-screen" style="display: none;">
+    <div id="result-animation"></div>
+    <h2>Game Over!</h2>
+    <p>Your Final Score: <span id="final-score">0</span></p>
+    <p id="result-message"></p>
+    <button id="restart-btn">Play Again</button>
+  </div>
 
-        function createGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            for (let i = 0; i < 9; i++) {
-                const hole = document.createElement('div');
-                hole.className = 'hole';
-                hole.id = `hole-${i}`;
-                hole.innerHTML = `
-                    <div class="mole" id="mole-${i}">
-                        <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
-                    </div>
-                    <div class="hole-bg"></div>
-                `;
-                hole.onclick = () => whackMole(i);
-                grid.appendChild(hole);
-            }
-        }
+  <audio id="start-music" src="start-music.mp3" loop></audio>
+  <audio id="game-music" src="music/mixkit-game-level-music-689.wav" loop></audio>
+  <audio id="hit-sound" src="music/mixkit-winning-a-coin-video-game-2069.wav"></audio>
+  <audio id="miss-sound" src="music/mixkit-player-jumping-in-a-video-game-2043.wav"></audio>
+  <audio id="score-high" src="music/mixkit-medieval-show-fanfare-announcement-226.wav"></audio>
+  <audio id="score-medium" src="music/mixkit-game-bonus-reached-2065.wav"></audio>
+  <audio id="score-low" src="music/mixkit-player-losing-or-failing-2042.wav"></audio>
 
-        function popMole() {
-            if (!running || activeMoles.size >= 2) return;
-            const available = [];
-            for (let i = 0; i < 9; i++) {
-                if (!activeMoles.has(i)) available.push(i);
-            }
-            if (available.length === 0) return;
-            const idx = available[Math.floor(Math.random() * available.length)];
-            const mole = document.getElementById(`mole-${idx}`);
-            mole.classList.add('up');
-            activeMoles.add(idx);
-            const stayTime = Math.max(600, moleSpeed - 100);
-            setTimeout(() => {
-                if (activeMoles.has(idx)) {
-                    mole.classList.remove('up');
-                    activeMoles.delete(idx);
-                }
-            }, stayTime);
-        }
-
-        function whackMole(idx) {
-            if (!running || !activeMoles.has(idx)) return;
-            const mole = document.getElementById(`mole-${idx}`);
-            mole.classList.add('hit');
-            mole.classList.remove('up');
-            activeMoles.delete(idx);
-            score++;
-            document.getElementById('score').textContent = score;
-            setTimeout(() => mole.classList.remove('hit'), 300);
-        }
-
-        function startGame() {
-            score = 0;
-            timeLeft = 30;
-            moleSpeed = 1500;
-            running = true;
-            activeMoles.clear();
-            document.getElementById('score').textContent = 0;
-            document.getElementById('timer').textContent = 30;
-            document.getElementById('timerFill').style.width = '100%';
-            document.getElementById('message').textContent = '';
-            document.getElementById('message').className = 'message';
-            createGrid();
-
-            gameInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = timeLeft;
-                document.getElementById('timerFill').style.width = `${(timeLeft / 30) * 100}%`;
-                if (timeLeft <= 10) {
-                    document.getElementById('timerFill').style.background = 'linear-gradient(90deg, #ff4444, #ff6644)';
-                }
-                if (timeLeft <= 0) {
-                    endGame();
-                }
-            }, 1000);
-
-            moleInterval = setInterval(popMole, moleSpeed);
-            scheduleSpeedIncrease();
-        }
-
-        function scheduleSpeedIncrease() {
-            setTimeout(() => {
-                if (!running) return;
-                if (moleSpeed > 500) {
-                    moleSpeed -= 100;
-                    clearInterval(moleInterval);
-                    moleInterval = setInterval(popMole, moleSpeed);
-                }
-                scheduleSpeedIncrease();
-            }, 5000);
-        }
-
-        function endGame() {
-            running = false;
-            clearInterval(gameInterval);
-            clearInterval(moleInterval);
-            document.getElementById('message').textContent = `Game Over! Score: ${score}`;
-            document.getElementById('message').className = 'message lose';
-            document.getElementById('timerFill').style.background = 'linear-gradient(90deg, #00f0ff, #b537f2)';
-            activeMoles.clear();
-            for (let i = 0; i < 9; i++) {
-                document.getElementById(`mole-${i}`).classList.remove('up');
-            }
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('whackHighScore', highScore);
-                document.getElementById('message').textContent = `New High Score! ${score}`;
-                document.getElementById('message').className = 'message win';
-            }
-            document.getElementById('highScore').textContent = `High Score: ${highScore}`;
-        }
-
-        document.getElementById('highScore').textContent = `High Score: ${highScore}`;
-        createGrid();
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>

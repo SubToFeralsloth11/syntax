@@ -1,173 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Reaction Time</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;user-select:none}
-h1{font-size:2.5rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
-h1 span{color:#b537f2}
-.info{display:flex;gap:40px;margin-bottom:30px;font-size:1.1rem;color:#888}
-.info span{color:#00f0ff}
-.game-area{width:500px;height:500px;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:2rem;font-weight:bold;letter-spacing:2px;transition:background .15s;text-align:center;padding:20px;border:3px solid #1a1a2e}
-.game-area.wait{background:#1a1a2e;color:#888}
-.game-area.ready{background:#8a1a1a;color:#fff}
-.game-area.green{background:#1a6a1a;color:#fff}
-.game-area.clicked{background:#0a0a14;color:#00f0ff}
-.results{display:none;margin-top:30px;text-align:center}
-.results h2{color:#00f0ff;font-size:1.8rem;margin-bottom:15px}
-.results .times{display:flex;gap:15px;justify-content:center;margin-bottom:20px}
-.results .time-box{background:#1a1a2e;border-radius:12px;padding:12px 18px;min-width:80px}
-.results .time-box .label{font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:1px}
-.results .time-box .value{font-size:1.4rem;color:#00f0ff;margin-top:4px}
-.results .time-box .value.best{color:#b537f2}
-.results .time-box.too-soon .value{color:#b51a1a}
-.round-info{font-size:1rem;color:#888;margin-bottom:10px}
-button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:10px 30px;font-size:1rem;border-radius:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
-button:hover{background:#b537f2;color:#0a0a14}
-.controls{margin-top:20px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction-timer Intro</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: lightgray;
+            font-size: 25px;
+        }
+        a#play_game {
+            text-decoration: none;
+            border: 2px solid darkgray;
+            padding: 20px;
+            font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            border-radius: 10px;
+        }
+        a#play_game:hover {
+            background-color: blue;
+            color: white;
+            
+        }
+        div {
+            margin-top: 300px;
+            min-height: 791px;
+            min-width: 691px;
+        }
+
+    </style>
 </head>
 <body>
-<h1><span>SYNTAX</span> // Reaction Time</h1>
-<div class="info">
-  <div>Round: <span id="roundNum">0</span> / 5</div>
-  <div>Best: <span id="bestTime">---</span></div>
-</div>
-<div class="round-info" id="roundInfo">Click to start</div>
-<div class="game-area wait" id="area">
-  Click to start the test
-</div>
-<div class="results" id="results">
-  <h2>Results</h2>
-  <div class="times" id="times"></div>
-  <p style="color:#888;margin-bottom:15px">Average: <span id="avg" style="color:#00f0ff;font-size:1.3rem"></span></p>
-  <div class="controls">
-    <button id="retryBtn">Try Again</button>
-  </div>
-</div>
-<div class="controls" id="startCtrl">
-  <button id="startBtn">Start</button>
-</div>
-<script>
-const area=document.getElementById('area');
-const roundNum=document.getElementById('roundNum');
-const roundInfo=document.getElementById('roundInfo');
-const bestTimeEl=document.getElementById('bestTime');
-const resultsDiv=document.getElementById('results');
-const timesDiv=document.getElementById('times');
-const avgEl=document.getElementById('avg');
-const startCtrl=document.getElementById('startCtrl');
-
-let state='idle';
-let round=0;
-let times=[];
-let timeout;
-let waitStart=0;
-let best=localStorage.getItem('reactionBest');
-
-if(best)bestTimeEl.textContent=best+'ms';
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-
-function startRound(){
-  if(round>=5){showResults();return}
-  roundNum.textContent=round+1;
-  roundInfo.textContent='Wait for green...';
-  area.className='game-area ready';
-  area.textContent='Wait...';
-  state='waiting';
-  const delay=1500+Math.random()*3500;
-  timeout=setTimeout(()=>{
-    area.className='game-area green';
-    area.textContent='CLICK NOW!';
-    waitStart=performance.now();
-    state='green';
-  },delay);
-}
-
-area.addEventListener('click',()=>{
-  if(state==='idle')return;
-  if(state==='waiting'){
-    clearTimeout(timeout);
-    area.className='game-area ready';
-    area.textContent='Too early! Click to retry';
-    state='toosoon';
-    times.push(-1);
-    round++;
-    roundNum.textContent=round;
-    return;
-  }
-  if(state==='toosoon'){
-    startRound();
-    return;
-  }
-  if(state==='green'){
-    const elapsed=Math.round(performance.now()-waitStart);
-    times.push(elapsed);
-    round++;
-    roundNum.textContent=round;
-    area.className='game-area clicked';
-    area.innerHTML=elapsed+'<br><span style="font-size:.9rem;color:#888">ms</span>';
-    state='idle';
-    if(round<5){
-      roundInfo.textContent='Click to continue';
-      state='done';
-    }else{
-      roundInfo.textContent='';
-      setTimeout(showResults,800);
-    }
-    return;
-  }
-  if(state==='done'){
-    startRound();
-    return;
-  }
-});
-
-function showResults(){
-  area.style.display='none';
-  document.getElementById('roundInfo').style.display='none';
-  resultsDiv.style.display='block';
-  timesDiv.innerHTML='';
-  let valid=0,sum=0;
-  times.forEach((t,i)=>{
-    const box=document.createElement('div');
-    box.className='time-box'+(t<0?' too-soon':'');
-    box.innerHTML=`<div class="label">R${i+1}</div><div class="value">${t<0?'Foul':t+'ms'}</div>`;
-    timesDiv.appendChild(box);
-    if(t>0){valid++;sum+=t}
-  });
-  if(valid>0){
-    const avg=Math.round(sum/valid);
-    avgEl.textContent=avg+'ms';
-    if(!best||avg<parseInt(best)){
-      best=avg;
-      localStorage.setItem('reactionBest',best);
-      bestTimeEl.textContent=best+'ms';
-      avgEl.textContent+= ' (New Best!)';
-    }
-  }else{
-    avgEl.textContent='No valid times';
-  }
-}
-
-function reset(){
-  clearTimeout(timeout);
-  round=0;times=[];state='idle';
-  roundNum.textContent='0';
-  roundInfo.textContent='Click to start';
-  area.style.display='flex';
-  area.className='game-area wait';
-  area.textContent='Click to start the test';
-  resultsDiv.style.display='none';
-  document.getElementById('roundInfo').style.display='';
-}
-
-document.getElementById('startBtn').addEventListener('click',()=>{reset();startCtrl.style.display='none';startRound()});
-document.getElementById('retryBtn').addEventListener('click',()=>{reset();startCtrl.style.display='';});
-</script>
+    <div>
+        <a href="https://github.com/viditvarshney/Reaction-Timer.github.io"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+        <h1>Test Your Reactions!</h1>
+        <h2>Click On The Boxes And Circles As Quickly As You Can! </h2>
+        <h3>Your best time and the current time is displayed before</h3>
+        <a id="play_game" href="main.html">Play Game!</a>
+    </div>
+    
 </body>
 </html>

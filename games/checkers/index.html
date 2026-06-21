@@ -1,244 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Checkers</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px}
-h1{font-size:2em;margin-bottom:10px;color:#00f0ff;text-shadow:0 0 20px #00f0ff55}
-.status{font-size:1.2em;margin:10px 0;color:#b537f2;min-height:1.5em}
-.board{display:grid;grid-template-columns:repeat(8,64px);grid-template-rows:repeat(8,64px);border:2px solid #00f0ff;box-shadow:0 0 30px #00f0ff33}
-.cell{width:64px;height:64px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
-.cell.light{background:#1a1a2e}
-.cell.dark{background:#0f0f1e}
-.cell.selected{background:#b537f288 !important}
-.cell.legal{background:#00f0ff33 !important}
-.cell.legal::after{content:'';width:14px;height:14px;background:#00f0ff55;border-radius:50%}
-.cell.capture-move{background:#ff335533 !important}
-.piece{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;border:2px solid transparent;transition:all .2s}
-.piece.red{background:linear-gradient(135deg,#ff3344,#cc1122);border-color:#ff5566;color:#fff}
-.piece.black{background:linear-gradient(135deg,#333,#111);border-color:#555;color:#fff}
-.piece.king{box-shadow:0 0 12px #ffd700;border-color:#ffd700}
-.piece.king::before{content:'♛';font-size:20px}
-.controls{margin-top:20px;display:flex;gap:10px}
-button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:10px 24px;font-family:inherit;font-size:1em;cursor:pointer;transition:all .2s}
-button:hover{background:#b537f233;color:#fff}
-</style>
+  <title>HTML5 Checkers</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.png" type="image/x-icon">
+  <script src="script.js"></script>
 </head>
 <body>
-<h1>SYNTAX // Checkers</h1>
-<div class="status" id="status">Red's turn</div>
-<div class="board" id="board"></div>
-<div class="controls">
-<button onclick="resetGame()">RESTART</button>
-<button onclick="undoMove()">UNDO</button>
-</div>
-<script>
-let board,selected,turn,history_,mustJump;
-
-function initBoard(){
-board=Array.from({length:8},()=>Array(8).fill(null));
-for(let r=0;r<3;r++)for(let c=0;c<8;c++)
-if((r+c)%2===1)board[r][c]={color:'black',king:false};
-for(let r=5;r<8;r++)for(let c=0;c<8;c++)
-if((r+c)%2===1)board[r][c]={color:'red',king:false};
-turn='red';selected=null;history_=[];mustJump=false;
-}
-
-function render(){
-const el=document.getElementById('board');el.innerHTML='';
-const jumps=getAllJumps(turn);
-mustJump=jumps.length>0;
-for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-const cell=document.createElement('div');
-cell.className='cell '+(r+c)%2===0?'light':'dark';
-cell.dataset.row=r;cell.dataset.col=c;
-if(selected&&selected[0]===r&&selected[1]===c)cell.classList.add('selected');
-const legalMoves=getLegalMoves(r,c);
-if(selected&&legalMoves.some(([mr,mc])=>mr===r&&mc===c)){
-cell.classList.add(legalMoves.some(([mr,mc, cap])=>cap)?'capture-move':'legal');
-}
-const p=board[r][c];
-if(p){
-const piece=document.createElement('div');
-piece.className=`piece ${p.color}`;
-if(p.king)piece.classList.add('king');
-cell.appendChild(piece);
-}
-cell.onclick=()=>onClick(r,c);
-el.appendChild(cell);
-}
-updateStatus();
-}
-
-function getAllJumps(color){
-const jumps=[];
-for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-if(board[r][c]&&board[r][c].color===color){
-for(const[jr,jc,cap]of getJumpMoves(r,c))
-jumps.push({from:[r,c],to:[jr,jc],cap});
-}
-}
-return jumps;
-}
-
-function getLegalMoves(r,c){
-const p=board[r][c];if(!p||p.color!==turn)return[];
-if(mustJump)return getJumpMoves(r,c).map(([jr,jc,cap])=>[jr,jc]);
-return[...getJumpMoves(r,c).map(([jr,jc])=>[jr,jc]),...getNormalMoves(r,c)];
-}
-
-function getJumpMoves(r,c){
-const p=board[r][c];if(!p)return[];
-const moves=[];const dir=p.color==='red'?-1:1;
-for(const dc of[-1,1]){
-const mr=r+dir,mc=c+dc,lr=r+2*dir,lc=c+2*dc;
-if(inBounds(lr,lc)&&board[mr][mc]&&board[mr][mc].color!==p.color&&!board[lr][lc])
-moves.push([lr,lc,[mr,mc]]);
-}
-if(p.king){
-for(const dc of[-1,1]){
-const mr=r-dir,mc=c+dc,lr=r-2*dir,lc=c-2*dc;
-if(inBounds(lr,lc)&&board[mr][mc]&&board[mr][mc].color!==p.color&&!board[lr][lc])
-moves.push([lr,lc,[mr,mc]]);
-}
-}
-return moves;
-}
-
-function getNormalMoves(r,c){
-const p=board[r][c];if(!p)return[];
-const moves=[];const dir=p.color==='red'?-1:1;
-for(const dc of[-1,1]){
-const nr=r+dir,nc=c+dc;
-if(inBounds(nr,nc)&&!board[nr][nc])moves.push([nr,nc]);
-}
-if(p.king){
-for(const dc of[-1,1]){
-const nr=r-dir,nc=c+dc;
-if(inBounds(nr,nc)&&!board[nr][nc])moves.push([nr,nc]);
-}
-}
-return moves;
-}
-
-function inBounds(r,c){return r>=0&&r<8&&c>=0&&c<8}
-
-function onClick(r,c){
-if(turn!=='red')return;
-const p=board[r][c];
-if(selected){
-const moves=getLegalMoves(selected[0],selected[1]);
-const move=moves.find(([mr,mc])=>mr===r&&mc===c);
-if(move){
-history_.push({board:board.map(row=>row.map(cell=>cell?{...cell}:null)),turn,selected});
-executeJump(selected[0],selected[1],r,c);
-selected=null;checkWin();render();return;
-}
-}
-if(p&&p.color===turn){
-if(mustJump){
-const jumps=getJumpMoves(r,c);
-if(jumps.length===0)return;
-}
-selected=[r,c];render();
-}
-}
-
-function executeJump(fr,tc,tr,tc2){
-const p=board[fr][tc];board[fr][tc]=null;board[tr][tc2]=p;
-const dir=p.color==='red'?-1:1;
-if(Math.abs(tr-fr)===2){
-const cr=(fr+tr)/2,cc=(tc+tc2)/2;
-board[cr][cc]=null;
-}
-const promoRow=p.color==='red'?0:7;
-if(tr===promoRow)p.king=true;
-const jumps=tr===promoRow?[]:getJumpMoves(tr,tc2);
-if(p.color==='red'&&jumps.length>0){
-selected=[tr,tc2];mustJump=true;
-}else{
-turn=turn==='red'?'black':turn==='black'?'red':null;
-selected=null;mustJump=false;
-if(turn==='black')setTimeout(aiMove,300);
-}
-}
-
-function aiMove(){
-const jumps=getAllJumps('black');
-if(jumps.length>0){
-const j=jumps[Math.floor(Math.random()*jumps.length)];
-history_.push({board:board.map(row=>row.map(cell=>cell?{...cell}:null)),turn,selected});
-executeJump(j.from[0],j.from[1],j.to[0],j.to[1]);
-checkWin();render();return;
-}
-const moves=[];
-for(let r=0;r<8;r++)for(let c=0;c<8;c++)
-if(board[r][c]&&board[r][c].color==='black'){
-const nms=getNormalMoves(r,c);
-for(const[mr,mc]of nms)moves.push({from:[r,c],to:[mr,mc]});
-}
-if(moves.length===0){checkWin();return;}
-const m=moves[Math.floor(Math.random()*moves.length)];
-history_.push({board:board.map(row=>row.map(cell=>cell?{...cell}:null)),turn,selected});
-const p=board[m.from[0]][m.from[1]];
-board[m.from[0]][m.from[1]]=null;
-board[m.to[0]][m.to[1]]=p;
-const promoRow=p.color==='red'?0:7;
-if(m.to[0]===promoRow)p.king=true;
-turn='red';selected=null;mustJump=false;
-checkWin();render();
-}
-
-function checkWin(){
-let red=false,black=false;
-for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-if(board[r][c]&&board[r][c].color==='red')red=true;
-if(board[r][c]&&board[r][c].color==='black')black=true;
-}
-const redMoves=getAllLegalMovesAny('red');
-const blackMoves=getAllLegalMovesAny('black');
-if(!red||redMoves.length===0){
-document.getElementById('status').textContent='Black wins!';
-turn=null;
-}else if(!black||blackMoves.length===0){
-document.getElementById('status').textContent='Red wins!';
-turn=null;
-}
-}
-
-function getAllLegalMovesAny(color){
-const saved=turn;turn=color;
-const jumps=getAllJumps(color);
-if(jumps.length>0){turn=saved;return jumps;}
-const moves=[];
-for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-if(board[r][c]&&board[r][c].color===color){
-const nms=getNormalMoves(r,c);
-moves.push(...nms);
-}
-}
-turn=saved;return moves;
-}
-
-function updateStatus(){
-const el=document.getElementById('status');
-if(!turn)return;
-const jumps=getAllJumps(turn);
-el.textContent=`${turn==='red'?'Red':'Black'}'s turn${jumps.length>0?' (must jump)':''}`;
-}
-
-function resetGame(){initBoard();render();}
-function undoMove(){
-if(!history_.length)return;
-const s=history_.pop();
-board=s.board;turn=s.turn;selected=null;mustJump=false;
-render();
-}
-
-initBoard();render();
-</script>
+  <div class="column">
+    <div class="info">
+      <h1>Checkers</h1>
+      <hr>
+      <p>Made by codethejason for <a href="http://fossasia.org">FOSSASIA</a> 2015.</p>
+    </div>
+    <div class="stats">
+      <h2>Game Statistics</h2>
+      <div class="wrapper">
+      <div id="player1">
+        <h3>Player 1 (Top)</h3>
+      </div>
+      <div id="player2">
+        <h3>Player 2 (Bottom)</h3>
+      </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="turn"></div>
+      <span id="winner"></span>
+      <button id="cleargame">Reset Game</button>
+    </div>
+  </div>
+  <div class="column">
+    <div id="board">
+      <div class="tiles"></div>
+      <div class="pieces">
+        <div class="player1pieces">
+        </div>
+        <div class="player2pieces">
+        </div>
+      </div>
+  </div>
 </body>
 </html>

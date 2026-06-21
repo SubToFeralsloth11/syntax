@@ -1,83 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> 
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Breakout</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#e0e0e0;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:1rem}
-h1{font-size:1.5rem;margin-bottom:0.5rem;color:#00f0ff;text-shadow:0 0 10px #00f0ff44}
-h1 span{color:#b537f2}
-.hud{display:flex;gap:2rem;margin-bottom:0.5rem;font-size:0.9rem}
-.hud span{color:#00f0ff}
-.hud .lives span{color:#b537f2}
-canvas{border:1px solid #222;border-radius:4px;background:#111;display:block}
-.restart{margin-top:1rem;background:#111;border:1px solid #b537f2;color:#b537f2;padding:0.5rem 1.5rem;font-family:inherit;cursor:pointer;font-size:0.9rem;border-radius:3px;transition:all .2s}
-.restart:hover{background:#b537f2;color:#0a0a14}
-</style>
-</head>
-<body>
-<h1>SYNTAX <span>// Breakout</span></h1>
-<div class="hud">
-<div>Score: <span id="score">0</span></div>
-<div class="lives">Lives: <span id="lives">3</span></div>
-<div>Level: <span id="level">1</span></div>
-</div>
-<canvas id="c" width="480" height="400"></canvas>
-<button class="restart" onclick="startGame()">Restart</button>
-<script>
-const cv=document.getElementById('c'),cx=cv.getContext('2d');
-let paddle,ball,bricks,score,lives,level,running,keys={};
-const BRICK_ROWS=5,BRICK_COLS=8,BRICK_W=52,BRICK_H=18,BRICK_PAD=4,BRICK_TOP=40;
-const paddleW=80,paddleH=12,ballR=6;
-const colors=[['#00f0ff','#00c4cc'],['#b537f2','#8e2cbf'],['#00f0ff','#00f0ff'],['#b537f2','#b537f2'],['#00f0ff','#b537f2']];
-function startGame(){
-score=0;lives=3;level=1;running=true;keys={};
-document.getElementById('score').textContent=0;
-document.getElementById('lives').textContent=3;
-document.getElementById('level').textContent=1;
-initLevel();requestAnimationFrame(loop)
-}
-function initLevel(){
-paddle={x:cv.width/2-paddleW/2,y:cv.height-30,w:paddleW,h:paddleH};
-ball={x:cv.width/2,y:cv.height-42,dx:3*(Math.random()>0.5?1:-1),dy:-3,r:ballR,active:true};
-bricks=[];
-for(let r=0;r<BRICK_ROWS+level-1;r++){bricks[r]=[];for(let c=0;c<BRICK_COLS;c++){
-bricks[r][c]={x:c*(BRICK_W+BRICK_PAD)+BRICK_PAD,y:r*(BRICK_H+BRICK_PAD)+BRICK_TOP,w:BRICK_W,h:BRICK_H,alive:true,color:colors[r%colors.length]}}}
-}
-function loop(){if(!running)return;update();draw();requestAnimationFrame(loop)}
-function update(){
-if(keys.ArrowLeft||keys.KeyA)paddle.x=Math.max(0,paddle.x-7);
-if(keys.ArrowRight||keys.KeyD)paddle.x=Math.min(cv.width-paddle.w,paddle.x+7);
-ball.x+=ball.dx;ball.y+=ball.dy;
-if(ball.x-ball.r<0||ball.x+ball.r>cv.width){ball.dx*=-1;ball.x=Math.max(ball.r,Math.min(cv.width-ball.r,ball.x))}
-if(ball.y-ball.r<0){ball.dy*=-1;ball.y=ball.r}
-if(ball.y+ball.r>paddle.y&&ball.x>paddle.x&&ball.x<paddle.x+paddle.w&&ball.dy>0){
-ball.dy=-Math.abs(ball.dy);let hit=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
-ball.dx=hit*5;if(Math.abs(ball.dx)<1)ball.dx=ball.dx<0?-1:1}
-if(ball.y+ball.r>cv.height){lives--;document.getElementById('lives').textContent=lives;if(lives<=0){running=false;draw();cx.fillStyle='#b537f2';cx.font='28px Courier New';cx.textAlign='center';cx.fillText('GAME OVER',cv.width/2,cv.height/2);return}
-ball.x=cv.width/2;ball.y=cv.height-42;ball.dx=3*(Math.random()>0.5?1:-1);ball.dy=-3}
-let aliveCount=0;
-for(let r=0;r<bricks.length;r++)for(let c=0;c<bricks[r].length;c++){const b=bricks[r][c];if(!b.alive)continue;aliveCount++;
-if(ball.x+ball.r>b.x&&ball.x-ball.r<b.x+b.w&&ball.y+ball.r>b.y&&ball.y-ball.r<b.y+b.h){
-b.alive=false;ball.dy*=-1;score+=10*(bricks.length-r);document.getElementById('score').textContent=score;
-if(!bricks.some(row=>row.some(bb=>bb.alive))){
-level++;document.getElementById('level').textContent=level;initLevel()}}}
-}
-function draw(){
-cx.fillStyle='#111';cx.fillRect(0,0,cv.width,cv.height);
-for(let r=0;r<bricks.length;r++)for(let c=0;c<bricks[r].length;c++){const b=bricks[r][c];if(!b.alive)continue;
-const g=cx.createLinearGradient(b.x,b.y,b.x,b.y+b.h);g.addColorStop(0,b.color[0]);g.addColorStop(1,b.color[1]);
-cx.fillStyle=g;cx.beginPath();cx.roundRect(b.x,b.y,b.w,b.h,3);cx.fill();cx.strokeStyle='#00000044';cx.stroke()}
-cx.fillStyle='#00f0ff';cx.beginPath();cx.roundRect(paddle.x,paddle.y,paddle.w,paddle.h,3);cx.fill();
-cx.shadowColor='#00f0ff';cx.shadowBlur=8;cx.beginPath();cx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);cx.fill();cx.shadowBlur=0;
-if(!ball.active)return}
-document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space'&&!running)startGame()});
-document.addEventListener('keyup',e=>keys[e.code]=false);
-cv.addEventListener('mousemove',e=>{if(!running)return;const r=cv.getBoundingClientRect();paddle.x=Math.max(0,Math.min(cv.width-paddle.w,(e.clientX-r.left)*(cv.width/r.width)-paddle.w/2))});
-cv.addEventListener('click',()=>{if(!running)startGame()});
-startGame()
-</script>
-</body>
+  <title>Javascript Breakout</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width", initial-scale=1.0, user-scalable="no"/>
+  <link href="breakout.css" media="screen, print" rel="stylesheet" type="text/css" /> 
+</head> 
+ 
+<body> 
+
+
+  <div id="breakout">
+    <canvas id="canvas">
+      <div class='unsupported'>
+        Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
+      </div>
+    </canvas>
+    <div id="levels">
+      <img id="next" class="disabled" src="images/up.png"   title="next level">
+      <img id="prev" class="disabled" src="images/down.png" title="previous level">
+      <span id="label">level:</span><span id="level"></span>
+    </div>
+    <div id="controls">
+      <input id='sound' type='checkbox' />
+      <label for='sound'>sound</label>
+    </div>
+    <div id="instructions" style='display:none;'>
+      <div class='keyboard'>
+        <b>space</b> to start<br>
+        <b>left/right</b> to move paddle<br>
+        <b>up/down</b> to change level
+      </div>
+      <div class='touch'>
+        <b>touch here</b> to start<br>
+        <b>drag</b> paddle to move<br>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script src="breakout.js"></script>
+  <script src="levels.js"></script>
+  <script>
+  Game.ready(function() {
+    var game = Game.start('canvas', Breakout);
+  });
+  </script>
+
+</body> 
 </html>

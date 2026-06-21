@@ -1,354 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNTAX // Hangman</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a14;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00f0ff, #b537f2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .subtitle { color: #888; margin-bottom: 20px; }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        select, button {
-            font-family: inherit;
-            padding: 8px 16px;
-            background: #1a1a2e;
-            color: #00f0ff;
-            border: 2px solid #00f0ff;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        select:hover, button:hover {
-            background: #00f0ff;
-            color: #0a0a14;
-        }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        canvas {
-            border: 2px solid #b537f2;
-            background: #1a1a2e;
-        }
-        .word-display {
-            font-size: 2rem;
-            letter-spacing: 10px;
-            color: #00f0ff;
-            min-height: 40px;
-        }
-        .category { color: #b537f2; font-size: 1.2rem; margin-bottom: 10px; }
-        .keyboard {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 5px;
-            max-width: 600px;
-        }
-        .key {
-            width: 40px;
-            height: 40px;
-            font-family: inherit;
-            font-size: 1rem;
-            background: #1a1a2e;
-            color: #00f0ff;
-            border: 2px solid #00f0ff;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .key:hover:not(:disabled) {
-            background: #00f0ff;
-            color: #0a0a14;
-        }
-        .key:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        .key.wrong {
-            border-color: #ff4444;
-            color: #ff4444;
-        }
-        .key.correct {
-            border-color: #44ff44;
-            color: #44ff44;
-        }
-        .message {
-            font-size: 1.5rem;
-            margin: 10px 0;
-            min-height: 40px;
-        }
-        .message.win { color: #44ff44; }
-        .message.lose { color: #ff4444; }
-        .stats {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 10px;
-        }
-        .stat { text-align: center; }
-        .stat-value { font-size: 1.5rem; color: #00f0ff; }
-        .stat-label { font-size: 0.8rem; color: #888; }
-    </style>
-</head>
-<body>
-    <h1>SYNTAX // Hangman</h1>
-    <div class="subtitle">Guess the word before it's too late</div>
-
-    <div class="stats">
-        <div class="stat">
-            <div class="stat-value" id="wins">0</div>
-            <div class="stat-label">WINS</div>
-        </div>
-        <div class="stat">
-            <div class="stat-value" id="losses">0</div>
-            <div class="stat-label">LOSSES</div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <select id="category">
-            <option value="animals">Animals</option>
-            <option value="countries">Countries</option>
-            <option value="food">Food</option>
-            <option value="tech">Technology</option>
-        </select>
-        <select id="difficulty">
-            <option value="easy">Easy (8 lives)</option>
-            <option value="medium" selected>Medium (6 lives)</option>
-            <option value="hard">Hard (4 lives)</option>
-        </select>
-        <button onclick="newGame()">NEW GAME</button>
-    </div>
-
-    <div class="game-container">
-        <canvas id="hangman" width="200" height="250"></canvas>
-        <div class="category" id="categoryLabel">Category: Animals</div>
-        <div class="word-display" id="wordDisplay"></div>
-        <div class="message" id="message"></div>
-        <div class="keyboard" id="keyboard"></div>
-    </div>
-
-    <script>
-        const words = {
-            animals: ['elephant', 'giraffe', 'penguin', 'dolphin', 'cheetah', 'octopus', 'kangaroo', 'flamingo', 'chameleon', 'hedgehog', 'butterfly', 'crocodile', 'platypus', 'rhinoceros', 'squirrel'],
-            countries: ['australia', 'brazil', 'canada', 'denmark', 'egypt', 'france', 'germany', 'hungary', 'iceland', 'jamaica', 'kenya', 'mexico', 'norway', 'portugal', 'thailand'],
-            food: ['avocado', 'broccoli', 'chocolate', 'dumpling', 'espresso', 'focaccia', 'guacamole', 'hamburger', 'jalapeno', 'ketchup', 'lasagna', 'mushroom', 'pancakes', 'ravioli', 'spaghetti'],
-            tech: ['algorithm', 'bluetooth', 'compiler', 'database', 'ethernet', 'firmware', 'gateway', 'hardware', 'internet', 'keyboard', 'laptop', 'malware', 'network', 'software', 'terminal']
-        };
-
-        let currentWord = '';
-        let guessedLetters = new Set();
-        let wrongGuesses = 0;
-        let maxLives = 6;
-        let wins = 0;
-        let losses = 0;
-        let gameActive = true;
-
-        const canvas = document.getElementById('hangman');
-        const ctx = canvas.getContext('2d');
-
-        function createKeyboard() {
-            const keyboard = document.getElementById('keyboard');
-            keyboard.innerHTML = '';
-            for (let i = 65; i <= 90; i++) {
-                const letter = String.fromCharCode(i);
-                const btn = document.createElement('button');
-                btn.className = 'key';
-                btn.textContent = letter;
-                btn.id = `key-${letter}`;
-                btn.onclick = () => guessLetter(letter);
-                keyboard.appendChild(btn);
-            }
-        }
-
-        function drawHangman() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#b537f2';
-            ctx.lineWidth = 3;
-
-            // Base
-            ctx.beginPath();
-            ctx.moveTo(20, 230);
-            ctx.lineTo(100, 230);
-            ctx.stroke();
-
-            // Pole
-            ctx.beginPath();
-            ctx.moveTo(60, 230);
-            ctx.lineTo(60, 30);
-            ctx.stroke();
-
-            // Top
-            ctx.beginPath();
-            ctx.moveTo(60, 30);
-            ctx.lineTo(140, 30);
-            ctx.stroke();
-
-            // Rope
-            ctx.beginPath();
-            ctx.moveTo(140, 30);
-            ctx.lineTo(140, 50);
-            ctx.stroke();
-
-            ctx.strokeStyle = '#00f0ff';
-
-            if (wrongGuesses >= 1) {
-                // Head
-                ctx.beginPath();
-                ctx.arc(140, 70, 20, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-            if (wrongGuesses >= 2) {
-                // Body
-                ctx.beginPath();
-                ctx.moveTo(140, 90);
-                ctx.lineTo(140, 150);
-                ctx.stroke();
-            }
-            if (wrongGuesses >= 3) {
-                // Left arm
-                ctx.beginPath();
-                ctx.moveTo(140, 110);
-                ctx.lineTo(110, 130);
-                ctx.stroke();
-            }
-            if (wrongGuesses >= 4) {
-                // Right arm
-                ctx.beginPath();
-                ctx.moveTo(140, 110);
-                ctx.lineTo(170, 130);
-                ctx.stroke();
-            }
-            if (wrongGuesses >= 5) {
-                // Left leg
-                ctx.beginPath();
-                ctx.moveTo(140, 150);
-                ctx.lineTo(110, 190);
-                ctx.stroke();
-            }
-            if (wrongGuesses >= 6) {
-                // Right leg
-                ctx.beginPath();
-                ctx.moveTo(140, 150);
-                ctx.lineTo(170, 190);
-                ctx.stroke();
-            }
-        }
-
-        function updateWordDisplay() {
-            const display = currentWord.split('').map(letter =>
-                guessedLetters.has(letter) ? letter : '_'
-            ).join(' ');
-            document.getElementById('wordDisplay').textContent = display;
-        }
-
-        function guessLetter(letter) {
-            if (!gameActive || guessedLetters.has(letter)) return;
-
-            guessedLetters.add(letter);
-            const btn = document.getElementById(`key-${letter}`);
-            btn.disabled = true;
-
-            if (currentWord.includes(letter)) {
-                btn.classList.add('correct');
-                updateWordDisplay();
-                checkWin();
-            } else {
-                btn.classList.add('wrong');
-                wrongGuesses++;
-                drawHangman();
-                checkLose();
-            }
-        }
-
-        function checkWin() {
-            const won = currentWord.split('').every(letter => guessedLetters.has(letter));
-            if (won) {
-                wins++;
-                document.getElementById('wins').textContent = wins;
-                document.getElementById('message').textContent = 'YOU WIN!';
-                document.getElementById('message').className = 'message win';
-                gameActive = false;
-                disableAllKeys();
-            }
-        }
-
-        function checkLose() {
-            if (wrongGuesses >= maxLives) {
-                losses++;
-                document.getElementById('losses').textContent = losses;
-                document.getElementById('message').textContent = `Game Over! Word: ${currentWord}`;
-                document.getElementById('message').className = 'message lose';
-                gameActive = false;
-                revealWord();
-                disableAllKeys();
-            }
-        }
-
-        function revealWord() {
-            const display = currentWord.split('').map(letter =>
-                guessedLetters.has(letter) ? letter : letter
-            ).join(' ');
-            document.getElementById('wordDisplay').textContent = display;
-        }
-
-        function disableAllKeys() {
-            document.querySelectorAll('.key').forEach(btn => btn.disabled = true);
-        }
-
-        function newGame() {
-            const category = document.getElementById('category').value;
-            const difficulty = document.getElementById('difficulty').value;
-
-            const lives = { easy: 8, medium: 6, hard: 4 };
-            maxLives = lives[difficulty];
-            wrongGuesses = 0;
-            guessedLetters.clear();
-            gameActive = true;
-
-            const wordList = words[category];
-            currentWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
-
-            document.getElementById('categoryLabel').textContent = `Category: ${category.charAt(0).toUpperCase() + category.slice(1)}`;
-            document.getElementById('message').textContent = '';
-            document.getElementById('message').className = 'message';
-
-            createKeyboard();
-            drawHangman();
-            updateWordDisplay();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            const letter = e.key.toUpperCase();
-            if (letter.length === 1 && letter >= 'A' && letter <= 'Z') {
-                guessLetter(letter);
-            }
-        });
-
-        newGame();
-    </script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/css/main.css" />
+		<title>Hangman</title>
+	</head>
+	<body>
+		<div class="loading-screen">
+			<svg class="loading-svg" viewBox="0 0 121.46 13.54">
+				<path
+					id="segL"
+					class="loading-seg"
+					d="M11,9.82v2.93H2.66V.82H6.32v9Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segO"
+					class="loading-seg"
+					d="M25.05,13.3A5.4,5.4,0,0,1,21,11.63a6.19,6.19,0,0,1-1.59-4.46,6.48,6.48,0,0,1,1.52-4.42A5.28,5.28,0,0,1,25.08,1a5.34,5.34,0,0,1,4.06,1.64A6.06,6.06,0,0,1,30.71,7a6.44,6.44,0,0,1-1.58,4.55A5.3,5.3,0,0,1,25.05,13.3Zm0-2.71a1.38,1.38,0,0,0,1.33-.81,7.34,7.34,0,0,0,.41-3c0-2.07-.56-3.11-1.67-3.11S23.3,4.9,23.3,7.26,23.88,10.59,25,10.59Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segA"
+					class="loading-seg"
+					d="M44.65,12.71,44,10.36H40.78l-.71,2.35h-3L40.78.79h3.86l3.74,11.92Zm-3.25-5h1.93l-1-3.46Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segD"
+					class="loading-seg"
+					d="M56.1,12.73V.81h4.61a5.52,5.52,0,0,1,4.5,1.78A6.2,6.2,0,0,1,66.7,6.71a6,6,0,0,1-1.6,4.35,5.51,5.51,0,0,1-4.16,1.67ZM59.76,10h1a1.85,1.85,0,0,0,1.54-.89,4.1,4.1,0,0,0,.62-2.4,4.33,4.33,0,0,0-.55-2.24,1.77,1.77,0,0,0-1.61-1h-1Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segI"
+					class="loading-seg"
+					d="M80.55.79V12.71H76.89V.79Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segN"
+					class="loading-seg"
+					d="M101.81,13.3h-3L95.56,8a21.29,21.29,0,0,1-1.27-2.46,7.92,7.92,0,0,1,.29,1.95V13.3h-3V1.37h3.46l2.78,4.37A17.88,17.88,0,0,1,99.11,8a17,17,0,0,1-.28-3.13V1.37h3Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<path
+					id="segG"
+					class="loading-seg"
+					d="M119,6.43v6.68h-1.8a6.54,6.54,0,0,0-.48-1.25,3.88,3.88,0,0,1-3.28,1.44,4.93,4.93,0,0,1-3.79-1.61,6.21,6.21,0,0,1-1.49-4.37,7,7,0,0,1,1.44-4.49A5.1,5.1,0,0,1,113.91,1a5.2,5.2,0,0,1,3.43,1.08A5.11,5.11,0,0,1,119,5.16l-3.55.35c-.18-1.24-.72-1.86-1.63-1.86-1.2,0-1.8,1.15-1.8,3.43a4.48,4.48,0,0,0,.57,2.73,1.8,1.8,0,0,0,1.4.66,1.67,1.67,0,0,0,1.13-.41,1.4,1.4,0,0,0,.48-1.1h-2V6.43Z"
+					transform="translate(0 0.02)"
+					fill="#520ca1"
+				/>
+				<rect
+					id="covL"
+					class="loading-cover"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covO"
+					class="loading-cover"
+					x="17.99"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covA"
+					class="loading-cover"
+					x="35.98"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covD"
+					class="loading-cover"
+					x="53.97"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covI"
+					class="loading-cover"
+					x="71.96"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covN"
+					class="loading-cover"
+					x="89.95"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+				<rect
+					id="covG"
+					class="loading-cover"
+					x="107.94"
+					y="0.02"
+					width="13.52"
+					height="13.52"
+					rx="1.09"
+					fill="#e6d439"
+				/>
+			</svg>
+		</div>
+		<section class="modal">
+			<div class="modal-content drop-down">
+				<div class="menu-container">
+					<button class="menu-button start-game">Play!</button>
+					<div class="category-list">
+						<button class="menu-button category-button">Category</button>
+						<ul class="list closed-list">
+							<li>Food</li>
+							<li>Sports</li>
+							<li>Instruments</li>
+							<li>Pokemons</li>
+							<li>Software</li>
+							<li>Sciences</li>
+							<li>Planets</li>
+							<li>Countries</li>
+							<li>Animals</li>
+							<li>Superheroes</li>
+						</ul>
+					</div>
+					<div class="difficulty-list">
+						<button class="menu-button difficulty-button">Difficulty</button>
+						<ul class="list closed-list">
+							<li>Easy</li>
+							<li>Medium</li>
+							<li>Hard</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+		<main class="main-content blur-in">
+			<nav class="nav-bar">
+				<div class="home-container">
+					<button class="home-button"></button>
+					<button class="sound-button"></button>
+				</div>
+				<div class="category"><span>FOOD</span><span>medium</span></div>
+				<div class="score-container">
+					<div class="guesses-left"><span>5/5</span></div>
+					<div class="score"><span>0</span></div>
+					<div class="best-score"><span>0</span></div>
+				</div>
+			</nav>
+			<section class="bg-container" id="scene">
+				<div class="mountains" data-depth="0.06"></div>
+				<div class="city" data-depth="0.1"></div>
+				<div class="hill-middle" data-depth="0.2"></div>
+				<div class="hill-left" data-depth="0.3"></div>
+				<div class="hill-right" data-depth="0.6">
+					<div class="gallows-container">
+						<canvas></canvas>
+					</div>
+				</div>
+			</section>
+			<footer>
+				<ul class="word-container"></ul>
+				<div class="alpha-container"></div>
+			</footer>
+			<svg id="nextIcon" class="next-icon" viewBox="0 0 185.23 338.95">
+				<g class="small" opacity="0.25">
+					<polygon
+						points="83.99 303.05 21.7 303.05 101.23 172.18 21.02 35.9 83.99 35.9 167.62 169.47 83.99 303.05"
+					/>
+				</g>
+				<g class="big">
+					<polygon
+						points="84.21 338.95 0 338.95 100.8 172.18 0 0 84.21 0 185.23 169.47 84.21 338.95"
+					/>
+				</g>
+			</svg>
+		</main>
+		<section class="gameover-modal">
+			<div class="gameover-box">
+				<div class="gameover-content">
+					<h1 class="text">GAME OVER</h1>
+					<div class="gameover-data">
+						<div class="score-cont">
+							<span>Score:</span>
+							<span class="score">0</span>
+						</div>
+						<div class="best-score-cont">
+							<span>Best score:</span>
+							<span class="best-score">0</span>
+						</div>
+					</div>
+					<div class="buttons">
+						<button class="main-menu"></button>
+						<button class="play-again"></button>
+					</div>
+				</div>
+			</div>
+		</section>
+		<script
+			defer
+			src="https://code.createjs.com/1.0.0/preloadjs.min.js"
+		></script>
+		<script
+			defer
+			src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js"
+		></script>
+		<script defer src="/scripts/loader.js"></script>
+		<script
+			defer
+			src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js"
+		></script>
+		<script defer src="/scripts/rope.js"></script>
+		<script defer src="/scripts/main.js"></script>
+	</body>
 </html>

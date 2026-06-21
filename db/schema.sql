@@ -252,3 +252,14 @@ CREATE TABLE IF NOT EXISTS user_quests (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_items_name ON shop_items(name);
+
+CREATE TABLE IF NOT EXISTS game_scores (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  game_id TEXT NOT NULL,
+  score INTEGER NOT NULL,
+  extra_data TEXT DEFAULT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_game_scores_user_game ON game_scores(user_id, game_id);

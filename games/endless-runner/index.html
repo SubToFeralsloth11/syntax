@@ -1,225 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Endless Runner</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px}
-h1{font-size:2em;margin-bottom:5px;color:#00f0ff;text-shadow:0 0 20px #00f0ff55}
-.info{display:flex;gap:40px;margin:5px 0;font-size:1.1em}
-.info span{color:#b537f2}
-canvas{border:2px solid #00f0ff;box-shadow:0 0 30px #00f0ff33;cursor:pointer}
-.controls{margin-top:15px;display:flex;gap:10px}
-button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:10px 24px;font-family:inherit;font-size:1em;cursor:pointer;transition:all .2s}
-button:hover{background:#b537f233;color:#fff}
-.hint{color:#666;margin-top:8px;font-size:0.9em}
-</style>
+  <meta charset="UTF-8">
+  <title>Kandi Runner</title>
+  <link rel="stylesheet" href="kandi.css" type="text/css" media="screen">
+  <script type="text/javascript" src="jquery.2.1.1.min.js"></script>
 </head>
 <body>
-<h1>SYNTAX // Endless Runner</h1>
-<div class="info">
-<div>SCORE: <span id="score">0</span></div>
-<div>HIGH: <span id="highscore">0</span></div>
-</div>
-<canvas id="game" width="800" height="400"></canvas>
-<div class="controls">
-<button onclick="resetGame()">RESTART</button>
-</div>
-<div class="hint">Space / Click to jump (double jump allowed)</div>
-<script>
-const canvas=document.getElementById('game');
-const ctx=canvas.getContext('2d');
-const W=800,H=400;
-const GRAVITY=0.7,JUMP=-13;
-
-let player,obstacles,score,highScore,speed,spawnTimer,gameOver,ground,clouds,dust,started;
-
-function init(){
-player={x:100,y:H-80,w:35,h:50,vy:0,jumps:0,maxJumps:2,grounded:true};
-obstacles=[];score=0;speed=5;spawnTimer=0;gameOver=false;started=false;
-ground=H-50;
-clouds=[];
-for(let i=0;i<8;i++)clouds.push({x:Math.random()*W,y:Math.random()*100+20,w:Math.random()*60+40,s:Math.random()*0.5+0.2});
-dust=[];
-document.getElementById('highscore').textContent=highScore||0;
-render();
-}
-
-function update(){
-if(gameOver||!started)return;
-
-speed=5+score*0.002;
-if(speed>15)speed=15;
-
-player.vy+=GRAVITY;
-player.y+=player.vy;
-if(player.y+player.h>=ground){
-player.y=ground-player.h;player.vy=0;player.grounded=true;player.jumps=0;
-}
-
-for(let i=obstacles.length-1;i>=0;i--){
-obstacles[i].x-=speed;
-if(obstacles[i].x+obstacles[i].w<0){
-obstacles.splice(i,1);score+=5;
-}
-}
-
-spawnTimer++;
-const spawnRate=Math.max(40,100-score*0.5);
-if(spawnTimer>=spawnRate){
-spawnTimer=0;
-if(Math.random()<0.5){
-obstacles.push({x:W,y:ground-30,w:25,h:30,type:'cactus'});
-}else{
-obstacles.push({x:W,y:ground-60-Math.random()*40,w:40,h:25,type:'bird'});
-}
-}
-
-for(const o of obstacles){
-if(player.x+player.w>o.x+5&&player.x<o.x+o.w-5&&
-player.y+player.h>o.y+5&&player.y<o.y+o.h-5){
-gameOver=true;
-if(score>highScore)highScore=score;
-document.getElementById('highscore').textContent=highScore;
-}
-}
-
-for(const c of clouds){
-c.x-=c.s;
-if(c.x+c.w<0){c.x=W;c.y=Math.random()*100+20;}
-}
-
-if(player.grounded&&Math.random()<0.3){
-dust.push({x:player.x,y:ground-2,vx:-Math.random()*2-1,life:20});
-}
-for(let i=dust.length-1;i>=0;i--){
-dust[i].x+=dust[i].vx;dust[i].life--;
-if(dust[i].life<=0)dust.splice(i,1);
-}
-
-document.getElementById('score').textContent=score;
-render();
-}
-
-function render(){
-ctx.fillStyle='#0a0a14';
-ctx.fillRect(0,0,W,H);
-
-for(const c of clouds){
-ctx.fillStyle='#ffffff11';
-ctx.beginPath();
-ctx.ellipse(c.x,c.y,c.w,c.w*0.4,0,0,Math.PI*2);
-ctx.fill();
-}
-
-ctx.fillStyle='#1a1a2e';
-ctx.fillRect(0,ground,W,H-ground);
-ctx.strokeStyle='#00f0ff33';
-ctx.lineWidth=2;
-ctx.beginPath();
-ctx.moveTo(0,ground);ctx.lineTo(W,ground);ctx.stroke();
-
-ctx.fillStyle='#b537f222';
-for(let x=0;x<W;x+=40){
-ctx.fillRect(x,ground+5,20,3);
-}
-
-for(const d of dust){
-ctx.fillStyle=`rgba(180,180,180,${d.life/20*0.5})`;
-ctx.fillRect(d.x,d.y,4,4);
-}
-
-for(const o of obstacles){
-if(o.type==='cactus'){
-ctx.fillStyle='#00cc66';
-ctx.fillRect(o.x+8,o.y,9,o.h);
-ctx.fillRect(o.x,o.y+8,9,7);
-ctx.fillRect(o.x+16,o.y+12,9,7);
-ctx.fillStyle='#009944';
-ctx.fillRect(o.x+10,o.y+2,5,o.h-4);
-}else{
-ctx.fillStyle='#b537f2';
-ctx.beginPath();
-ctx.moveTo(o.x,o.y+o.h/2);
-ctx.lineTo(o.x+o.w,o.y);
-ctx.lineTo(o.x+o.w,o.y+o.h);
-ctx.closePath();
-ctx.fill();
-ctx.fillStyle='#fff';
-ctx.fillRect(o.x+o.w-10,o.y+5,5,5);
-}
-}
-
-const px=player.x,py=player.y,pw=player.w,ph=player.h;
-ctx.fillStyle='#00f0ff';
-ctx.fillRect(px,py+10,pw,ph-10);
-ctx.fillStyle='#0a0a14';
-ctx.fillRect(px+pw/2-2,py+15,4,8);
-ctx.fillStyle='#b537f2';
-ctx.fillRect(px+2,py,pw-4,12);
-ctx.fillStyle='#fff';
-ctx.fillRect(px+5,py+3,3,3);
-ctx.fillRect(px+pw-8,py+3,3,3);
-
-if(!player.grounded){
-ctx.fillStyle='#00f0ff44';
-ctx.beginPath();
-ctx.arc(px+pw/2,py+ph+5,8,0,Math.PI*2);
-ctx.fill();
-}
-
-if(gameOver){
-ctx.fillStyle='rgba(0,0,0,0.85)';
-ctx.fillRect(0,0,W,H);
-ctx.fillStyle='#ff3344';
-ctx.font='bold 48px Courier New';
-ctx.textAlign='center';
-ctx.fillText('GAME OVER',W/2,H/2-30);
-ctx.fillStyle='#b537f2';
-ctx.font='24px Courier New';
-ctx.fillText(`Score: ${score}`,W/2,H/2+10);
-ctx.fillStyle='#00f0ff';
-ctx.font='18px Courier New';
-ctx.fillText('Click or press Space to restart',W/2,H/2+50);
-ctx.textAlign='left';
-}
-
-if(!started&&!gameOver){
-ctx.fillStyle='rgba(0,0,0,0.7)';
-ctx.fillRect(0,0,W,H);
-ctx.fillStyle='#00f0ff';
-ctx.font='bold 32px Courier New';
-ctx.textAlign='center';
-ctx.fillText('SYNTAX // Runner',W/2,H/2-20);
-ctx.fillStyle='#b537f2';
-ctx.font='18px Courier New';
-ctx.fillText('Click or press Space to start',W/2,H/2+20);
-ctx.textAlign='left';
-}
-}
-
-function jump(){
-if(gameOver){resetGame();return;}
-if(!started){started=true;return;}
-if(player.jumps<player.maxJumps){
-player.vy=JUMP;player.grounded=false;player.jumps++;
-}
-}
-
-function resetGame(){init();}
-
-document.addEventListener('keydown',e=>{
-if(e.code==='Space'||e.code==='ArrowUp'){
-e.preventDefault();jump();
-}
-});
-canvas.addEventListener('click',jump);
-
-function gameLoop(){update();requestAnimationFrame(gameLoop);}
-init();
-gameLoop();
-</script>
+  <div class="wrapper">
+    <div class="sound sound-off"></div>
+    <div id="menu">
+      <div id="progress">
+        <div id="percent">Downloading: <span id="p"></span></div>
+        <progress id="progress-bar" value="0"></progress>
+      </div>
+      <div id="main">
+        <h1>Kandi Runner</h1>
+        <ul>
+          <li><a href="javascript:void(0)" class="button play">Start Game</a></li>
+          <li><a href="javascript:void(0)" class="button credits">Credits</a></li>
+        </ul>
+      </div>
+      <div id="credits">
+        <ul>
+          <li class="artwork">Character design and art: <a href="http://www.acrylicana.com/">Mary Winkler</a></li>
+          <li class="artwork">Walk cycle animation: <a href="http://vimeo.com/hellostudios">Adam Everett Miller</a></li>
+          <li class="artwork">Platformer tiles: <a href="http://www.kenney.nl/">Kenney</a></li>
+        </ul>
+        <ul>
+          <li class="music">Game music: <a href="http://opengameart.org/content/jump-and-run-8-bit">bart</a></li>
+          <li class="music">Jump sound effect: <a href="http://opengameart.org/content/platformer-jumping-sounds">dklon</a></li>
+          <li class="music">Game over music: <a href="http://opengameart.org/content/lose-music-3">remaxim</a></li>
+        </ul>
+        <ul>
+          <li class="developer">Developer: <a href="http://blog.sklambert.com/">Steven Lambert</a></li>
+        </ul>
+        <a href="javascript:void(0)" class="button back">Back</a>
+      </div>
+    </div>
+    <canvas id="canvas" width="800" height="480">
+      <p>You're browser does not support the required functionality to play this game.</p>
+      <p>Please update to a modern browser such as <a href="www.google.com/chrome/‎">Google Chrome</a> to play.</p>
+    </canvas>
+    <div id="game-over">
+      <h2>You ran <span id="score"></span> meters!</h2>
+      <a href="javascript:void(0)" class="button restart">Try again?</a>
+    </div>
+  </div>
+  <script type="text/javascript" src="kandi.js"></script>
 </body>
 </html>

@@ -1,69 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // 2048</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
-.container{text-align:center}
-h1{font-size:2rem;margin-bottom:5px;background:linear-gradient(135deg,#00f0ff,#b537f2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.subtitle{font-size:.85rem;color:#666;margin-bottom:15px;letter-spacing:2px}
-.score-board{display:flex;gap:20px;justify-content:center;margin-bottom:15px}
-.score-box{background:#12121e;border:1px solid #222;border-radius:8px;padding:8px 20px;text-align:center}
-.score-box .label{font-size:.65rem;color:#888;text-transform:uppercase;letter-spacing:1px}
-.score-box .value{font-size:1.3rem;font-weight:700;color:#00f0ff}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#16162a;border-radius:10px;padding:10px;border:1px solid #222;width:340px;height:340px}
-.cell{background:#1a1a30;border-radius:6px;display:flex;justify-content:center;align-items:center;font-size:1.5rem;font-weight:700;transition:all .12s ease}
-.t2{background:#1a1a30;color:#00f0ff}
-.t4{background:#1c1c35;color:#00d4e0}
-.t8{background:#00f0ff20;color:#00f0ff}
-.t16{background:#b537f230;color:#b537f2}
-.t32{background:#b537f240;color:#d060ff}
-.t64{background:#b537f260;color:#fff}
-.t128{background:#ff6b3530;color:#ff8c5a}
-.t256{background:#ff6b3550;color:#ffa070}
-.t512{background:#ff6b3570;color:#ffb080}
-.t1024{background:#ff404040;color:#ff6060}
-.t2048{background:#ff404060;color:#ff4040;text-shadow:0 0 10px #ff404080}
-.controls{margin-top:15px;display:flex;gap:10px;justify-content:center}
-button{background:linear-gradient(135deg,#00f0ff,#b537f2);border:none;color:#0a0a14;padding:10px 25px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:opacity .2s}
-button:hover{opacity:.85}
-.msg{font-size:1.1rem;margin-top:10px;color:#b537f2;min-height:1.5rem}
-</style>
+  <meta charset="utf-8">
+  <title>2048</title>
+
+  <link href="style/main.css" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
-<div class="container">
-<h1>2048</h1>
-<div class="subtitle">SYNTAX // BROWSER GAMES</div>
-<div class="score-board">
-<div class="score-box"><div class="label">Score</div><div class="value" id="score">0</div></div>
-<div class="score-box"><div class="label">Best</div><div class="value" id="best">0</div></div>
-</div>
-<div class="grid" id="grid"></div>
-<div class="msg" id="msg"></div>
-<div class="controls"><button onclick="init()">NEW GAME</button></div>
-</div>
-<script>
-let grid,score,best=parseInt(localStorage.getItem('2048best'))||0,won,over;
-const gridEl=document.getElementById('grid'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),msgEl=document.getElementById('msg');
-bestEl.textContent=best;
-function init(){grid=Array.from({length:4},()=>Array(4).fill(0));score=0;won=false;over=false;msgEl.textContent='';addTile();addTile();render()}
-function addTile(){let empty=[];for(let r=0;r<4;r++)for(let c=0;c<4;c++)if(!grid[r][c])empty.push([r,c]);if(!empty.length)return;let[r,c]=empty[Math.floor(Math.random()*empty.length)];grid[r][c]=Math.random()<.9?2:4}
-function render(){gridEl.innerHTML='';for(let r=0;r<4;r++)for(let c=0;c<4;c++){let d=document.createElement('div');d.className='cell';let v=grid[r][c];if(v){d.textContent=v;d.classList.add('t'+Math.min(v,2048))}gridEl.appendChild(d)}scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;localStorage.setItem('2048best',best)}}
-function slide(row){let a=row.filter(x=>x),merged=false;for(let i=0;i<a.length-1;i++){if(a[i]===a[i+1]){a[i]*=2;a[i+1]=0;score+=a[i];merged=true;if(a[i]===2048&&!won){won=true;msgEl.textContent='🎉 YOU WIN!'}}}a=a.filter(x=>x);while(a.length<4)a.push(0);return a}
-function move(dir){let moved=false,g=grid.map(r=>[...r]);
-if(dir==='left'){for(let r=0;r<4;r++){let n=slide(g[r]);if(n.toString()!==g[r].toString())moved=true;grid[r]=n}}
-if(dir==='right'){for(let r=0;r<4;r++){let n=slide(g[r].reverse()).reverse();if(n.toString()!==g[r].toString())moved=true;grid[r]=n}}
-if(dir==='up'){for(let c=0;c<4;c++){let col=[g[0][c],g[1][c],g[2][c],g[3][c]],n=slide(col);if(n.toString()!==col.toString())moved=true;for(let r=0;r<4;r++)grid[r][c]=n[r]}}
-if(dir==='down'){for(let c=0;c<4;c++){let col=[g[3][c],g[2][c],g[1][c],g[0][c]],n=slide(col).reverse();if(n.toString()!==col.reverse().toString())moved=true;for(let r=0;r<4;r++)grid[r][c]=n[r]}}
-if(moved){addTile();render();if(!canMove()){over=true;msgEl.textContent='GAME OVER'}}}
-function canMove(){for(let r=0;r<4;r++)for(let c=0;c<4;c++){if(!grid[r][c])return true;if(c<3&&grid[r][c]===grid[r][c+1])return true;if(r<3&&grid[r][c]===grid[r+1][c])return true}return false}
-document.addEventListener('keydown',e=>{if(over)return;const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(map[e.key]){e.preventDefault();move(map[e.key])}});
-let tx,ty;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY});
-document.addEventListener('touchend',e=>{let dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)<30&&Math.abs(dy)<30)return;Math.abs(dx)>Math.abs(dy)?move(dx>0?'right':'left'):move(dy>0?'down':'up')});
-init();
-</script>
+  <div class="container">
+    <div class="heading">
+      <h1 class="title">2048</h1>
+      <div class="scores-container">
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+      </div>
+    </div>
+
+    <div class="above-game">
+      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <a class="restart-button">New Game</a>
+    </div>
+
+    <div class="game-container">
+      <div class="game-message">
+        <p></p>
+        <div class="lower">
+	        <a class="keep-playing-button">Keep going</a>
+          <a class="retry-button">Try again</a>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+      </div>
+
+      <div class="tile-container">
+
+      </div>
+    </div>
+
+    <p class="game-explanation">
+      <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
+    </p>
+    <hr>
+    <p>
+    <strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
+    </p>
+    <hr>
+    <p>
+    Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
+    </p>
+  </div>
+
+  <script src="js/bind_polyfill.js"></script>
+  <script src="js/classlist_polyfill.js"></script>
+  <script src="js/animframe_polyfill.js"></script>
+  <script src="js/keyboard_input_manager.js"></script>
+  <script src="js/html_actuator.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/tile.js"></script>
+  <script src="js/local_storage_manager.js"></script>
+  <script src="js/game_manager.js"></script>
+  <script src="js/application.js"></script>
 </body>
 </html>

@@ -1,346 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNTAX // Space Invaders</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a14;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00f0ff, #b537f2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .subtitle { color: #888; margin-bottom: 20px; }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        button {
-            font-family: inherit;
-            padding: 8px 16px;
-            background: #1a1a2e;
-            color: #00f0ff;
-            border: 2px solid #00f0ff;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        button:hover { background: #00f0ff; color: #0a0a14; }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .hud {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 10px;
-        }
-        .hud-item { text-align: center; }
-        .hud-value { font-size: 1.5rem; color: #00f0ff; }
-        .hud-label { font-size: 0.8rem; color: #888; }
-        .lives-display { display: flex; gap: 5px; }
-        .life {
-            width: 20px;
-            height: 20px;
-            background: #44ff44;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-        canvas {
-            border: 2px solid #b537f2;
-            background: #0a0a14;
-            display: block;
-        }
-        .message {
-            font-size: 1.5rem;
-            min-height: 40px;
-            margin: 10px 0;
-        }
-        .message.win { color: #44ff44; }
-        .message.lose { color: #ff4444; }
-        .controls-info {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 10px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1>SYNTAX // Space Invaders</h1>
-    <div class="subtitle">Defend Earth from the alien invasion</div>
-    <div class="hud">
-        <div class="hud-item"><div class="hud-value" id="score">0</div><div class="hud-label">SCORE</div></div>
-        <div class="hud-item"><div class="hud-value" id="wave">1</div><div class="hud-label">WAVE</div></div>
-        <div class="hud-item"><div class="lives-display" id="lives"></div><div class="hud-label">LIVES</div></div>
-    </div>
-    <div class="controls">
-        <button onclick="startGame()">START</button>
-        <button onclick="pauseGame()">PAUSE</button>
-    </div>
-    <div class="game-container">
-        <canvas id="game" width="560" height="400"></canvas>
-        <div class="message" id="message"></div>
-        <div class="controls-info">Arrow Keys or A/D to move | SPACE to shoot</div>
-    </div>
+<html>
+    <head>
+        <title>Space Invaders</title>
+        <link rel="stylesheet" type="text/css" href="css/core.css">
+        <link rel="stylesheet" type="text/css" href="css/typeography.css">
+        <style>
+    
+            /* Styling needed for a fullscreen canvas and no scrollbars. */
+            body, html { 
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            }
 
-    <script>
-        const canvas = document.getElementById('game');
-        const ctx = canvas.getContext('2d');
-        const W = canvas.width, H = canvas.height;
+            #starfield {
+                width:100%;
+                height:100%;
+                z-index: -1;
+                position: absolute;
+                left: 0px;
+                top: 0px;
+            }
+            #gamecontainer {
+                width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #gamecanvas { 
+                width: 800px;
+                height: 600px;
+            }
+            #info {
+                width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="starfield"></div>
+        <div id="gamecontainer">
+        <canvas id="gameCanvas"></canvas>
+        </div>
+        <div id="info">
+            <p>Move with arrow keys or swipe, fire with the space bar or touch. The invaders get faster and drop
+                more bombs as you complete each level!</p>
+            <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a> | 
+                <a href="http://github.com/dwmkerr/spaceinvaders">spaceinvaders on github</a> | 
+                <a href="http://github.com/dwmkerr">more projects</a> | <a href="http://www.dwmkerr.com">dwmkerr.com</a></p>
+        </div>
 
-        let gameLoop, player, aliens, alienBullets, playerBullets, score, wave, lives;
-        let running = false, paused = false;
-        const keys = {};
+        <script src="js/starfield.js"></script>
+        <script src="js/spaceinvaders.js"></script>
+        <script>
 
-        class Player {
-            constructor() {
-                this.x = W / 2;
-                this.y = H - 40;
-                this.w = 40;
-                this.h = 20;
-                this.speed = 5;
-            }
-            draw() {
-                ctx.fillStyle = '#00f0ff';
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y - this.h);
-                ctx.lineTo(this.x - this.w / 2, this.y + this.h / 2);
-                ctx.lineTo(this.x + this.w / 2, this.y + this.h / 2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillStyle = '#b537f2';
-                ctx.fillRect(this.x - 3, this.y + 5, 6, 10);
-            }
-            update() {
-                if (keys['ArrowLeft'] || keys['KeyA']) this.x -= this.speed;
-                if (keys['ArrowRight'] || keys['KeyD']) this.x += this.speed;
-                this.x = Math.max(this.w / 2, Math.min(W - this.w / 2, this.x));
-            }
-            shoot() {
-                playerBullets.push({ x: this.x, y: this.y - this.h, w: 4, h: 12, speed: 8 });
-            }
-        }
+            //  Create the starfield.
+            var container = document.getElementById('starfield');
+            var starfield = new Starfield();
+            starfield.initialise(container);
+            starfield.start();
 
-        class Alien {
-            constructor(x, y, row) {
-                this.x = x;
-                this.y = y;
-                this.w = 30;
-                this.h = 20;
-                this.row = row;
-                this.alive = true;
-                this.frame = 0;
-            }
-            draw() {
-                if (!this.alive) return;
-                const color = this.row < 2 ? '#b537f2' : this.row < 4 ? '#ff4444' : '#00f0ff';
-                ctx.fillStyle = color;
-                ctx.fillRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h);
-                ctx.fillStyle = '#0a0a14';
-                ctx.fillRect(this.x - 6, this.y - 4, 4, 4);
-                ctx.fillRect(this.x + 2, this.y - 4, 4, 4);
-                const armOff = this.frame % 2 === 0 ? -4 : 4;
-                ctx.fillRect(this.x - this.w / 2 - 4, this.y + armOff, 6, 4);
-                ctx.fillRect(this.x + this.w / 2 - 2, this.y - armOff, 6, 4);
-            }
-        }
+            //  Setup the canvas.
+            var canvas = document.getElementById("gameCanvas");
+            canvas.width = 800;
+            canvas.height = 600;
 
-        function initAliens() {
-            aliens = [];
-            const rows = 5, cols = 8;
-            const spacing = 50;
-            const startX = (W - cols * spacing) / 2 + spacing / 2;
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    aliens.push(new Alien(startX + c * spacing, 50 + r * 40, r));
+            //  Create the game.
+            var game = new Game();
+
+            //  Initialise it with the game canvas.
+            game.initialise(canvas);
+
+            //  Start the game.
+            game.start();
+
+            //  Listen for keyboard events.
+            window.addEventListener("keydown", function keydown(e) {
+                var keycode = e.which || window.event.keycode;
+                //  Supress further processing of left/right/space (37/29/32)
+                if(keycode == 37 || keycode == 39 || keycode == 32) {
+                    e.preventDefault();
                 }
-            }
-        }
+                game.keyDown(keycode);
 
-        function updateLivesDisplay() {
-            const el = document.getElementById('lives');
-            el.innerHTML = '';
-            for (let i = 0; i < lives; i++) {
-                const div = document.createElement('div');
-                div.className = 'life';
-                el.appendChild(div);
-            }
-        }
-
-        let alienDir = 1, alienSpeed = 1, alienShootTimer = 0, alienAnimTimer = 0;
-
-        function spawnAlienBullet() {
-            const alive = aliens.filter(a => a.alive);
-            if (alive.length === 0) return;
-            const a = alive[Math.floor(Math.random() * alive.length)];
-            alienBullets.push({ x: a.x, y: a.y + a.h / 2, w: 4, h: 10, speed: 4 });
-        }
-
-        function update() {
-            if (!running || paused) return;
-
-            player.update();
-
-            alienAnimTimer++;
-            if (alienAnimTimer > 30) {
-                alienAnimTimer = 0;
-                aliens.forEach(a => a.frame++);
-            }
-
-            let edgeHit = false;
-            const speed = alienSpeed + Math.floor(score / 100);
-            aliens.forEach(a => {
-                if (!a.alive) return;
-                a.x += alienDir * speed;
-                if (a.x - a.w / 2 < 5 || a.x + a.w / 2 > W - 5) edgeHit = true;
             });
-            if (edgeHit) {
-                alienDir *= -1;
-                aliens.forEach(a => { if (a.alive) a.y += 15; });
-            }
-
-            alienShootTimer++;
-            const shootRate = Math.max(15, 60 - wave * 5);
-            if (alienShootTimer >= shootRate) {
-                alienShootTimer = 0;
-                spawnAlienBullet();
-            }
-
-            playerBullets.forEach(b => b.y -= b.speed);
-            alienBullets.forEach(b => b.y += b.speed);
-            playerBullets = playerBullets.filter(b => b.y > -10);
-            alienBullets = alienBullets.filter(b => b.y < H + 10);
-
-            for (let i = playerBullets.length - 1; i >= 0; i--) {
-                const b = playerBullets[i];
-                for (const a of aliens) {
-                    if (!a.alive) continue;
-                    if (b.x > a.x - a.w / 2 && b.x < a.x + a.w / 2 &&
-                        b.y > a.y - a.h / 2 && b.y < a.y + a.h / 2) {
-                        a.alive = false;
-                        playerBullets.splice(i, 1);
-                        score += (5 - a.row) * 10;
-                        document.getElementById('score').textContent = score;
-                        break;
-                    }
-                }
-            }
-
-            for (let i = alienBullets.length - 1; i >= 0; i--) {
-                const b = alienBullets[i];
-                if (b.x > player.x - player.w / 2 && b.x < player.x + player.w / 2 &&
-                    b.y > player.y - player.h && b.y < player.y + player.h / 2) {
-                    alienBullets.splice(i, 1);
-                    lives--;
-                    updateLivesDisplay();
-                    if (lives <= 0) {
-                        gameOver(false);
-                        return;
-                    }
-                    player.x = W / 2;
-                }
-            }
-
-            if (aliens.every(a => !a.alive)) {
-                wave++;
-                document.getElementById('wave').textContent = wave;
-                initAliens();
-                alienDir = 1;
-            }
-
-            if (aliens.some(a => a.alive && a.y + a.h / 2 >= player.y - player.h)) {
-                gameOver(false);
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = '#1a1a2e';
-            ctx.fillRect(0, 0, W, H);
-            for (let i = 0; i < W; i += 40) {
-                for (let j = 0; j < H; j += 40) {
-                    ctx.fillStyle = Math.random() > 0.95 ? '#ffffff22' : 'transparent';
-                    ctx.fillRect(i, j, 1, 1);
-                }
-            }
-            aliens.forEach(a => a.draw());
-            playerBullets.forEach(b => {
-                ctx.fillStyle = '#44ff44';
-                ctx.fillRect(b.x - b.w / 2, b.y, b.w, b.h);
+            window.addEventListener("keyup", function keydown(e) {
+                var keycode = e.which || window.event.keycode;
+                game.keyUp(keycode);
             });
-            alienBullets.forEach(b => {
-                ctx.fillStyle = '#ff4444';
-                ctx.fillRect(b.x - b.w / 2, b.y, b.w, b.h);
-            });
-            if (running) player.draw();
-        }
 
-        function gameOver(won) {
-            running = false;
-            cancelAnimationFrame(gameLoop);
-            document.getElementById('message').textContent =
-                won ? 'You Win!' : `Game Over! Score: ${score}`;
-            document.getElementById('message').className = `message ${won ? 'win' : 'lose'}`;
-        }
+            window.addEventListener("touchstart", function (e) {
+                game.touchstart(e);
+            }, false);
+ 
+            window.addEventListener('touchend', function(e){
+                game.touchend(e);
+            }, false);
 
-        function gameStep() {
-            update();
-            draw();
-            if (running) gameLoop = requestAnimationFrame(gameStep);
-        }
+            window.addEventListener('touchmove', function(e){
+                game.touchmove(e);
+            }, false);
 
-        function startGame() {
-            score = 0; wave = 1; lives = 3;
-            alienDir = 1; alienSpeed = 1;
-            alienShootTimer = 0; alienAnimTimer = 0;
-            playerBullets = []; alienBullets = [];
-            document.getElementById('score').textContent = 0;
-            document.getElementById('wave').textContent = 1;
-            document.getElementById('message').textContent = '';
-            document.getElementById('message').className = 'message';
-            updateLivesDisplay();
-            player = new Player();
-            initAliens();
-            running = true;
-            paused = false;
-            if (gameLoop) cancelAnimationFrame(gameLoop);
-            gameStep();
-        }
-
-        function pauseGame() {
-            if (!running) return;
-            paused = !paused;
-            document.getElementById('message').textContent = paused ? 'PAUSED' : '';
-            document.getElementById('message').className = 'message';
-        }
-
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            if (e.code === 'Space' && running && !paused) {
-                e.preventDefault();
-                player.shoot();
+            function toggleMute() {
+                game.mute();
+                document.getElementById("muteLink").innerText = game.sounds.mute ? "unmute" : "mute";
             }
-        });
-        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+        </script>
+        <script type="text/javascript">
 
-        initAliens();
-        draw();
-    </script>
-</body>
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-41728580-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    </body>
 </html>

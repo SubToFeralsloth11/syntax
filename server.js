@@ -165,8 +165,9 @@ app.get('/games/funny-shooter', (req, res) => {
 const funnyShooterDir = path.join(__dirname, 'games', 'funny-shooter');
 app.use('/games/funny-shooter', express.static(funnyShooterDir));
 
-// Helper: serve a single-file game with visit coins + nav injection
+// Helper: serve a single-file game with visit coins + nav injection + save API
 function serveGame(route, folder) {
+  const gameId = folder;
   app.get(route, (req, res) => {
     if (req.isAuthenticated()) {
       const db = require('./db/database');
@@ -184,9 +185,53 @@ function serveGame(route, folder) {
     let html = fs.readFileSync(path.join(__dirname, 'games', folder, 'index.html'), 'utf8');
     html = html.replace('<head>', '<head><base href="' + route + '/">');
     html = injectGameNav(html);
+    if (req.isAuthenticated()) {
+      html = injectGameSave(html, gameId);
+    }
     res.type('html').send(html);
   });
   app.use(route, express.static(path.join(__dirname, 'games', folder)));
+}
+
+// Game score API — save/load/highscore
+app.post('/api/game-scores', (req, res) => {
+  if (!req.isAuthenticated()) return res.status(401).json({ error: 'Login required' });
+  const { game_id, score, extra_data } = req.body;
+  if (!game_id || score === undefined) return res.status(400).json({ error: 'game_id and score required' });
+  const db = require('./db/database');
+  db.prepare('INSERT INTO game_scores (user_id, game_id, score, extra_data) VALUES (?, ?, ?, ?)').run(req.user.id, game_id, score, extra_data || null);
+  const best = db.prepare('SELECT MAX(score) as best FROM game_scores WHERE user_id = ? AND game_id = ?').get(req.user.id, game_id);
+  res.json({ ok: true, best: best.best });
+});
+
+app.get('/api/game-scores/:gameId', (req, res) => {
+  if (!req.isAuthenticated()) return res.status(401).json({ error: 'Login required' });
+  const db = require('./db/database');
+  const best = db.prepare('SELECT MAX(score) as best FROM game_scores WHERE user_id = ? AND game_id = ?').get(req.user.id, req.params.gameId);
+  const recent = db.prepare('SELECT score, created_at FROM game_scores WHERE user_id = ? AND game_id = ? ORDER BY created_at DESC LIMIT 10').all(req.user.id, req.params.gameId);
+  res.json({ best: best?.best || 0, recent });
+});
+
+// Inject game save helper into all served game HTML
+function injectGameSave(html, gameId) {
+  const saveScript = `<script>
+(function(){
+  window.SYNTAX_GAME_ID = '${gameId}';
+  window.saveGameScore = function(score, extra) {
+    fetch('/api/game-scores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game_id: '${gameId}', score: score, extra_data: extra ? JSON.stringify(extra) : null })
+    }).catch(function(){});
+  };
+  window.getGameScores = function(cb) {
+    fetch('/api/game-scores/${gameId}').then(function(r){return r.json()}).then(cb).catch(function(){});
+  };
+})();</script>`;
+  if (html.includes('</head>')) {
+    return html.replace('</head>', saveScript + '</head>');
+  }
+  return saveScript + html;
 }
 
 serveGame('/games/2048', '2048');

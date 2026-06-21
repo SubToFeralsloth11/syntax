@@ -1,95 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Connect Four</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#e0e0e0;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:1rem}
-h1{font-size:1.5rem;margin-bottom:0.5rem;color:#00f0ff;text-shadow:0 0 10px #00f0ff44}
-h1 span{color:#b537f2}
-.scores{display:flex;gap:2rem;margin:0.5rem 0;font-size:0.9rem}
-.scores .p{color:#00f0ff}.scores .c{color:#b537f2}
-.board-wrap{position:relative}
-.board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:#1a1a2e;padding:10px;border-radius:8px;border:2px solid #222}
-.col{display:flex;flex-direction:column;gap:6px;cursor:pointer}
-.col:hover .cell{border-color:#00f0ff44}
-.cell{width:44px;height:44px;background:#111;border:2px solid #222;border-radius:50%;transition:all .3s}
-.cell.p1{background:#00f0ff;box-shadow:0 0 12px #00f0ff55;animation:drop .3s ease-out}
-.cell.p2{background:#b537f2;box-shadow:0 0 12px #b537f255;animation:drop .3s ease-out}
-.cell.win{animation:glow .6s infinite alternate}
-@keyframes drop{from{transform:translateY(-40px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes glow{from{filter:brightness(1)}to{filter:brightness(1.5)}}
-.message{margin-top:0.8rem;font-size:1rem;min-height:1.5rem;color:#00f0ff}
-.restart{margin-top:0.5rem;background:#111;border:1px solid #b537f2;color:#b537f2;padding:0.5rem 1.5rem;font-family:inherit;cursor:pointer;font-size:0.9rem;border-radius:3px;transition:all .2s}
-.restart:hover{background:#b537f2;color:#0a0a14}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forza 4 Single Player</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>SYNTAX <span>// Connect Four</span></h1>
-<div class="scores">
-<div class="p">You: <span id="ps">0</span></div>
-<div class="c">AI: <span id="as">0</span></div>
-</div>
-<div class="board-wrap"><div class="board" id="board"></div></div>
-<div class="message" id="message">Click a column to drop your piece</div>
-<button class="restart" onclick="startGame()">Restart</button>
-<script>
-const ROWS=6,COLS=7;
-let grid,turn,ps=0,as=0,gameOver;
-function startGame(){
-grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));turn=1;gameOver=false;
-document.getElementById('message').textContent='Click a column to drop your piece';
-render()}
-function render(){
-const b=document.getElementById('board');b.innerHTML='';
-for(let c=0;c<COLS;c++){const col=document.createElement('div');col.className='col';
-col.onclick=()=>dropPiece(c);
-for(let r=0;r<ROWS;r++){const cell=document.createElement('div');cell.className='cell';
-if(grid[r][c]===1)cell.classList.add('p1');
-if(grid[r][c]===2)cell.classList.add('p2');
-col.appendChild(cell)}b.appendChild(col)}
-}
-function dropPiece(c){if(gameOver||turn!==1)return;
-let r=ROWS-1;while(r>=0&&grid[r][c]!==0)r--;if(r<0)return;
-grid[r][c]=1;render();
-const w=checkWin(1);if(w){endGame(w,1);return}
-if(!grid[0].includes(0)){endGame(null);return}
-turn=2;setTimeout(aiMove,400)}
-function aiMove(){if(gameOver)return;
-let bestC=-1,bestScore=-Infinity;
-for(let c=0;c<COLS;c++){let r=ROWS-1;while(r>=0&&grid[r][c]!==0)r--;if(r<0)continue;
-grid[r][c]=2;let sc=evaluate();grid[r][c]=0;
-if(sc>bestScore){bestScore=sc;bestC=c}}
-let r=ROWS-1;while(r>=0&&grid[r][bestC]!==0)r--;
-grid[r][bestC]=2;render();
-const w=checkWin(2);if(w){endGame(w,2);return}
-if(!grid[0].includes(0)){endGame(null);return}
-turn=1;document.getElementById('message').textContent='Your turn'}
-function evaluate(){let sc=0;
-for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(grid[r][c]===0)continue;
-const dirs=[[0,1],[1,0],[1,1],[1,-1]];
-for(const[dr,dc] of dirs){let count=0;
-for(let i=0;i<4;i++){const nr=r+dr*i,nc=c+dc*i;
-if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&grid[nr][nc]===grid[r][c])count++;else break}
-if(count>=4)return grid[r][c]===2?1000:-1000;
-if(count===3&&grid[r][c]===2)sc+=50;
-if(count===2&&grid[r][c]===2)sc+=10;
-if(count===3&&grid[r][c]===1)sc-=45;
-if(count===2&&grid[r][c]===1)sc-=8}}
-return sc}
-const dirs=[[0,1],[1,0],[1,1],[1,-1]];
-function checkWin(p){for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(grid[r][c]!==p)continue;
-for(const[dr,dc] of dirs){const w=[];for(let i=0;i<4;i++){const nr=r+dr*i,nc=c+dc*i;
-if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&grid[nr][nc]===p)w.push([nr,nc]);else break}
-if(w.length===4)return w}}return null}
-function endGame(win,p){gameOver=true;
-if(win){win.forEach(([r,c])=>document.querySelectorAll('.col')[c].children[r].classList.add('win'));
-if(p===1){ps++;document.getElementById('ps').textContent=ps;document.getElementById('message').textContent='You win!'}
-else{as++;document.getElementById('as').textContent=as;document.getElementById('message').textContent='AI wins!'}}
-else{document.getElementById('message').textContent='Draw!'}}
-startGame()
-</script>
+  <div class="container mt-4">
+    <!-- Schermata Iniziale -->
+    <div id="homeScreen" class="center">
+      <h1>Forza 4 Single Player</h1>
+      <div class="form-group">
+        <label for="playerName">Inserisci il tuo nome:</label>
+        <input type="text" id="playerName" class="form-control" placeholder="Nome">
+      </div>
+      <div class="mb-3">
+        <button id="startBtn" class="btn btn-success">Inizia Partita</button>
+        <button id="helpBtn" class="btn btn-info" data-toggle="modal" data-target="#helpModal">Help</button>
+        <button id="recordBtn" class="btn btn-warning">Record</button>
+      </div>
+    </div>
+
+    <!-- Canvas del Gioco -->
+    <canvas id="gameCanvas" width="560" height="480" class="hidden"></canvas>
+    
+    <!-- Informazioni di gioco -->
+    <div id="gameInfo" class="center hidden">
+      <h4 id="turnDisplay">Turno: </h4>
+      <h4 id="moveCountDisplay">Mosse: 0</h4>
+    </div>
+  </div>
+
+  <!-- Modal Help -->
+  <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="helpModalLabel">Istruzioni Forza 4</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>L’obiettivo del gioco è allineare quattro dischi consecutivi (verticalmente, orizzontalmente o diagonalmente).</p>
+          <p>Clicca sulla colonna in cui desideri far cadere il tuo disco. Dopo la tua mossa, il bot eseguirà la sua.</p>
+          <p>Il gioco termina quando uno dei due (tu o il bot) riesce ad allineare 4 dischi oppure quando il tabellone risulta pieno (pareggio).</p>
+          <p>Buon divertimento! 😊</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Record -->
+  <div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="recordModalLabel">Record Storico</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul id="recordList" class="list-group">
+            <!-- I record verranno caricati dinamicamente -->
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap e dipendenze -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Includi prima il bot e poi la logica di gioco -->
+  <script src="bot.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

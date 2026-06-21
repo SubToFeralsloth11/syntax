@@ -1,150 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNTAX // Simon Says</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
-h1{font-size:2.5rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
-h1 span{color:#b537f2}
-.info{display:flex;gap:40px;margin-bottom:30px;font-size:1.1rem;color:#888}
-.info span{color:#00f0ff}
-.board{position:relative;width:340px;height:340px}
-.btn{position:absolute;width:150px;height:150px;border:3px solid #1a1a2e;border-radius:16px;cursor:pointer;transition:filter .1s,transform .1s;opacity:.5}
-.btn:hover{transform:scale(1.02)}
-.btn.active{filter:brightness(2.5)!important;transform:scale(1.05);opacity:1}
-.btn:active{transform:scale(.97)}
-.btn.green{top:0;left:0;background:#1a8a1a;border-top-left-radius:100px}
-.btn.red{top:0;right:0;background:#b51a1a;border-top-right-radius:100px}
-.btn.yellow{bottom:0;left:0;background:#b5a51a;border-bottom-left-radius:100px}
-.btn.blue{bottom:0;right:0;background:#1a1ab5;border-bottom-right-radius:100px}
-.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background:#0a0a14;border-radius:50%;border:3px solid #1a1a2e;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#b537f2;letter-spacing:1px;font-weight:bold;text-align:center;line-height:1.2}
-#message{font-size:1.3rem;min-height:40px;margin:20px 0 10px;color:#00f0ff}
-.controls{margin-top:10px}
-button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:10px 30px;font-size:1rem;border-radius:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
-button:hover{background:#b537f2;color:#0a0a14}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
-.overlay.show{opacity:1;pointer-events:auto}
-.overlay h2{font-size:2.5rem;color:#00f0ff;margin-bottom:10px}
-.overlay p{font-size:1.2rem;color:#888;margin-bottom:8px}
-.overlay p span{color:#b537f2}
-.overlay button{margin-top:20px}
-</style>
+  <meta charset="UTF-8">
+  <title>Simon Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href='https://fonts.googleapis.com/css?family=Original+Surfer&effect=emboss' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="css/style.css">
+
+  <audio id="clip1">
+  	<source src="https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"></source>
+  </audio>
+  <audio id="clip2">
+  	<source src="https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"></source>
+  </audio>
+  <audio id="clip3">
+  	<source src="https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"></source>
+  </audio>
+  <audio id="clip4">
+  	<source src="https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"></source>
+  </audio>
 </head>
+
 <body>
-<h1><span>SYNTAX</span> // Simon Says</h1>
-<div class="info">
-  <div>Round: <span id="round">0</span></div>
-  <div>Best: <span id="best">0</span></div>
-</div>
-<div class="board">
-  <button class="btn green" data-i="0"></button>
-  <button class="btn red" data-i="1"></button>
-  <button class="btn yellow" data-i="2"></button>
-  <button class="btn blue" data-i="3"></button>
-  <div class="center">SIMON</div>
-</div>
-<div id="message">Press Start to begin</div>
-<div class="controls">
-  <button id="startBtn">Start</button>
-</div>
-<div class="overlay" id="overlay">
-  <h2 id="overMsg">Game Over</h2>
-  <p>You reached round <span id="overRound">0</span></p>
-  <p>Best: <span id="overBest">0</span></p>
-  <button id="retryBtn">Play Again</button>
-</div>
-<script>
-const AudioCtx=window.AudioContext||window.webkitAudioContext;
-let audioCtx;
-function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
-function playTone(freq,dur){
-  ensureAudio();
-  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-  o.connect(g);g.connect(audioCtx.destination);
-  o.type='square';o.frequency.value=freq;
-  g.gain.value=0.15;g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
-  o.start();o.stop(audioCtx.currentTime+dur);
-}
-const freqs=[392,330,262,196];
-const colors=document.querySelectorAll('.btn');
-const overlay=document.getElementById('overlay');
-const msg=document.getElementById('message');
-const roundEl=document.getElementById('round');
-const bestEl=document.getElementById('best');
-let sequence=[],playerIdx=0,round=0,playing=false,inputLocked=true;
-let best=parseInt(localStorage.getItem('simonBest'))||0;
-bestEl.textContent=best;
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+  <div id="outer-circle">
+    <div id="topleft"></div>
+    <div id="topright"></div>
+    <div id="bottomleft"></div>
+    <div id="bottomright"></div>
+    <div id="inner-circle">
+      <div id="title" class="font-effect-emboss">SIMON!</div>
+      <div id="switches">
+        <input type="checkbox" class="toggle" id="on">
+        <button class="button" id="start">Start</button>
+        <input type="checkbox" class="toggle" id="strict">
+      </div>
+      <div class="text1">
+        <span>POWER</span><span>STRICT</span>
+      </div>
+      <div id="turn"></div>
+      <div class="text2">
+        COUNT
+      </div>
+    </div>
+  </div>
 
-async function flashButton(i,dur=400){
-  colors[i].classList.add('active');
-  playTone(freqs[i],dur/1000);
-  await sleep(dur);
-  colors[i].classList.remove('active');
-}
+  <script  src="js/index.js"></script>
 
-async function playSequence(){
-  inputLocked=true;
-  msg.textContent='Watch the sequence...';
-  await sleep(500);
-  for(let i=0;i<sequence.length;i++){
-    await flashButton(sequence[i],Math.max(200,500-round*15));
-    await sleep(150);
-  }
-  inputLocked=false;
-  msg.textContent='Your turn!';
-}
-
-function startRound(){
-  round++;
-  roundEl.textContent=round;
-  sequence.push(Math.floor(Math.random()*4));
-  playerIdx=0;
-  playSequence();
-}
-
-function gameOver(){
-  playing=false;
-  inputLocked=true;
-  if(round>best){best=round;localStorage.setItem('simonBest',best);bestEl.textContent=best}
-  document.getElementById('overRound').textContent=round;
-  document.getElementById('overBest').textContent=best;
-  overlay.classList.add('show');
-}
-
-colors.forEach((btn,i)=>{
-  btn.addEventListener('click',()=>{
-    if(inputLocked||!playing)return;
-    flashButton(i,200);
-    if(i===sequence[playerIdx]){
-      playerIdx++;
-      if(playerIdx===sequence.length){
-        inputLocked=true;
-        msg.textContent='Correct!';
-        setTimeout(()=>startRound(),800);
-      }
-    }else{
-      gameOver();
-    }
-  });
-});
-
-document.getElementById('startBtn').addEventListener('click',()=>{
-  ensureAudio();
-  sequence=[];round=0;playing=true;
-  overlay.classList.remove('show');
-  startRound();
-});
-
-document.getElementById('retryBtn').addEventListener('click',()=>{
-  sequence=[];round=0;playing=true;
-  overlay.classList.remove('show');
-  startRound();
-});
-</script>
 </body>
 </html>
