@@ -21,13 +21,19 @@ function dailyCheckin() {
 }
 
 function showNotification(message, type = 'success') {
+  const variant = (type === false || type === 'error' || type === 'fail' || type === 'danger') ? 'error'
+    : (type === 'info') ? 'info' : 'success';
   const existing = document.querySelector('.notification');
   if (existing) existing.remove();
 
+  const icon = variant === 'success' ? 'check-circle'
+    : variant === 'error' ? 'alert-circle'
+    : 'info';
   const el = document.createElement('div');
-  el.className = `notification notification-${type}`;
-  el.textContent = message;
+  el.className = `notification notification-${variant}`;
+  el.innerHTML = `<i data-lucide="${icon}"></i><span>${message}</span>`;
   document.body.appendChild(el);
+  if (window.lucide) lucide.createIcons();
 
   requestAnimationFrame(() => el.classList.add('show'));
 

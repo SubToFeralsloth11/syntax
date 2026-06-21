@@ -1,12 +1,22 @@
 let confettiPieces = [];
 let confettiAnimId = null;
+let tempConfettiCanvas = null;
 
 function startConfetti(canvas) {
+  if (!canvas) {
+    canvas = document.getElementById('confettiCanvas') || tempConfettiCanvas;
+    if (!canvas) {
+      tempConfettiCanvas = document.createElement('canvas');
+      tempConfettiCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:1100';
+      document.body.appendChild(tempConfettiCanvas);
+      canvas = tempConfettiCanvas;
+    }
+  }
   canvas.width = canvas.offsetWidth || window.innerWidth;
   canvas.height = canvas.offsetHeight || window.innerHeight;
 
   confettiPieces = [];
-  const colors = ['#7c5cfc', '#ffcc44', '#44dd88', '#44aaff', '#ff5566', '#ff8844', '#cc44ff', '#fff'];
+  const colors = ['#00f0ff', '#b537f2', '#ff2bd6', '#ffcc44', '#44dd88', '#4fa8ff', '#ffffff'];
 
   for (let i = 0; i < 150; i++) {
     confettiPieces.push({
@@ -19,7 +29,8 @@ function startConfetti(canvas) {
       color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * 360,
       rotSpeed: (Math.random() - 0.5) * 10,
-      gravity: 0.25 + Math.random() * 0.15
+      gravity: 0.25 + Math.random() * 0.15,
+      temp: canvas === tempConfettiCanvas
     });
   }
 
@@ -53,5 +64,8 @@ function animateConfetti(canvas) {
 
   if (active) {
     confettiAnimId = requestAnimationFrame(() => animateConfetti(canvas));
+  } else if (canvas === tempConfettiCanvas) {
+    canvas.remove();
+    tempConfettiCanvas = null;
   }
 }

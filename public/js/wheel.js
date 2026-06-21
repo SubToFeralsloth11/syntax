@@ -4,21 +4,33 @@ const segmentColors = (() => {
   const n = segments.length;
   if (n === 0) return [];
   const colors = [];
+  const c1 = [0, 240, 255];
+  const c2 = [181, 55, 242];
+  const c3 = [255, 43, 214];
   for (let i = 0; i < n; i++) {
-    const t = i / (n - 1);
-    const r = Math.round(231 - t * 193);
-    const g = Math.round(76 + t * 139);
-    const b = Math.round(60 - t * 36);
+    const t = i / Math.max(1, n - 1);
+    let r, g, b;
+    if (t < 0.5) {
+      const tt = t * 2;
+      r = Math.round(c1[0] + (c2[0] - c1[0]) * tt);
+      g = Math.round(c1[1] + (c2[1] - c1[1]) * tt);
+      b = Math.round(c1[2] + (c2[2] - c1[2]) * tt);
+    } else {
+      const tt = (t - 0.5) * 2;
+      r = Math.round(c2[0] + (c3[0] - c2[0]) * tt);
+      g = Math.round(c2[1] + (c3[1] - c2[1]) * tt);
+      b = Math.round(c2[2] + (c3[2] - c2[2]) * tt);
+    }
     colors.push(`rgb(${r},${g},${b})`);
   }
   return colors;
 })();
 
 const tierColors = {
-  low: '#e74c3c',
-  mid: '#f39c12',
-  high: '#2ecc71',
-  epic: '#0e8c5f',
+  low: '#4fa8ff',
+  mid: '#44dd88',
+  high: '#ffae00',
+  epic: '#ff2bd6',
 };
 
 const tierLabels = {
@@ -168,7 +180,8 @@ function spinWheel() {
 
   const btn = document.getElementById('spinBtn');
   btn.disabled = true;
-  btn.textContent = 'Spinning...';
+  btn.innerHTML = '<i data-lucide="loader-circle"></i> Spinning...';
+  if (window.lucide) lucide.createIcons();
   const hint = document.getElementById('wheelHint');
   if (hint) hint.textContent = '';
 
@@ -182,15 +195,17 @@ function spinWheel() {
         currentResult = data;
         animateSpin();
       } else {
-        showNotification(data.message, 'error');
-        btn.textContent = 'SPIN (' + (window.SPIN_COST || 5) + ' coins)';
+        showNotification(data.message, false);
+        btn.innerHTML = '<i data-lucide="disc-3"></i> SPIN (' + (window.SPIN_COST || 5) + ' coins)';
+        if (window.lucide) lucide.createIcons();
         btn.disabled = false;
         isSpinning = false;
       }
     })
     .catch(() => {
-      showNotification('Something went wrong', 'error');
-      btn.textContent = 'SPIN (' + (window.SPIN_COST || 5) + ' coins)';
+      showNotification('Something went wrong', false);
+      btn.innerHTML = '<i data-lucide="disc-3"></i> SPIN (' + (window.SPIN_COST || 5) + ' coins)';
+      if (window.lucide) lucide.createIcons();
       btn.disabled = false;
       isSpinning = false;
     });
@@ -303,10 +318,11 @@ function closeResult() {
 
   const btn = document.getElementById('spinBtn');
   if (currentResult && currentResult.freeSpin) {
-    btn.textContent = 'SPIN (FREE)';
+    btn.innerHTML = '<i data-lucide="disc-3"></i> SPIN (FREE)';
   } else {
-    btn.textContent = 'SPIN (' + (window.SPIN_COST || 5) + ' coins)';
+    btn.innerHTML = '<i data-lucide="disc-3"></i> SPIN (' + (window.SPIN_COST || 5) + ' coins)';
   }
+  if (window.lucide) lucide.createIcons();
   btn.disabled = false;
   isSpinning = false;
   currentResult = null;
@@ -369,7 +385,8 @@ function launchConfetti(tier) {
 function updateCoins(balance) {
   const el = document.querySelector('.coins-display');
   if (el) {
-    el.textContent = balance + ' coins';
+    el.innerHTML = '<i data-lucide="circle-dollar-sign"></i>' + balance;
+    if (window.lucide) lucide.createIcons();
     el.classList.remove('coin-flash');
     void el.offsetWidth;
     el.classList.add('coin-flash');

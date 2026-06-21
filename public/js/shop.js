@@ -109,7 +109,13 @@ function closeGiftBox() {
 
 function updateCoins(balance) {
   const el = document.querySelector('.coins-display');
-  if (el) el.textContent = `${balance} coins`;
+  if (el) {
+    el.innerHTML = '<i data-lucide="circle-dollar-sign"></i>' + balance;
+    if (window.lucide) lucide.createIcons();
+    el.classList.remove('coin-flash');
+    void el.offsetWidth;
+    el.classList.add('coin-flash');
+  }
 }
 
 function buyShopItem(itemId) {

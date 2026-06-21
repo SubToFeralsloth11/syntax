@@ -65,12 +65,13 @@ function setupInvestButtons() {
       const input = document.querySelector('.plan-input[data-plan="' + plan + '"]');
       const amount = parseInt(input.value);
       if (!amount || amount < 10) {
-        showNotification('Minimum investment is 10 coins.', 'error');
+        showNotification('Minimum investment is 10 coins.', false);
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = 'Investing...';
+      btn.innerHTML = '<i data-lucide="loader-circle"></i> Investing...';
+      if (window.lucide) lucide.createIcons();
 
       fetch('/bank/invest', {
         method: 'POST',
@@ -80,7 +81,7 @@ function setupInvestButtons() {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            showNotification('Invested ' + amount + ' coins!', 'success');
+            showNotification('Invested ' + amount + ' coins!', true);
             updateBalance(data.balance);
             input.value = '';
             const preview = document.getElementById('preview-' + plan);
@@ -92,15 +93,17 @@ function setupInvestButtons() {
             }
             addInvestmentItem(data.investment);
           } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message, false);
           }
           btn.disabled = false;
-          btn.textContent = 'Invest';
+          btn.innerHTML = '<i data-lucide="lock"></i> Invest';
+          if (window.lucide) lucide.createIcons();
         })
         .catch(() => {
-          showNotification('Something went wrong.', 'error');
+          showNotification('Something went wrong.', false);
           btn.disabled = false;
-          btn.textContent = 'Invest';
+          btn.innerHTML = '<i data-lucide="lock"></i> Invest';
+          if (window.lucide) lucide.createIcons();
         });
     });
   });
@@ -112,30 +115,33 @@ function setupClaimButtons() {
       if (btn.disabled) return;
       const id = btn.dataset.id;
       btn.disabled = true;
-      btn.textContent = 'Claiming...';
+      btn.innerHTML = '<i data-lucide="loader-circle"></i> Claiming...';
+      if (window.lucide) lucide.createIcons();
 
       fetch('/bank/claim/' + id, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            showNotification('+' + data.total + ' coins claimed!', 'success');
+            showNotification('+' + data.total + ' coins claimed!', true);
             updateBalance(data.balance);
             const item = document.querySelector('.investment-item[data-id="' + id + '"]');
             if (item) item.remove();
             const list = document.getElementById('investmentsList');
             if (list && !list.querySelector('.investment-item')) {
-              list.innerHTML = '<div class="empty-state">No active investments.</div>';
+              list.innerHTML = '<div class="empty-state">// no active investments //</div>';
             }
           } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message, false);
             btn.disabled = false;
-            btn.textContent = 'Claim';
+            btn.innerHTML = '<i data-lucide="unlock"></i> Claim';
+            if (window.lucide) lucide.createIcons();
           }
         })
         .catch(() => {
-          showNotification('Something went wrong.', 'error');
+          showNotification('Something went wrong.', false);
           btn.disabled = false;
-          btn.textContent = 'Claim';
+          btn.innerHTML = '<i data-lucide="unlock"></i> Claim';
+          if (window.lucide) lucide.createIcons();
         });
     });
   });
@@ -160,7 +166,8 @@ function startCountdowns() {
           cd.textContent = 'Ready to claim!';
           if (btn) {
             btn.disabled = false;
-            btn.textContent = 'Claim';
+            btn.innerHTML = '<i data-lucide="unlock"></i> Claim';
+            if (window.lucide) lucide.createIcons();
           }
         } else {
           cd.textContent = formatRemaining(remaining);
@@ -211,11 +218,12 @@ function addInvestmentItem(inv) {
       '<span class="inv-profit">+' + inv.profit + ' coins</span>' +
     '</div>' +
     '<div class="inv-progress-bar"><div class="inv-progress-fill" style="width:0%"></div></div>' +
-    '<div class="inv-bottom">' +
-      '<span class="inv-countdown" id="countdown-' + inv.id + '">' + formatRemaining(inv.remaining) + '</span>' +
-      '<button class="btn btn-sm claim-btn" data-id="' + inv.id + '" disabled>Locked</button>' +
-    '</div>';
+      '<div class="inv-bottom">' +
+        '<span class="inv-countdown" id="countdown-' + inv.id + '">' + formatRemaining(inv.remaining) + '</span>' +
+        '<button class="btn btn-sm claim-btn" data-id="' + inv.id + '" disabled><i data-lucide="lock"></i> Locked</button>' +
+      '</div>';
   list.prepend(el);
+  if (window.lucide) lucide.createIcons();
 }
 
 function updateBalance(balance) {
@@ -223,7 +231,8 @@ function updateBalance(balance) {
   if (el) el.textContent = balance;
   const headerEl = document.querySelector('.coins-display');
   if (headerEl) {
-    headerEl.textContent = balance + ' coins';
+    headerEl.innerHTML = '<i data-lucide="circle-dollar-sign"></i>' + balance;
+    if (window.lucide) lucide.createIcons();
     headerEl.classList.remove('coin-flash');
     void headerEl.offsetWidth;
     headerEl.classList.add('coin-flash');
