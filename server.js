@@ -16,8 +16,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/favicon.ico', (req, res) => {
-  res.type('image/svg+xml');
-  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+  res.type('image/png');
+  res.sendFile(path.join(__dirname, 'public', 'images', 'logo.png'));
 });
 
 app.use(session({
