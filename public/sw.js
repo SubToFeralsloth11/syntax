@@ -1,4 +1,4 @@
-const CACHE = 'syntax-v5';
+const CACHE = 'syntax-v6';
 const OFFLINE = '/offline.html';
 
 const PRECACHE = [

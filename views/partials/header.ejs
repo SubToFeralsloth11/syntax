@@ -45,23 +45,14 @@ function dismissAllWarnings() {
 <% } %>
 
 <% var _p = typeof currentPath !== 'undefined' ? currentPath : ''; %>
+
+<!-- Slim top bar: logo + user actions only -->
 <header class="site-header">
-  <div class="container">
-    <a href="/" class="logo" aria-label="Syntax home"><img src="/images/logo.png?v=2" alt="Syntax" class="logo-img"></a>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">
+  <div class="header-bar">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle sidebar" aria-expanded="false" onclick="toggleNav()">
       <span></span><span></span><span></span>
     </button>
-    <nav class="nav" id="mainNav" aria-label="Primary">
-      <a href="/" aria-current="<%= _p === '/' ? 'page' : 'false' %>"><i data-lucide="home"></i>Home</a>
-      <a href="/games" aria-current="<%= _p.startsWith('/games') ? 'page' : 'false' %>"><i data-lucide="gamepad-2"></i>Games</a>
-      <a href="/quests" aria-current="<%= _p.startsWith('/quests') ? 'page' : 'false' %>"><i data-lucide="target"></i>Quests</a>
-      <a href="/leaderboard" aria-current="<%= _p.startsWith('/leaderboard') ? 'page' : 'false' %>"><i data-lucide="trophy"></i>Ranks</a>
-      <a href="/earn" aria-current="<%= _p.startsWith('/earn') ? 'page' : 'false' %>"><i data-lucide="coins"></i>Earn</a>
-      <a href="/trades" aria-current="<%= _p.startsWith('/trades') ? 'page' : 'false' %>"><i data-lucide="repeat"></i>Trades</a>
-      <a href="/refer" aria-current="<%= _p.startsWith('/refer') ? 'page' : 'false' %>"><i data-lucide="gift"></i>Refer</a>
-      <a href="/friends" aria-current="<%= _p.startsWith('/friends') || _p.startsWith('/profile/') ? 'page' : 'false' %>"><i data-lucide="users"></i>Friends</a>
-      <a href="/chat" aria-current="<%= _p.startsWith('/chat') ? 'page' : 'false' %>"><i data-lucide="message-square"></i>Chat</a>
-    </nav>
+    <a href="/" class="logo" aria-label="Syntax home"><img src="/images/logo.png?v=3" alt="Syntax" class="logo-img"></a>
     <div class="user-section">
       <% if (typeof user !== 'undefined' && user) { %>
         <span class="coins-display" aria-label="Coins: <%= user.coins %>"><i data-lucide="circle-dollar-sign"></i><%= user.coins %></span>
@@ -85,3 +76,50 @@ function dismissAllWarnings() {
     </div>
   </div>
 </header>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeNav()"></div>
+
+<!-- Left sidebar navigation -->
+<aside class="sidebar" id="mainNav" aria-label="Primary">
+  <nav class="sidebar-nav">
+    <div class="sidebar-group">
+      <span class="sidebar-label"><i data-lucide="play"></i> Play</span>
+      <a href="/" class="sidebar-link<%= _p === '/' ? ' active' : '' %>"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="/games" class="sidebar-link<%= _p.startsWith('/games') ? ' active' : '' %>"><i data-lucide="gamepad-2"></i><span>Games</span></a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-label"><i data-lucide="trending-up"></i> Progress</span>
+      <a href="/quests" class="sidebar-link<%= _p.startsWith('/quests') ? ' active' : '' %>"><i data-lucide="target"></i><span>Quests</span></a>
+      <a href="/leaderboard" class="sidebar-link<%= _p.startsWith('/leaderboard') ? ' active' : '' %>"><i data-lucide="trophy"></i><span>Leaderboard</span></a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-label"><i data-lucide="coins"></i> Economy</span>
+      <a href="/earn" class="sidebar-link<%= _p.startsWith('/earn') ? ' active' : '' %>"><i data-lucide="wallet"></i><span>Earn</span></a>
+      <a href="/bank" class="sidebar-link<%= _p.startsWith('/bank') ? ' active' : '' %>"><i data-lucide="landmark"></i><span>Bank</span></a>
+      <a href="/shop" class="sidebar-link<%= _p.startsWith('/shop') ? ' active' : '' %>"><i data-lucide="shopping-bag"></i><span>Shop</span></a>
+      <a href="/wheel" class="sidebar-link<%= _p.startsWith('/wheel') ? ' active' : '' %>"><i data-lucide="disc-3"></i><span>Lucky Wheel</span></a>
+      <a href="/lottery" class="sidebar-link<%= _p.startsWith('/lottery') ? ' active' : '' %>"><i data-lucide="ticket"></i><span>Lottery</span></a>
+      <a href="/trivia" class="sidebar-link<%= _p.startsWith('/trivia') ? ' active' : '' %>"><i data-lucide="brain-circuit"></i><span>Trivia</span></a>
+      <a href="/trades" class="sidebar-link<%= _p.startsWith('/trades') ? ' active' : '' %>"><i data-lucide="repeat"></i><span>Trades</span></a>
+      <a href="/refer" class="sidebar-link<%= _p.startsWith('/refer') ? ' active' : '' %>"><i data-lucide="gift"></i><span>Refer &amp; Earn</span></a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-label"><i data-lucide="users"></i> Social</span>
+      <a href="/friends" class="sidebar-link<%= _p.startsWith('/friends') || _p.startsWith('/profile/') ? ' active' : '' %>"><i data-lucide="users"></i><span>Friends</span></a>
+      <a href="/chat" class="sidebar-link<%= _p.startsWith('/chat') ? ' active' : '' %>"><i data-lucide="message-square"></i><span>Chat</span></a>
+      <a href="/profile" class="sidebar-link<%= _p === '/profile' ? ' active' : '' %>"><i data-lucide="user"></i><span>Profile</span></a>
+      <a href="/settings" class="sidebar-link<%= _p.startsWith('/settings') ? ' active' : '' %>"><i data-lucide="settings"></i><span>Settings</span></a>
+    </div>
+
+    <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+    <div class="sidebar-group">
+      <span class="sidebar-label"><i data-lucide="shield"></i> Admin</span>
+      <a href="/admin" class="sidebar-link<%= _p.startsWith('/admin') ? ' active' : '' %>"><i data-lucide="layout-dashboard"></i><span>Panel</span></a>
+    </div>
+    <% } %>
+  </nav>
+</aside>
