@@ -121,9 +121,16 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messageId: id })
       }).then(r => r.json()).then(data => {
-        showNotification(data.message, data.success !== false);
-        if (data.success) setTimeout(()=>location.reload(),800);
-      });
+        if (data.success) {
+          var rows = document.querySelectorAll('.admin-table tbody tr');
+          rows.forEach(function(r) {
+            if (r.cells[0] && r.cells[0].textContent.trim() === String(id)) r.remove();
+          });
+          showNotification(data.message, true);
+        } else {
+          showNotification(data.message, false);
+        }
+      }).catch(() => showNotification('Network error — action may not have completed', false));
     }
   </script>
   <script src="/js/main.js"></script>

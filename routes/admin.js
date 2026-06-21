@@ -35,7 +35,7 @@ router.post('/admin/ban', requireAdmin, (req, res) => {
     return res.json({ success: false, message: 'You cannot ban yourself' });
   }
 
-  const target = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  const target = db.prepare('SELECT id, role FROM users WHERE id = ?').get(userId);
   if (!target) {
     return res.json({ success: false, message: 'User not found' });
   }
@@ -65,9 +65,12 @@ router.post('/admin/warn', requireAdmin, (req, res) => {
     return res.json({ success: false, message: 'User ID and message required' });
   }
 
-  const target = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  const target = db.prepare('SELECT id, role FROM users WHERE id = ?').get(userId);
   if (!target) {
     return res.json({ success: false, message: 'User not found' });
+  }
+  if (target.role === 'admin') {
+    return res.json({ success: false, message: 'You cannot warn another admin' });
   }
 
   db.prepare('INSERT INTO warnings (user_id, admin_id, message) VALUES (?, ?, ?)').run(userId, req.user.id, message.trim());

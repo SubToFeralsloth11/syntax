@@ -193,13 +193,41 @@
     }
     function confirmBan() {
       const hours = document.getElementById('banDuration').value;
+      const banBtn = document.querySelector('.modal-actions .btn-danger');
+      if (banBtn) { banBtn.disabled = true; banBtn.innerHTML = '<i data-lucide="loader-circle"></i> Banning...'; if (window.lucide) lucide.createIcons(); }
       fetch('/admin/ban', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: banUserId, hours: parseInt(hours) })
       }).then(r => r.json()).then(data => {
-        if (data.success) { closeBanModal(); showNotification('User banned', true); setTimeout(()=>location.reload(),800); }
-        else showNotification(data.message, false);
+        if (data.success) {
+          closeBanModal();
+          var row = document.querySelector('.user-row[data-uid="' + banUserId + '"]');
+          if (row) {
+            row.classList.add('banned-row');
+            var statusCell = row.querySelector('.col-status');
+            if (statusCell) statusCell.innerHTML = '<span class="status-banned"><i data-lucide="ban"></i> Banned</span>';
+            var actionsCell = row.querySelector('.admin-actions');
+            if (actionsCell) {
+              var name = (row.querySelector('.col-name a') || {}).textContent || '';
+              var escaped = name.replace(/'/g, "\\'");
+              actionsCell.innerHTML =
+                '<button class="btn btn-sm admin-nav-btn" onclick="loginAsUser(' + banUserId + ')"><i data-lucide="user-cog"></i> Login As</button>' +
+                '<button class="btn btn-sm btn-warn" onclick="warnUser(' + banUserId + ', \'' + escaped + '\')"><i data-lucide="alert-triangle"></i> Warn</button>' +
+                '<button class="btn btn-sm btn-success" onclick="unbanUser(' + banUserId + ')"><i data-lucide="unlock"></i> Unban</button>' +
+                '<button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + banUserId + ', \'' + escaped + '\')"><i data-lucide="trash-2"></i> Delete</button>';
+            }
+          }
+          bumpBannedCount(1);
+          showNotification(data.message, true);
+          if (window.lucide) lucide.createIcons();
+        } else {
+          showNotification(data.message, false);
+        }
+        if (banBtn) { banBtn.disabled = false; banBtn.innerHTML = '<i data-lucide="ban"></i> Ban User'; if (window.lucide) lucide.createIcons(); }
+      }).catch(() => {
+        showNotification('Network error — action may not have completed', false);
+        if (banBtn) { banBtn.disabled = false; banBtn.innerHTML = '<i data-lucide="ban"></i> Ban User'; if (window.lucide) lucide.createIcons(); }
       });
     }
     function unbanUser(id) {
@@ -209,15 +237,37 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: id })
       }).then(r => r.json()).then(data => {
-        if (data.success) { showNotification('User unbanned', true); setTimeout(()=>location.reload(),800); }
-        else showNotification(data.message, false);
-      });
+        if (data.success) {
+          var row = document.querySelector('.user-row[data-uid="' + id + '"]');
+          if (row) {
+            row.classList.remove('banned-row');
+            var statusCell = row.querySelector('.col-status');
+            if (statusCell) statusCell.innerHTML = '<span class="status-active"><i data-lucide="circle-check"></i> Active</span>';
+            var actionsCell = row.querySelector('.admin-actions');
+            if (actionsCell) {
+              var name = (row.querySelector('.col-name a') || {}).textContent || '';
+              var escaped = name.replace(/'/g, "\\'");
+              actionsCell.innerHTML =
+                '<button class="btn btn-sm admin-nav-btn" onclick="loginAsUser(' + id + ')"><i data-lucide="user-cog"></i> Login As</button>' +
+                '<button class="btn btn-sm btn-warn" onclick="warnUser(' + id + ', \'' + escaped + '\')"><i data-lucide="alert-triangle"></i> Warn</button>' +
+                '<button class="btn btn-sm btn-danger" onclick="showBanModal(' + id + ', \'' + escaped + '\')"><i data-lucide="ban"></i> Ban</button>' +
+                '<button class="btn btn-sm btn-danger-outline" onclick="deleteUser(' + id + ', \'' + escaped + '\')"><i data-lucide="trash-2"></i> Delete</button>';
+            }
+          }
+          bumpBannedCount(-1);
+          showNotification(data.message, true);
+          if (window.lucide) lucide.createIcons();
+        } else {
+          showNotification(data.message, false);
+        }
+      }).catch(() => showNotification('Network error — action may not have completed', false));
     }
     function warnUser(id, name) {
       warnUserId = id;
       document.getElementById('warnTargetName').textContent = name || ('User #' + id);
       document.getElementById('warnMessage').value = '';
       document.getElementById('warnModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('warnMessage').focus(), 50);
     }
     function closeWarnModal() {
       document.getElementById('warnModal').style.display = 'none';
@@ -226,13 +276,23 @@
     function confirmWarn() {
       const message = document.getElementById('warnMessage').value.trim();
       if (!message) return showNotification('Reason required', false);
+      const sendBtn = document.querySelector('#warnModal .btn-warn');
+      if (sendBtn) { sendBtn.disabled = true; sendBtn.innerHTML = '<i data-lucide="loader-circle"></i> Sending...'; if (window.lucide) lucide.createIcons(); }
       fetch('/admin/warn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: warnUserId, message })
       }).then(r => r.json()).then(data => {
-        if (data.success) { closeWarnModal(); showNotification('Warning sent', true); }
-        else { closeWarnModal(); showNotification(data.message, false); }
+        if (data.success) {
+          closeWarnModal();
+          showNotification(data.message, true);
+        } else {
+          showNotification(data.message, false);
+        }
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '<i data-lucide="send"></i> Send Warning'; if (window.lucide) lucide.createIcons(); }
+      }).catch(() => {
+        showNotification('Network error — action may not have completed', false);
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '<i data-lucide="send"></i> Send Warning'; if (window.lucide) lucide.createIcons(); }
       });
     }
     function deleteMessage(id) {
@@ -242,9 +302,17 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messageId: id })
       }).then(r => r.json()).then(data => {
-        showNotification(data.message, data.success !== false);
-        if (data.success) setTimeout(()=>location.reload(),800);
-      });
+        if (data.success) {
+          var rows = document.querySelectorAll('#tab-chat .admin-table tbody tr');
+          rows.forEach(function(r) {
+            if (r.cells[0] && r.cells[0].textContent.trim() === String(id)) r.remove();
+          });
+          bumpMsgCount(-1);
+          showNotification(data.message, true);
+        } else {
+          showNotification(data.message, false);
+        }
+      }).catch(() => showNotification('Network error — action may not have completed', false));
     }
     function deleteUser(id, name) {
       var displayName = name || ('User #' + id);
@@ -255,9 +323,33 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: id })
       }).then(r => r.json()).then(data => {
-        showNotification(data.message, data.success !== false);
-        if (data.success) setTimeout(()=>location.reload(),800);
-      });
+        if (data.success) {
+          var row = document.querySelector('.user-row[data-uid="' + id + '"]');
+          if (row) row.remove();
+          bumpUserCount(-1);
+          showNotification(data.message, true);
+        } else {
+          showNotification(data.message, false);
+        }
+      }).catch(() => showNotification('Network error — action may not have completed', false));
+    }
+    function bumpUserCount(delta) {
+      var p = document.querySelector('.page-header p');
+      if (!p) return;
+      var m = p.textContent.match(/(\d+)\s+users/);
+      if (m) { var n = Math.max(0, parseInt(m[1]) + delta); p.innerHTML = p.innerHTML.replace(/(\d+)\s+users/, n + ' users'); }
+    }
+    function bumpBannedCount(delta) {
+      var p = document.querySelector('.page-header p');
+      if (!p) return;
+      var m = p.textContent.match(/(\d+)\s+banned/);
+      if (m) { var n = Math.max(0, parseInt(m[1]) + delta); p.innerHTML = p.innerHTML.replace(/(\d+)\s+banned/, n + ' banned'); }
+    }
+    function bumpMsgCount(delta) {
+      var p = document.querySelector('.page-header p');
+      if (!p) return;
+      var m = p.textContent.match(/(\d+)\s+messages/);
+      if (m) { var n = Math.max(0, parseInt(m[1]) + delta); p.innerHTML = p.innerHTML.replace(/(\d+)\s+messages/, n + ' messages'); }
     }
   </script>
   <script src="/js/main.js"></script>
