@@ -33,9 +33,9 @@
   },
   {
     "id": "funny-shooter",
-    "name": "Funny Shooter",
-    "description": "A cartoon mini shooter — pick a character and blast away!",
-    "thumbnail": "/images/game-covers/funny-shooter.svg",
+    "name": "Funny Shooter 2",
+    "description": "A 3D shooter — blast the red guys in a blocky world!",
+    "thumbnail": "/images/game-covers/funny-shooter.jpg",
     "url": "/games/funny-shooter",
     "status": "active"
   }

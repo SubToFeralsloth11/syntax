@@ -156,9 +156,14 @@ app.get('/games/funny-shooter', (req, res) => {
   }
   const fs = require('fs');
   let html = fs.readFileSync(path.join(__dirname, 'games', 'funny-shooter', 'index.html'), 'utf8');
+  html = html.replace('<head>', '<head><base href="/games/funny-shooter/">');
   html = injectGameNav(html);
   res.type('html').send(html);
 });
+
+// Serve Funny Shooter Unity WebGL assets
+const funnyShooterDir = path.join(__dirname, 'games', 'funny-shooter');
+app.use('/games/funny-shooter', express.static(funnyShooterDir));
 
 app.use('/', indexRoutes);
 app.use('/', authRoutes);
