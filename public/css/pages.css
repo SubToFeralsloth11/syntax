@@ -2144,6 +2144,8 @@
   padding: 24px;
   transition: all var(--t);
   position: relative;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .plan-card:hover,
@@ -2194,6 +2196,103 @@
   font-size: 0.82rem;
   color: var(--text-muted);
   margin-bottom: 14px;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Earn page plan cards (compact, no overflow) */
+.earn-plan-profit {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: var(--font-head);
+  color: var(--success);
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(68, 221, 136, 0.3);
+}
+
+.earn-plan-detail {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.7;
+  display: block;
+}
+
+.earn-plan-detail strong {
+  color: var(--text);
+}
+
+/* Earn page quick-link cards */
+.earn-quick-links {
+  margin-top: 8px;
+}
+
+.earn-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.earn-link-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  transition: all var(--t-fast);
+}
+
+.earn-link-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow), 0 0 20px rgba(0, 240, 255, 0.08);
+}
+
+.earn-link-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #04121a;
+}
+
+.earn-link-icon [data-lucide] {
+  width: 22px;
+  height: 22px;
+}
+
+.earn-link-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.earn-link-text strong {
+  font-size: 0.92rem;
+  font-family: var(--font-head);
+}
+
+.earn-link-text span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.earn-link-go {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .plan-duration {

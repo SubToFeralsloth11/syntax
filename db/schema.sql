@@ -250,3 +250,5 @@ CREATE TABLE IF NOT EXISTS user_quests (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (quest_id) REFERENCES quests(id)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_items_name ON shop_items(name);

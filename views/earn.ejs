@@ -18,13 +18,12 @@
           <button class="earn-tab active" data-tab="shop" onclick="switchEarnTab('shop',this)"><i data-lucide="gift"></i>Shop</button>
           <button class="earn-tab" data-tab="bank" onclick="switchEarnTab('bank',this)"><i data-lucide="landmark"></i>Bank</button>
           <button class="earn-tab" data-tab="trivia" onclick="switchEarnTab('trivia',this)"><i data-lucide="brain-circuit"></i>Trivia</button>
-          <button class="earn-tab" data-tab="wheel" onclick="switchEarnTab('wheel',this)"><i data-lucide="disc-3"></i>Wheel</button>
           <button class="earn-tab" data-tab="lottery" onclick="switchEarnTab('lottery',this)"><i data-lucide="ticket"></i>Lottery</button>
         </div>
 
         <!-- Shop -->
         <div class="earn-panel" id="tab-shop">
-          <div class="mystery-box-card" style="margin-bottom:20px">
+          <div class="mystery-box-card" style="margin-bottom:24px">
             <h2><i data-lucide="gift"></i> Mystery Box</h2>
             <p class="mb-desc">50+ items · 250 coins each</p>
             <div class="mystery-box-preview" id="mysteryBoxPreview">
@@ -58,17 +57,49 @@
         <!-- Bank -->
         <div class="earn-panel" id="tab-bank" style="display:none">
           <h2 class="section-title"><i data-lucide="landmark"></i> Investment Plans</h2>
-          <div class="bank-plans" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px">
-            <div class="bank-plan-card"><h3>Conservative</h3><p>100 coins — 20% return in 24h</p><button class="btn btn-primary" onclick="invest('conservative')">Invest 100</button></div>
-            <div class="bank-plan-card"><h3>Balanced</h3><p>250 coins — 40% return in 48h</p><button class="btn btn-primary" onclick="invest('balanced')">Invest 250</button></div>
-            <div class="bank-plan-card"><h3>Aggressive</h3><p>500 coins — 75% return in 72h</p><button class="btn btn-primary" onclick="invest('aggressive')">Invest 500</button></div>
+          <p class="hint" style="margin-bottom:20px">Lock your coins for a set time and earn guaranteed profit. Visit the <a href="/bank">full Bank page</a> for advanced options.</p>
+          <div class="bank-plans">
+            <div class="bank-plan-card">
+              <h3>Conservative</h3>
+              <div class="earn-plan-profit">+20%</div>
+              <p class="earn-plan-detail">Lock <strong>100</strong> coins for <strong>24h</strong><br>Get back <strong>120</strong> coins</p>
+              <button class="btn btn-primary btn-full" onclick="invest('conservative')"><i data-lucide="lock"></i> Invest 100</button>
+            </div>
+            <div class="bank-plan-card">
+              <h3>Balanced</h3>
+              <div class="earn-plan-profit">+40%</div>
+              <p class="earn-plan-detail">Lock <strong>250</strong> coins for <strong>48h</strong><br>Get back <strong>350</strong> coins</p>
+              <button class="btn btn-primary btn-full" onclick="invest('balanced')"><i data-lucide="lock"></i> Invest 250</button>
+            </div>
+            <div class="bank-plan-card">
+              <h3>Aggressive</h3>
+              <div class="earn-plan-profit">+75%</div>
+              <p class="earn-plan-detail">Lock <strong>500</strong> coins for <strong>72h</strong><br>Get back <strong>875</strong> coins</p>
+              <button class="btn btn-primary btn-full" onclick="invest('aggressive')"><i data-lucide="lock"></i> Invest 500</button>
+            </div>
           </div>
+
           <% if (investments && investments.length > 0) { %>
-            <h3 class="section-title" style="font-size:1rem"><i data-lucide="hourglass"></i> Your Investments</h3>
-            <% investments.forEach(inv => { %>
-              <div class="investment-row"><span><%= inv.plan %></span><span class="mono"><%= inv.amount %> coins</span><span class="mono">+<%= inv.profit %></span><span class="mono"><%= inv.claimed ? 'Claimed' : 'Active' %></span><% if (!inv.claimed) { %><button class="btn btn-sm btn-primary" onclick="claimInvestment(<%= inv.id %>)">Claim</button><% } %></div>
-            <% }) %>
+            <h3 class="section-title" style="font-size:1rem;margin-top:28px"><i data-lucide="hourglass"></i> Your Investments</h3>
+            <div class="investments-list">
+              <% investments.forEach(inv => { %>
+                <div class="investment-row">
+                  <span class="inv-plan-badge"><%= inv.plan %></span>
+                  <span class="inv-amount"><%= inv.amount %> coins</span>
+                  <% if (!inv.claimed) { %>
+                    <span class="inv-profit">+<%= inv.profit %></span>
+                    <button class="btn btn-sm btn-primary" onclick="claimInvestment(<%= inv.id %>)"><i data-lucide="unlock"></i> Claim</button>
+                  <% } else { %>
+                    <span class="badge badge-active"><i data-lucide="check"></i> Claimed</span>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
           <% } %>
+
+          <div style="margin-top:24px;text-align:center">
+            <a href="/bank" class="btn btn-outline"><i data-lucide="arrow-right"></i> Go to Full Bank</a>
+          </div>
         </div>
 
         <!-- Trivia -->
@@ -81,20 +112,6 @@
               <p>Answer correctly to earn 25 coins!</p>
             <% } %>
             <a href="/trivia" class="btn btn-primary" style="margin-top:12px"><i data-lucide="brain-circuit"></i> Open Full Trivia</a>
-          </div>
-        </div>
-
-        <!-- Wheel -->
-        <div class="earn-panel" id="tab-wheel" style="display:none">
-          <div class="wheel-card">
-            <div class="wheel-wrapper" style="max-width:300px;margin:0 auto">
-              <canvas id="wheelCanvas"></canvas>
-            </div>
-            <div class="wheel-controls">
-              <button class="btn btn-primary btn-lg" id="spinBtn" onclick="spinWheelInline()"><i data-lucide="disc-3"></i> SPIN (<%= spinCost %> coins)</button>
-              <div class="wheel-balance">Balance: <strong id="wheelBalance"><%= userCoins %></strong> coins</div>
-            </div>
-            <p class="wheel-hint" id="wheelHint">// click SPIN to try your luck //</p>
           </div>
         </div>
 
@@ -112,6 +129,31 @@
             </div>
             <div class="form-group"><label>Number of tickets</label><div class="ticket-input-row"><input type="number" id="ticketCount" value="1" min="1" max="500"><span class="ticket-cost" id="ticketCostDisplay">= 50 coins</span></div><p class="ticket-chance" id="chanceDisplay">Chance: 0.500%</p></div>
             <button class="btn btn-primary btn-full" id="buyBtn2" onclick="buyTicketsInline()"><i data-lucide="ticket"></i> Buy & Draw</button>
+            <div style="margin-top:16px;text-align:center">
+              <a href="/lottery" class="btn btn-outline btn-sm"><i data-lucide="arrow-right"></i> Full Lottery Page</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick links to games of chance -->
+        <div class="earn-quick-links">
+          <h3 class="section-title" style="font-size:1rem;margin-top:32px"><i data-lucide="zap"></i> Quick Links</h3>
+          <div class="earn-link-grid">
+            <a href="/wheel" class="earn-link-card">
+              <div class="earn-link-icon" style="background:linear-gradient(135deg,var(--magenta),var(--purple))"><i data-lucide="disc-3"></i></div>
+              <div class="earn-link-text"><strong>Lucky Wheel</strong><span>Spin for up to 1000 coins</span></div>
+              <i data-lucide="chevron-right" class="earn-link-go"></i>
+            </a>
+            <a href="/trivia" class="earn-link-card">
+              <div class="earn-link-icon" style="background:linear-gradient(135deg,var(--cyan),var(--success))"><i data-lucide="brain-circuit"></i></div>
+              <div class="earn-link-text"><strong>Trivia</strong><span>Answer questions for 25 coins</span></div>
+              <i data-lucide="chevron-right" class="earn-link-go"></i>
+            </a>
+            <a href="/shop" class="earn-link-card">
+              <div class="earn-link-icon" style="background:linear-gradient(135deg,var(--gold),#ff8c1a)"><i data-lucide="shopping-bag"></i></div>
+              <div class="earn-link-text"><strong>Shop</strong><span>Full shop with all items</span></div>
+              <i data-lucide="chevron-right" class="earn-link-go"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -136,11 +178,7 @@
 
   <%- include('partials/footer') %>
   <%- include('partials/notification') %>
-  <script>
-    window.SPIN_COST = <%= spinCost %>;
-    window.WHEEL_SEGMENTS = <%- JSON.stringify(wheelSegments) %>;
-  </script>
-  <script src="/js/wheel.js?v=3"></script>
+  <script src="/js/main.js"></script>
   <script src="/js/gift-box.js?v=3"></script>
   <script>
     function switchEarnTab(tab, btn) {
@@ -148,7 +186,6 @@
       document.querySelectorAll('.earn-panel').forEach(p => p.style.display = 'none');
       document.querySelector('#tab-' + tab).style.display = '';
       if (btn) btn.classList.add('active');
-      if (tab === 'wheel') { if (typeof drawWheel === 'function') drawWheel(); }
     }
 
     function invest(plan) { fetch('/bank/invest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan})}).then(r=>r.json()).then(d=>{showNotification(d.message||(d.success?'Invested!':'Failed'),d.success!==false);if(d.success)setTimeout(()=>location.reload(),800)}) }
@@ -179,14 +216,25 @@
       location.reload();
     }
 
-    function showLootTable() { var items=<%- JSON.stringify(mysteryBoxItems.map(i=>({name:i.name,type:i.type}))) %>;var html='';items.forEach(i=>html+='<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem">'+i.name+'</div>');var d=document.createElement('div');d.className='modal-overlay';d.style.cssText='display:flex';d.innerHTML='<div class="modal" style="max-width:440px"><div class="modal-header"><h2>Loot Table</h2><button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button></div><div class="modal-body" style="max-height:70vh;overflow-y:auto">'+html+'</div></div>';d.onclick=function(e){if(e.target===d)d.remove()};document.body.appendChild(d);if(window.lucide)lucide.createIcons(); }
+    function showLootTable() {
+      var items=<%- JSON.stringify(mysteryBoxItems.map(i=>({name:i.name,type:i.type}))) %>;
+      var html='';
+      items.forEach(i=>html+='<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem">'+i.name+'</div>');
+      var d=document.createElement('div');
+      d.className='modal-overlay';
+      d.style.cssText='display:flex';
+      d.innerHTML='<div class="modal" style="max-width:440px"><div class="modal-header"><h2>Loot Table</h2><button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()"><i data-lucide="x"></i></button></div><div class="modal-body" style="max-height:70vh;overflow-y:auto">'+html+'</div></div>';
+      d.onclick=function(e){if(e.target===d)d.remove()};
+      document.body.appendChild(d);
+      if(window.lucide)lucide.createIcons();
+    }
 
     function buyTicketsInline() {
       var count = parseInt(document.getElementById('ticketCount').value)||1;
       var btn = document.getElementById('buyBtn2');
       btn.disabled = true;
       fetch('/lottery/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({count:count})}).then(r=>r.json()).then(d=>{
-        if(d.success){document.getElementById('jackpotAmount').textContent=d.jackpot.toLocaleString();showNotification(d.won?('JACKPOT WINNER! +'+d.wonAmount+' coins!'):'No luck. Chance was '+d.chance+'%',d.won);if(d.won)startConfetti&&startConfetti();setTimeout(()=>location.reload(),1200)}
+        if(d.success){document.getElementById('jackpotAmount').textContent=d.jackpot.toLocaleString();showNotification(d.won?('JACKPOT WINNER! +'+d.wonAmount+' coins!'):'No luck. Chance was '+d.chance+'%',d.won);if(d.won&&typeof startConfetti==='function')startConfetti();setTimeout(()=>location.reload(),1200)}
         else showNotification(d.message,false);
         btn.disabled=false;
       });
@@ -195,12 +243,6 @@
 
     var nextReset = <%= Math.floor((Math.floor(Date.now()/(20*60*1000))+1)*20*60*1000) %>;
     function updateTimer(){var r=Math.max(0,Math.floor((nextReset-Date.now())/1000));var el=document.getElementById('countdown');if(el)el.textContent=Math.floor(r/60)+':'+((r%60)<10?'0':'')+(r%60);if(r<=0){if(el)el.textContent='Now!';location.reload()}}updateTimer();setInterval(updateTimer,1000);
-
-    function spinWheelInline() {
-      if (typeof spinWheel === 'function') { spinWheel(); }
-      else { showNotification('Wheel loading... try refreshing', false); }
-    }
   </script>
-  <script src="/js/main.js"></script>
 </body>
 </html>
