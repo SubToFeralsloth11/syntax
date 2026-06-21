@@ -1,10 +1,21 @@
-const CACHE = 'syntax-v2';
+const CACHE = 'syntax-v3';
 const OFFLINE = '/offline.html';
 
 const PRECACHE = [
   OFFLINE,
   '/css/style.css',
+  '/css/tokens.css',
+  '/css/base.css',
+  '/css/layout.css',
+  '/css/components.css',
+  '/css/pages.css',
+  '/css/animations.css',
   '/js/main.js',
+  '/js/chat.js',
+  '/js/bank.js',
+  '/js/shop.js',
+  '/js/wheel.js',
+  '/js/gift-box.js',
   '/images/logo.svg',
   '/images/default-avatar.svg',
   '/favicon.svg',

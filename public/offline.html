@@ -3,76 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08080f">
   <title>No Connection — Syntax</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
   <style>
     :root {
-      --bg: #0d0d1a;
-      --text: #e0e0f0;
-      --text-muted: #8888aa;
-      --accent: #7c5cfc;
-      --radius-sm: 8px;
-      --radius: 12px;
+      --bg: #08080f;
+      --text: #e8e8ff;
+      --text-muted: #7a7a9e;
+      --cyan: #00f0ff;
+      --purple: #b537f2;
+      --magenta: #ff2bd6;
+      --error: #ff5566;
+      --success: #44dd88;
+      --border: rgba(0, 240, 255, 0.12);
+      --radius: 14px;
+      --radius-sm: 9px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 0%, transparent 75%);
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 0%, transparent 75%);
+      pointer-events: none;
     }
     .card {
-      max-width: 460px;
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
       padding: 56px 40px 48px;
     }
     .icon-block {
-      width: 80px;
-      height: 80px;
+      width: 88px;
+      height: 88px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #7c5cfc22, #9b59b622);
+      background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(181,55,242,0.15));
+      border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 24px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
     }
     .icon {
-      font-size: 2.5rem;
+      font-size: 2.6rem;
+      filter: drop-shadow(0 0 10px rgba(0,240,255,0.5));
     }
     h1 {
-      font-size: 1.5rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     p {
       color: var(--text-muted);
       line-height: 1.6;
       margin-bottom: 28px;
       font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
     }
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 32px;
-      background: var(--accent);
-      color: #fff;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #04121a;
       border: none;
       border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: 0.92rem;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
-      transition: 0.15s;
+      transition: 0.2s;
+      font-family: 'Inter', sans-serif;
     }
-    .btn:hover { filter: brightness(1.15); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(0,240,255,0.4); }
     .btn-outline {
       background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
+      border: 1px solid rgba(0,240,255,0.4);
+      color: var(--cyan);
     }
+    .btn-outline:hover { background: rgba(0,240,255,0.1); box-shadow: 0 0 18px rgba(0,240,255,0.25); }
     .actions {
       display: flex;
       gap: 12px;
@@ -80,7 +119,7 @@
       flex-wrap: wrap;
     }
     .status-bar {
-      margin-top: 24px;
+      margin-top: 28px;
       font-size: 0.78rem;
       color: var(--text-muted);
       min-height: 24px;
@@ -88,16 +127,18 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
     }
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
-      background: #e74c3c;
+      background: var(--error);
       display: inline-block;
       animation: pulse 1.5s infinite;
+      box-shadow: 0 0 8px var(--error);
     }
-    .dot.connected { background: #2ecc71; animation: none; }
+    .dot.connected { background: var(--success); animation: none; box-shadow: 0 0 8px var(--success); }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
@@ -107,10 +148,10 @@
 <body>
   <div class="card">
     <div class="icon-block">
-      <span class="icon">&#128225;</span>
+      <span class="icon">&#128268;</span>
     </div>
     <h1>No Connection</h1>
-    <p>Syntax is unreachable right now. The server may be offline or restarting. Your data is safe — nothing has been lost.</p>
+    <p>// syntax is unreachable right now. the server may be offline or restarting. your data is safe.</p>
     <div class="actions">
       <button class="btn" onclick="retry()">&#x21bb; Try Again</button>
       <button class="btn btn-outline" onclick="location.reload()">Refresh</button>
