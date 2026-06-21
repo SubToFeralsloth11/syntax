@@ -80,6 +80,33 @@ function avatarUrl(avatar) {
 }
 app.locals.avatarUrl = avatarUrl;
 
+function injectGameNav(html) {
+  const backBtn = `
+<style>
+  .syntax-game-nav{position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:10px 18px 10px 14px;background:rgba(10,10,20,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,240,255,0.3);border-radius:10px;color:#00f0ff;font-family:'Inter',-apple-system,sans-serif;font-size:0.85rem;font-weight:600;text-decoration:none;letter-spacing:0.5px;transition:all 0.2s;box-shadow:0 0 20px rgba(0,240,255,0.15)}
+  .syntax-game-nav:hover{background:rgba(0,240,255,0.12);border-color:#00f0ff;color:#4ff8ff;box-shadow:0 0 28px rgba(0,240,255,0.4);transform:translateY(-1px)}
+  .syntax-game-nav svg{width:18px;height:18px;flex-shrink:0}
+  .syntax-game-nav span{white-space:nowrap}
+  .syntax-game-nav .sgn-divider{width:1px;height:16px;background:rgba(0,240,255,0.3);margin:0 2px}
+  .syntax-game-nav .sgn-home{color:#b537f2}
+  .syntax-game-nav:hover .sgn-home{color:#c96bff}
+  @media(max-width:480px){.syntax-game-nav span:not(.sgn-label){display:none}.syntax-game-nav .sgn-divider{display:none}.syntax-game-nav .sgn-label{display:inline}}
+</style>
+<a href="/games" class="syntax-game-nav" title="Back to Games">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  <span class="sgn-label">Back to Games</span>
+  <span class="sgn-divider"></span>
+  <svg class="sgn-home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+</a>`;
+  if (html.includes('<body>')) {
+    return html.replace('<body>', '<body>' + backBtn);
+  }
+  if (html.includes('<body ')) {
+    return html.replace(/<body([^>]*)>/, '<body$1>' + backBtn);
+  }
+  return backBtn + html;
+}
+
 app.get('/games/echoes', (req, res) => {
   if (req.isAuthenticated()) {
     const db = require('./db/database');
@@ -96,6 +123,7 @@ app.get('/games/echoes', (req, res) => {
   const fs = require('fs');
   let html = fs.readFileSync(path.join(__dirname, 'games', 'Echoes of the Forgotten', 'index.html'), 'utf8');
   html = html.replace('<head>', '<head><base href="/games/echoes/">');
+  html = injectGameNav(html);
   res.type('html').send(html);
 });
 const echoGameDir = path.join(__dirname, 'games', 'Echoes of the Forgotten');
