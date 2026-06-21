@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= profile.display_name %> — Admin View</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: profile.display_name + ' — Admin View' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,129 +8,91 @@
     <section class="page-header">
       <div class="container">
         <h1>User Details</h1>
-        <p><a href="/admin">&larr; Back to Admin Panel</a></p>
+        <p><a href="/admin"><i data-lucide="arrow-left"></i> Back to Admin Panel</a></p>
       </div>
     </section>
 
     <section class="admin-section">
       <div class="container">
         <div class="admin-detail-card">
-          <h2><%= profile.display_name %> <% if (profile.role === 'admin') { %><span class="owner-badge-sm">Owner</span><% } %></h2>
+          <h2><i data-lucide="user-circle"></i> <%= profile.display_name %> <% if (profile.role === 'admin') { %><span class="owner-badge-sm">Owner</span><% } %></h2>
           <% if (profile.id !== user.id) { %>
-            <button class="btn btn-glow" style="background:#7c5cfc;color:#fff;border:none;display:inline-block;margin-bottom:16px" onclick="loginAsUser(<%= profile.id %>)">Login as this user</button>
+            <button class="btn admin-nav-btn" style="display:inline-flex;margin-bottom:16px" onclick="loginAsUser(<%= profile.id %>)"><i data-lucide="user-cog"></i> Login as this user</button>
           <% } %>
           <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">ID</span>
-              <span class="detail-value"><%= profile.id %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Email</span>
-              <span class="detail-value"><%= profile.email %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Password</span>
-              <span class="detail-value"><%= profile.password || 'N/A' %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Role</span>
-              <span class="detail-value"><span class="role-tag <%= profile.role %>"><%= profile.role %></span></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Coins</span>
-              <span class="detail-value"><%= profile.coins %> (earned: <%= profile.total_coins_earned %>)</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Equipped Frame</span>
-              <span class="detail-value"><%= profile.equipped_frame || 'None' %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Equipped Badge</span>
-              <span class="detail-value"><%= profile.equipped_badge || 'None' %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Equipped Title</span>
-              <span class="detail-value"><%= profile.equipped_title || 'None' %></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Status</span>
-              <span class="detail-value">
-                <% if (profile.banned_until && new Date(profile.banned_until) > new Date()) { %>
-                  <span class="status-banned">Banned until <%= new Date(profile.banned_until).toLocaleString() %></span>
-                <% } else { %>
-                  <span class="status-active">Active</span>
-                <% } %>
-              </span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Joined</span>
-              <span class="detail-value"><%= new Date(profile.created_at).toLocaleString() %></span>
-            </div>
+            <div class="detail-item"><span class="detail-label">ID</span><span class="detail-value"><%= profile.id %></span></div>
+            <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value"><%= profile.email %></span></div>
+            <div class="detail-item"><span class="detail-label">Password</span><span class="detail-value"><%= profile.password || 'N/A' %></span></div>
+            <div class="detail-item"><span class="detail-label">Role</span><span class="detail-value"><span class="role-tag <%= profile.role %>"><%= profile.role %></span></span></div>
+            <div class="detail-item"><span class="detail-label">Coins</span><span class="detail-value"><%= profile.coins %> (earned: <%= profile.total_coins_earned %>)</span></div>
+            <div class="detail-item"><span class="detail-label">Equipped Frame</span><span class="detail-value"><%= profile.equipped_frame || 'None' %></span></div>
+            <div class="detail-item"><span class="detail-label">Equipped Badge</span><span class="detail-value"><%= profile.equipped_badge || 'None' %></span></div>
+            <div class="detail-item"><span class="detail-label">Equipped Title</span><span class="detail-value"><%= profile.equipped_title || 'None' %></span></div>
+            <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value">
+              <% if (profile.banned_until && new Date(profile.banned_until) > new Date()) { %>
+                <span class="status-banned"><i data-lucide="ban"></i> Banned until <%= new Date(profile.banned_until).toLocaleString() %></span>
+              <% } else { %>
+                <span class="status-active"><i data-lucide="circle-check"></i> Active</span>
+              <% } %>
+            </span></div>
+            <div class="detail-item"><span class="detail-label">Joined</span><span class="detail-value"><%= new Date(profile.created_at).toLocaleString() %></span></div>
           </div>
         </div>
 
         <% if (warnings.length > 0) { %>
           <div class="admin-detail-card">
-            <h3>Warnings (<%= warnings.length %>)</h3>
-            <table class="admin-table">
-              <thead>
-                <tr><th>From</th><th>Message</th><th>Date</th></tr>
-              </thead>
-              <tbody>
-                <% warnings.forEach(w => { %>
-                  <tr>
-                    <td><%= w.admin_name %></td>
-                    <td><%= w.message %></td>
-                    <td><%= new Date(w.created_at).toLocaleString() %></td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
+            <h3><i data-lucide="alert-triangle"></i> Warnings (<%= warnings.length %>)</h3>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>From</th><th>Message</th><th>Date</th></tr></thead>
+                <tbody>
+                  <% warnings.forEach(w => { %>
+                    <tr><td><%= w.admin_name %></td><td><%= w.message %></td><td class="mono"><%= new Date(w.created_at).toLocaleString() %></td></tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
           </div>
         <% } %>
 
         <div class="admin-detail-card">
-          <h3>Recent Transactions</h3>
+          <h3><i data-lucide="receipt"></i> Recent Transactions</h3>
           <% if (transactions.length === 0) { %>
-            <p class="empty-state">No transactions</p>
+            <p class="empty-state">// no transactions //</p>
           <% } else { %>
-            <table class="admin-table">
-              <thead>
-                <tr><th>Amount</th><th>Reason</th><th>Date</th></tr>
-              </thead>
-              <tbody>
-                <% transactions.forEach(tx => { %>
-                  <tr>
-                    <td><%= tx.amount > 0 ? '+' : '' %><%= tx.amount %></td>
-                    <td><%= tx.reason %></td>
-                    <td><%= new Date(tx.created_at).toLocaleString() %></td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>Amount</th><th>Reason</th><th>Date</th></tr></thead>
+                <tbody>
+                  <% transactions.forEach(tx => { %>
+                    <tr><td class="mono"><%= tx.amount > 0 ? '+' : '' %><%= tx.amount %></td><td><%= tx.reason %></td><td class="mono"><%= new Date(tx.created_at).toLocaleString() %></td></tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
           <% } %>
         </div>
 
         <div class="admin-detail-card">
-          <h3>Recent Chat Messages</h3>
+          <h3><i data-lucide="message-square"></i> Recent Chat Messages</h3>
           <% if (messages.length === 0) { %>
-            <p class="empty-state">No messages</p>
+            <p class="empty-state">// no messages //</p>
           <% } else { %>
-            <table class="admin-table">
-              <thead>
-                <tr><th>ID</th><th>Message</th><th>Date</th><th>Action</th></tr>
-              </thead>
-              <tbody>
-                <% messages.forEach(m => { %>
-                  <tr>
-                    <td><%= m.id %></td>
-                    <td class="msg-preview"><%= m.message %></td>
-                    <td><%= new Date(m.created_at).toLocaleString() %></td>
-                    <td><button class="btn btn-sm btn-danger" onclick="deleteMessage(<%= m.id %>)">Delete</button></td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>ID</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody>
+                  <% messages.forEach(m => { %>
+                    <tr>
+                      <td><%= m.id %></td>
+                      <td class="msg-preview"><%= m.message %></td>
+                      <td class="mono"><%= new Date(m.created_at).toLocaleString() %></td>
+                      <td><button class="btn btn-sm btn-danger" onclick="deleteMessage(<%= m.id %>)"><i data-lucide="trash-2"></i></button></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
           <% } %>
         </div>
       </div>
@@ -143,6 +100,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     function loginAsUser(id) {
       fetch('/admin/impersonate-token/' + id, {
@@ -152,7 +110,7 @@
         if (data.success) {
           window.open('/auth/impersonate?token=' + data.token, '_blank');
         } else {
-          alert(data.message);
+          showNotification(data.message, false);
         }
       });
     }
@@ -163,10 +121,11 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messageId: id })
       }).then(r => r.json()).then(data => {
-        alert(data.message);
-        location.reload();
+        showNotification(data.message, data.success !== false);
+        if (data.success) setTimeout(()=>location.reload(),800);
       });
     }
   </script>
+  <script src="/js/main.js"></script>
 </body>
 </html>
