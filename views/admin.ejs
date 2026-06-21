@@ -112,7 +112,7 @@
     </section>
   </main>
 
-  <div class="modal-overlay" id="banModal" style="display:none">
+  <div class="modal-overlay hidden" id="banModal">
     <div class="modal" role="dialog" aria-modal="true" aria-label="Ban user">
       <div class="modal-header">
         <h2><i data-lucide="ban"></i> Ban <span id="banTargetName"></span></h2>
@@ -139,7 +139,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="warnModal" style="display:none">
+  <div class="modal-overlay hidden" id="warnModal">
     <div class="modal" role="dialog" aria-modal="true" aria-label="Warn user">
       <div class="modal-header">
         <h2><i data-lucide="alert-triangle"></i> Warn <span id="warnTargetName"></span></h2>
@@ -160,9 +160,24 @@
 
   <%- include('partials/footer') %>
   <%- include('partials/notification') %>
+  <script src="/js/main.js"></script>
   <script>
     let banUserId = null;
     let warnUserId = null;
+
+    // Escape closes any open modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (!document.getElementById('banModal').classList.contains('hidden')) closeBanModal();
+        if (!document.getElementById('warnModal').classList.contains('hidden')) closeWarnModal();
+      }
+    });
+
+    // Fallback if showNotification isn't loaded
+    function _notify(msg, ok) {
+      if (typeof showNotification === 'function') showNotification(msg, ok);
+      else alert((ok ? 'OK: ' : 'Error: ') + msg);
+    }
 
     function loginAsUser(id) {
       fetch('/admin/impersonate-token/' + id, {
@@ -172,7 +187,7 @@
         if (data.success) {
           window.open('/auth/impersonate?token=' + data.token, '_blank');
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
       });
     }
@@ -185,10 +200,10 @@
     function showBanModal(id, name) {
       banUserId = id;
       document.getElementById('banTargetName').textContent = name || ('User #' + id);
-      document.getElementById('banModal').style.display = 'flex';
+      document.getElementById('banModal').classList.remove('hidden');
     }
     function closeBanModal() {
-      document.getElementById('banModal').style.display = 'none';
+      document.getElementById('banModal').classList.add('hidden');
       banUserId = null;
     }
     function confirmBan() {
@@ -219,14 +234,14 @@
             }
           }
           bumpBannedCount(1);
-          showNotification(data.message, true);
+          _notify(data.message, true);
           if (window.lucide) lucide.createIcons();
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
         if (banBtn) { banBtn.disabled = false; banBtn.innerHTML = '<i data-lucide="ban"></i> Ban User'; if (window.lucide) lucide.createIcons(); }
       }).catch(() => {
-        showNotification('Network error — action may not have completed', false);
+        _notify('Network error — action may not have completed', false);
         if (banBtn) { banBtn.disabled = false; banBtn.innerHTML = '<i data-lucide="ban"></i> Ban User'; if (window.lucide) lucide.createIcons(); }
       });
     }
@@ -255,27 +270,27 @@
             }
           }
           bumpBannedCount(-1);
-          showNotification(data.message, true);
+          _notify(data.message, true);
           if (window.lucide) lucide.createIcons();
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
-      }).catch(() => showNotification('Network error — action may not have completed', false));
+      }).catch(() => _notify('Network error — action may not have completed', false));
     }
     function warnUser(id, name) {
       warnUserId = id;
       document.getElementById('warnTargetName').textContent = name || ('User #' + id);
       document.getElementById('warnMessage').value = '';
-      document.getElementById('warnModal').style.display = 'flex';
+      document.getElementById('warnModal').classList.remove('hidden');
       setTimeout(() => document.getElementById('warnMessage').focus(), 50);
     }
     function closeWarnModal() {
-      document.getElementById('warnModal').style.display = 'none';
+      document.getElementById('warnModal').classList.add('hidden');
       warnUserId = null;
     }
     function confirmWarn() {
       const message = document.getElementById('warnMessage').value.trim();
-      if (!message) return showNotification('Reason required', false);
+      if (!message) return _notify('Reason required', false);
       const sendBtn = document.querySelector('#warnModal .btn-warn');
       if (sendBtn) { sendBtn.disabled = true; sendBtn.innerHTML = '<i data-lucide="loader-circle"></i> Sending...'; if (window.lucide) lucide.createIcons(); }
       fetch('/admin/warn', {
@@ -285,13 +300,13 @@
       }).then(r => r.json()).then(data => {
         if (data.success) {
           closeWarnModal();
-          showNotification(data.message, true);
+          _notify(data.message, true);
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
         if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '<i data-lucide="send"></i> Send Warning'; if (window.lucide) lucide.createIcons(); }
       }).catch(() => {
-        showNotification('Network error — action may not have completed', false);
+        _notify('Network error — action may not have completed', false);
         if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '<i data-lucide="send"></i> Send Warning'; if (window.lucide) lucide.createIcons(); }
       });
     }
@@ -308,11 +323,11 @@
             if (r.cells[0] && r.cells[0].textContent.trim() === String(id)) r.remove();
           });
           bumpMsgCount(-1);
-          showNotification(data.message, true);
+          _notify(data.message, true);
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
-      }).catch(() => showNotification('Network error — action may not have completed', false));
+      }).catch(() => _notify('Network error — action may not have completed', false));
     }
     function deleteUser(id, name) {
       var displayName = name || ('User #' + id);
@@ -327,11 +342,11 @@
           var row = document.querySelector('.user-row[data-uid="' + id + '"]');
           if (row) row.remove();
           bumpUserCount(-1);
-          showNotification(data.message, true);
+          _notify(data.message, true);
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
-      }).catch(() => showNotification('Network error — action may not have completed', false));
+      }).catch(() => _notify('Network error — action may not have completed', false));
     }
     function bumpUserCount(delta) {
       var p = document.querySelector('.page-header p');
@@ -352,6 +367,5 @@
       if (m) { var n = Math.max(0, parseInt(m[1]) + delta); p.innerHTML = p.innerHTML.replace(/(\d+)\s+messages/, n + ' messages'); }
     }
   </script>
-  <script src="/js/main.js"></script>
 </body>
 </html>

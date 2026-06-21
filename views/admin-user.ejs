@@ -101,7 +101,12 @@
 
   <%- include('partials/footer') %>
   <%- include('partials/notification') %>
+  <script src="/js/main.js"></script>
   <script>
+    function _notify(msg, ok) {
+      if (typeof showNotification === 'function') showNotification(msg, ok);
+      else alert((ok ? 'OK: ' : 'Error: ') + msg);
+    }
     function loginAsUser(id) {
       fetch('/admin/impersonate-token/' + id, {
         method: 'POST',
@@ -110,9 +115,9 @@
         if (data.success) {
           window.open('/auth/impersonate?token=' + data.token, '_blank');
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
-      });
+      }).catch(() => _notify('Network error — action may not have completed', false));
     }
     function deleteMessage(id) {
       if (!confirm('Delete message #' + id + '?')) return;
@@ -126,13 +131,12 @@
           rows.forEach(function(r) {
             if (r.cells[0] && r.cells[0].textContent.trim() === String(id)) r.remove();
           });
-          showNotification(data.message, true);
+          _notify(data.message, true);
         } else {
-          showNotification(data.message, false);
+          _notify(data.message, false);
         }
-      }).catch(() => showNotification('Network error — action may not have completed', false));
+      }).catch(() => _notify('Network error — action may not have completed', false));
     }
   </script>
-  <script src="/js/main.js"></script>
 </body>
 </html>
