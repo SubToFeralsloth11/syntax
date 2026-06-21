@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Settings — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -19,18 +14,18 @@
     <section class="settings-section">
       <div class="container">
         <% if (message) { %>
-          <div class="alert alert-success"><%= message %></div>
+          <div class="alert alert-success"><i data-lucide="check-circle"></i> <%= message %></div>
         <% } %>
         <% if (error) { %>
-          <div class="alert alert-error"><%= error %></div>
+          <div class="alert alert-error"><i data-lucide="alert-circle"></i> <%= error %></div>
         <% } %>
 
         <div class="settings-card">
-          <h2>Profile</h2>
+          <h2><i data-lucide="user"></i> Profile</h2>
           <form action="/settings/profile" method="POST" enctype="multipart/form-data">
             <div class="settings-avatar">
               <img src="<%= avatarUrl(user.avatar) %>" alt="Avatar" class="avatar-preview" id="avatarPreview" onerror="this.src='/images/default-avatar.svg'">
-              <label class="btn btn-sm" for="avatarUpload">Change Photo</label>
+              <label class="btn btn-sm" for="avatarUpload"><i data-lucide="image"></i> Change Photo</label>
               <input type="file" id="avatarUpload" name="avatar" accept="image/*" style="display:none">
             </div>
 
@@ -49,12 +44,12 @@
               <textarea id="bio" name="bio" maxlength="200" placeholder="Tell others about yourself..."><%= user.bio || '' %></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Changes</button>
           </form>
         </div>
 
         <div class="settings-card">
-          <h2>Preferences</h2>
+          <h2><i data-lucide="sliders-horizontal"></i> Preferences</h2>
           <div class="form-group">
             <label class="toggle-label">
               <input type="checkbox" id="rememberMe" <%= user.remember_me !== 0 ? 'checked' : '' %> onchange="toggleRemember(this)">
@@ -65,7 +60,7 @@
         </div>
 
         <div class="settings-card">
-          <h2>Change Password</h2>
+          <h2><i data-lucide="key-round"></i> Change Password</h2>
           <form action="/settings/password" method="POST">
             <div class="form-group">
               <label for="current">Current Password</label>
@@ -79,7 +74,7 @@
               <label for="confirm">Confirm New Password</label>
               <input type="password" id="confirm" name="confirm" required minlength="4">
             </div>
-            <button type="submit" class="btn btn-primary">Change Password</button>
+            <button type="submit" class="btn btn-primary"><i data-lucide="lock"></i> Change Password</button>
           </form>
         </div>
       </div>
@@ -87,6 +82,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     document.getElementById('avatarUpload').addEventListener('change', function(e) {
       if (e.target.files && e.target.files[0]) {

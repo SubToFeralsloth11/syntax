@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Syntax — Game Portal</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Syntax — Game Portal' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -14,27 +9,24 @@
       <div class="container">
         <div class="hero-content">
           <div class="hero-logo">
-            <img src="/images/logo.png?v=1" alt="Syntax" class="hero-logo-img">
+            <img src="/images/logo.svg?v=1" alt="Syntax" class="hero-logo-img">
           </div>
-          <p class="hero-sub">Earn coins. Unlock rewards. Compete with friends.</p>
+          <p class="hero-sub">// earn coins · unlock rewards · compete with friends //</p>
 
           <% if (user) { %>
             <div class="checkin-section">
               <% if (checkedIn) { %>
-                <button class="btn btn-primary btn-lg" disabled>Checked In +<%= streak >= 5 ? 25 : 10 %> coins</button>
-                <p class="streak-info">Streak: <%= streak %> days</p>
+                <button class="btn btn-primary btn-lg" disabled><i data-lucide="check-circle"></i> Checked In +<%= streak >= 5 ? 25 : 10 %></button>
+                <p class="streak-info"><i data-lucide="flame"></i> Streak: <%= streak %> days</p>
               <% } else { %>
                 <button class="btn btn-glow btn-lg" id="checkin-btn" onclick="dailyCheckin()">
-                  Daily Check-in
+                  <i data-lucide="calendar-check"></i> Daily Check-in
                   <span class="btn-sub">+<%= streak >= 4 ? 25 : 10 %> coins</span>
                 </button>
-                <p class="streak-info"><%= streak > 0 ? 'Streak: ' + streak + ' days' : 'Start your streak today!' %></p>
+                <p class="streak-info"><%= streak > 0 ? '<i data-lucide=\"flame\"></i> Streak: ' + streak + ' days' : 'Start your streak today!' %></p>
               <% } %>
               <div class="hero-xp">
-                <div class="xp-bar-wrap">
-                  <div class="xp-bar"><div class="xp-fill" style="width:<%= lvl ? lvl.progress : 0 %>%"></div></div>
-                  <span class="xp-text">Level <%= lvl ? lvl.level : 1 %> — <%= lvl ? lvl.xp : 0 %> XP</span>
-                </div>
+                <%- include('partials/xp-bar', { progress: lvl ? lvl.progress : 0, level: lvl ? lvl.level : 1, xp: lvl ? lvl.xp : 0 }) %>
               </div>
               <% if (questProgress.length > 0) { %>
                 <div class="hero-quests">
@@ -44,13 +36,13 @@
                       <span class="hq-progress"><%= q.progress %>/<%= q.requirement_count %></span>
                     </div>
                   <% }) %>
-                  <a href="/quests" class="btn btn-sm">View All Quests</a>
+                  <a href="/quests" class="btn btn-sm"><i data-lucide="list"></i> View All Quests</a>
                 </div>
               <% } %>
             </div>
           <% } else { %>
             <div class="cta-buttons">
-              <a href="/signup" class="btn btn-glow btn-lg">Get Started</a>
+              <a href="/signup" class="btn btn-glow btn-lg"><i data-lucide="rocket"></i> Get Started</a>
               <a href="/login" class="btn btn-outline btn-lg">Login</a>
             </div>
           <% } %>
@@ -62,22 +54,22 @@
       <div class="container">
         <div class="features-grid">
           <a href="/earn" class="feature-card">
-            <div class="feature-icon" style="background:linear-gradient(135deg,#e74c3c,#f39c12)">W</div>
+            <div class="feature-icon" style="background:linear-gradient(135deg,var(--magenta),var(--purple))"><i data-lucide="disc-3"></i></div>
             <h3>Lucky Wheel</h3>
             <p>Spin to win up to 1000 coins. How lucky are you?</p>
           </a>
           <a href="/earn" class="feature-card">
-            <div class="feature-icon" style="background:linear-gradient(135deg,#3498db,#2ecc71)">T</div>
+            <div class="feature-icon" style="background:linear-gradient(135deg,var(--cyan),var(--success))"><i data-lucide="brain-circuit"></i></div>
             <h3>Trivia</h3>
             <p>Test your knowledge and earn 25 coins every 20 min.</p>
           </a>
           <a href="/earn" class="feature-card">
-            <div class="feature-icon" style="background:linear-gradient(135deg,#f1c40f,#e67e22)">S</div>
+            <div class="feature-icon" style="background:linear-gradient(135deg,var(--gold),#ff8c1a)"><i data-lucide="gift"></i></div>
             <h3>Mystery Box</h3>
             <p>Open mystery boxes with 50+ unique items to collect.</p>
           </a>
           <a href="/chat" class="feature-card">
-            <div class="feature-icon" style="background:linear-gradient(135deg,#9b59b6,#e84393)">C</div>
+            <div class="feature-icon" style="background:linear-gradient(135deg,var(--purple),var(--magenta))"><i data-lucide="message-square"></i></div>
             <h3>Live Chat</h3>
             <p>Chat with other players and tag your friends.</p>
           </a>
@@ -89,7 +81,7 @@
       <div class="container">
         <div class="section-header">
           <h2>Featured Games</h2>
-          <a href="/games" class="btn btn-sm">View All</a>
+          <a href="/games" class="btn btn-sm"><i data-lucide="arrow-right"></i> View All</a>
         </div>
         <div class="game-grid">
           <% games.forEach(game => { %>
@@ -101,9 +93,9 @@
                 <h3><%= game.name %></h3>
                 <p><%= game.description %></p>
                 <% if (game.status === 'coming-soon') { %>
-                  <span class="badge badge-coming">Coming Soon</span>
+                  <span class="badge badge-coming"><i data-lucide="clock"></i> Coming Soon</span>
                 <% } else { %>
-                  <a href="<%= game.url %>" class="btn btn-sm">Play</a>
+                  <a href="<%= game.url %>" class="btn btn-sm"><i data-lucide="play"></i> Play</a>
                 <% } %>
               </div>
             </div>
@@ -114,6 +106,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

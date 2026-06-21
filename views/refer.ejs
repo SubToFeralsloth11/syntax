@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Refer a Friend — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Refer a Friend — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,19 +8,20 @@
     <section class="page-header">
       <div class="container">
         <h1>Refer a Friend</h1>
-        <p>Share your link and earn 100 coins for each friend who joins! (max <%= maxReferrals %> referrals)</p>
+        <p>Share your link and earn 100 coins for each friend who joins (max <%= maxReferrals %>)</p>
       </div>
     </section>
 
     <section class="refer-section">
       <div class="container">
         <div class="refer-card">
-          <h2>Your Referral Link</h2>
+          <h2><i data-lucide="link"></i> Your Referral Link</h2>
           <div class="ref-link-box">
             <input type="text" id="refLink" value="<%= `${process.env.BASE_URL || 'http://localhost:3000'}/ref/${refCode}` %>" readonly>
-            <button class="btn btn-primary" onclick="copyRefLink()">Copy</button>
+            <button class="btn btn-primary" onclick="copyRefLink()" id="copyBtn"><i data-lucide="copy"></i> Copy</button>
           </div>
           <p class="ref-earnings">
+            <i data-lucide="coins" style="width:14px;height:14px"></i>
             You've earned <strong><%= totalEarned %></strong> coins from <strong><%= Math.min(referralCount, maxReferrals) %></strong> referral(s)
             <% if (referralCount >= maxReferrals) { %>
               — max reached!
@@ -39,13 +35,13 @@
               <h3>Your Referrals</h3>
               <% referrals.forEach(r => { %>
                 <div class="referral-item">
-                  <span><%= r.display_name %></span>
+                  <span><i data-lucide="user"></i> <%= r.display_name %></span>
                   <span class="ref-date"><%= new Date(r.created_at).toLocaleDateString() %></span>
                 </div>
               <% }) %>
             </div>
           <% } else { %>
-            <p class="empty-state">No referrals yet. Share your link to start earning!</p>
+            <%- include('partials/empty-state', { icon: 'user-plus', title: 'No referrals yet. Share your link to start earning!', subtitle: '' }) %>
           <% } %>
         </div>
       </div>
@@ -53,17 +49,19 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     function copyRefLink() {
       var input = document.getElementById('refLink');
       input.select();
       input.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(input.value).then(function() {
-        var btn = document.querySelector('.ref-link-box .btn');
-        btn.textContent = 'Copied!';
-        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+        var btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+        if (window.lucide) lucide.createIcons();
+        setTimeout(function() { btn.innerHTML = '<i data-lucide="copy"></i> Copy'; if (window.lucide) lucide.createIcons(); }, 2000);
       }).catch(function() {
-        alert('Failed to copy. Please copy manually.');
+        showNotification('Failed to copy. Please copy manually.', false);
       });
     }
   </script>

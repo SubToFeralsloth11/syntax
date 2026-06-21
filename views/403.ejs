@@ -1,67 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forbidden — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-  <style>
-    .error-page {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      background: var(--bg);
-    }
-    .error-wrapper {
-      max-width: 480px;
-      padding: 48px 40px;
-    }
-    .error-code {
-      font-size: 6rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--error), #e74c3c);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-    .error-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-    .error-desc {
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      line-height: 1.6;
-    }
-    .error-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-  </style>
-</head>
+<%- include('partials/head', { title: 'Forbidden — Syntax' }) %>
 <body>
-  <div class="error-page">
-    <div class="error-wrapper">
-      <div class="error-code">403</div>
+  <div class="error-wrapper" style="--err-grad: linear-gradient(135deg, var(--error), #ff2bd6)">
+    <div class="error-page">
+      <div class="error-code" style="background:linear-gradient(135deg,var(--error),#ff2bd6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(255,85,102,0.4))">403</div>
       <div class="error-title">Access Denied</div>
-      <div class="error-desc">You don't have permission to view this page.</div>
+      <div class="error-desc">// you do not have permission to view this page</div>
       <div class="error-actions">
-        <a href="/" class="btn btn-primary">Go Home</a>
+        <a href="/" class="btn btn-primary"><i data-lucide="home"></i>Go Home</a>
       </div>
     </div>
   </div>
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+    if (window.lucide) lucide.createIcons();
   </script>
 </body>
 </html>

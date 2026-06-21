@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leaderboard — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Leaderboard — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -20,7 +15,7 @@
     <section class="leaderboard-section">
       <div class="container">
         <% if (users.length === 0) { %>
-          <p class="empty-state">No players yet. Be the first!</p>
+          <%- include('partials/empty-state', { icon: 'trophy', title: 'No players yet. Be the first!', subtitle: '' }) %>
         <% } else { %>
           <div class="lb-list">
             <div class="lb-header">
@@ -64,6 +59,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

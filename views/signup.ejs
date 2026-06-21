@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Sign Up — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -14,7 +9,7 @@
       <div class="auth-card">
         <h1>Sign Up</h1>
         <% if (referred) { %>
-          <div class="ref-banner">&#127881; You were referred! Sign up and you'll both earn <strong>100 coins</strong>.</div>
+          <div class="ref-banner"><i data-lucide="party-popper"></i> You were referred! Sign up and you'll both earn <strong>100 coins</strong>.</div>
         <% } %>
         <% if (messages) { %>
           <div class="alert alert-error"><%= messages %></div>
@@ -32,7 +27,7 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required minlength="6">
           </div>
-          <button type="submit" class="btn btn-primary btn-full">Sign Up</button>
+          <button type="submit" class="btn btn-primary btn-full"><i data-lucide="user-plus"></i>Sign Up</button>
         </form>
         <% if (typeof googleEnabled !== 'undefined' && googleEnabled) { %>
         <div class="auth-divider">
@@ -46,6 +41,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

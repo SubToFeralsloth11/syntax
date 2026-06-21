@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Games — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Games — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,7 +8,7 @@
     <section class="page-header">
       <div class="container">
         <h1>Games</h1>
-        <p>Choose a game to play. Visit pages to earn coins!</p>
+        <p>Choose a game to play · visit pages to earn coins</p>
       </div>
     </section>
 
@@ -34,15 +29,15 @@
                 <p><%= game.description %></p>
                 <div class="game-status">
                   <% if (game.status === 'coming-soon') { %>
-                    <span class="badge badge-coming">Coming Soon</span>
+                    <span class="badge badge-coming"><i data-lucide="clock"></i> Coming Soon</span>
                   <% } else { %>
-                    <span class="badge badge-active">Active</span>
+                    <span class="badge badge-active"><i data-lucide="circle-dot"></i> Active</span>
                   <% } %>
                   <% if (visited) { %>
-                    <span class="badge badge-visited">Visited ✓</span>
+                    <span class="badge badge-visited"><i data-lucide="eye"></i> Visited</span>
                   <% } %>
                   <% if (played) { %>
-                    <span class="badge badge-played">Played ✓</span>
+                    <span class="badge badge-played"><i data-lucide="check"></i> Played</span>
                   <% } %>
                 </div>
               </div>
@@ -54,6 +49,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trivia — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Trivia — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -13,38 +8,39 @@
     <section class="page-header">
       <div class="container">
         <h1>Trivia</h1>
-        <p>Answer correctly to earn 25 coins! Resets every 20 minutes.</p>
+        <p>Answer correctly to earn 25 coins · resets every 20 minutes</p>
       </div>
     </section>
 
     <section class="trivia-section">
       <div class="container">
         <div class="trivia-timer">
-          Next question in: <strong id="countdown">--:--</strong>
+          <i data-lucide="timer" style="width:14px;height:14px"></i> Next question in: <strong id="countdown">--:--</strong>
         </div>
         <div class="trivia-card">
           <% if (answered) { %>
             <div class="trivia-result">
               <h2><%= correct ? 'Correct!' : 'Wrong!' %></h2>
               <p><%= correct ? 'You earned 25 coins! Come back after the timer resets for a new question.' : 'Better luck next round!' %></p>
-              <a href="/" class="btn btn-primary">Back to Home</a>
+              <a href="/" class="btn btn-primary"><i data-lucide="home"></i> Back to Home</a>
             </div>
           <% } else if (!question) { %>
             <div class="trivia-loading">
-              <h2>Loading question...</h2>
+              <h2><i data-lucide="loader-circle"></i> Loading question...</h2>
               <p>Please wait while we fetch a question.</p>
-              <a href="/trivia" class="btn">Try Again</a>
+              <a href="/trivia" class="btn"><i data-lucide="refresh-cw"></i> Try Again</a>
             </div>
           <% } else { %>
             <div class="trivia-question">
               <div class="trivia-meta">
-                <span class="badge badge-category"><%= question.category %></span>
-                <span class="badge badge-difficulty"><%= question.difficulty %></span>
+                <span class="badge badge-category"><i data-lucide="tag"></i> <%= question.category %></span>
+                <span class="badge badge-difficulty"><i data-lucide="gauge"></i> <%= question.difficulty %></span>
               </div>
               <h2><%- question.question %></h2>
               <div class="trivia-answers" id="trivia-answers">
                 <% question.answers.forEach(ans => { %>
                   <button class="btn trivia-btn" onclick="submitTriviaAnswer('<%= ans.replace(/'/g, "\\'") %>')">
+                    <i data-lucide="chevron-right"></i>
                     <%- ans %>
                   </button>
                 <% }) %>
@@ -57,6 +53,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script>
     var nextReset = <%= nextReset %>;
     function updateTimer() {

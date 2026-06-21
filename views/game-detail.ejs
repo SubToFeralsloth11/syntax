@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= game.name %> — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: game.name + ' — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
   <main>
     <section class="game-detail-page">
       <div class="container">
-        <a href="/games" class="btn back-link">← Back to Games</a>
+        <a href="/games" class="btn back-link"><i data-lucide="arrow-left"></i> Back to Games</a>
         <div class="game-detail-card">
           <div class="game-detail-icon"><%= game.name[0] %></div>
           <h1><%= game.name %></h1>
@@ -20,14 +15,14 @@
 
           <% if (game.status === 'coming-soon') { %>
             <div class="coming-soon-banner">
-              <h2>Coming Soon</h2>
+              <h2><i data-lucide="clock"></i> Coming Soon</h2>
               <p>This game is being built. Check back later!</p>
             </div>
           <% } else { %>
             <% if (playedToday) { %>
-              <p class="played-msg">You've played this game today ✓</p>
+              <p class="played-msg"><i data-lucide="check-circle"></i> You've played this game today</p>
             <% } else { %>
-              <button class="btn btn-primary btn-lg" onclick="playGame('<%= game.id %>')">Play Now</button>
+              <button class="btn btn-primary btn-lg" onclick="playGame('<%= game.id %>')"><i data-lucide="play"></i> Play Now</button>
             <% } %>
           <% } %>
         </div>
@@ -36,6 +31,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>

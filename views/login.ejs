@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Syntax</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-</head>
+<%- include('partials/head', { title: 'Login — Syntax' }) %>
 <body>
   <%- include('partials/header') %>
 
@@ -31,9 +26,8 @@
               <span>Remember me</span>
             </label>
           </div>
-          <button type="submit" class="btn btn-primary btn-full">Login</button>
+          <button type="submit" class="btn btn-primary btn-full"><i data-lucide="log-in"></i>Login</button>
         </form>
-        <% /* DEBUG: googleEnabled = " + typeof googleEnabled + " */ %>
         <% if (typeof googleEnabled !== 'undefined' && googleEnabled) { %>
         <div class="auth-divider">
           <span>or</span>
@@ -46,6 +40,7 @@
   </main>
 
   <%- include('partials/footer') %>
+  <%- include('partials/notification') %>
   <script src="/js/main.js"></script>
 </body>
 </html>
