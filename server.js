@@ -16,6 +16,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/favicon.ico', (req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.type('image/png');
   res.sendFile(path.join(__dirname, 'public', 'images', 'logo.png'));
 });
