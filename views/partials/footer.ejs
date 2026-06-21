@@ -1,6 +1,6 @@
 <footer class="site-footer">
   <div class="container">
-    <p>&copy; 2024 Syntax. All rights reserved.</p>
+    <p>&lt;SYNTAX/&gt; &mdash; &copy; 2024 All rights reserved</p>
   </div>
 </footer>
 <script>
@@ -15,4 +15,14 @@
     document.getElementById('navToggle').classList.remove('open');
     document.getElementById('mainNav').classList.remove('open');
   }
+  (function () {
+    function initIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+    if (document.readyState !== 'loading') initIcons();
+    else document.addEventListener('DOMContentLoaded', initIcons);
+    document.addEventListener('turbo:load', initIcons);
+  })();
 </script>

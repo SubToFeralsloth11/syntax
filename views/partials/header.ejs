@@ -2,8 +2,8 @@
 <div class="warning-overlay" id="warningOverlay">
   <div class="warning-modal">
     <div class="warning-modal-header">
-      <span class="warning-modal-icon">&#9888;</span>
-      <h2>OFFICIAL WARNING</h2>
+      <span class="warning-modal-icon"><i data-lucide="alert-triangle"></i></span>
+      <h2>Official Warning</h2>
     </div>
     <div class="warning-modal-body">
       <p class="warning-modal-blurb">You have received the following warning(s) from site administration. Continued violations may result in a permanent ban.</p>
@@ -16,7 +16,7 @@
     </div>
     <div class="warning-modal-footer">
       <p class="warning-ack-text">By dismissing this warning, you acknowledge that you have read and understood it.</p>
-      <button class="btn btn-danger btn-lg" onclick="dismissAllWarnings()">I Understand &mdash; Dismiss</button>
+      <button class="btn btn-danger btn-lg" onclick="dismissAllWarnings()"><i data-lucide="check"></i> I Understand &mdash; Dismiss</button>
     </div>
   </div>
 </div>
@@ -46,36 +46,36 @@ function dismissAllWarnings() {
 
 <header class="site-header">
   <div class="container">
-    <a href="/" class="logo"><img src="/images/logo.png?v=1" alt="Syntax" class="logo-img"></a>
-    <nav class="nav" id="mainNav">
-      <a href="/">Home</a>
-      <a href="/games">Games</a>
-      <a href="/earn">Earn</a>
-      <a href="/quests">Quests</a>
-      <a href="/friends">Friends</a>
-      <a href="/trades">Trades</a>
-      <a href="/leaderboard">Leaderboard</a>
-      <a href="/chat">Chat</a>
-      <a href="/refer">Refer</a>
+    <a href="/" class="logo" aria-label="Syntax home"><img src="/images/logo.svg?v=1" alt="Syntax" class="logo-img"></a>
+    <nav class="nav" id="mainNav" aria-label="Primary">
+      <a href="/"><i data-lucide="home"></i>Home</a>
+      <a href="/games"><i data-lucide="gamepad-2"></i>Games</a>
+      <a href="/earn"><i data-lucide="coins"></i>Earn</a>
+      <a href="/quests"><i data-lucide="target"></i>Quests</a>
+      <a href="/friends"><i data-lucide="users"></i>Friends</a>
+      <a href="/trades"><i data-lucide="repeat"></i>Trades</a>
+      <a href="/leaderboard"><i data-lucide="trophy"></i>Ranks</a>
+      <a href="/chat"><i data-lucide="message-square"></i>Chat</a>
+      <a href="/refer"><i data-lucide="gift"></i>Refer</a>
     </nav>
     <div class="user-section">
       <% if (typeof user !== 'undefined' && user) { %>
-        <span class="coins-display"><%= user.coins %> coins</span>
+        <span class="coins-display"><i data-lucide="circle-dollar-sign"></i><%= user.coins %></span>
         <% if (user.role === 'admin') { %>
-          <a href="/admin" class="btn btn-sm btn-glow admin-nav-btn">Admin</a>
+          <a href="/admin" class="btn btn-sm admin-nav-btn"><i data-lucide="shield"></i>Admin</a>
         <% } %>
-        <a href="/settings" class="settings-link" title="Settings">
+        <a href="/settings" class="settings-link" title="Settings" aria-label="Settings">
           <img src="<%= avatarUrl(user.avatar) %>" alt="" class="avatar-small" onerror="this.onerror=null;this.src='/images/default-avatar.svg'">
         </a>
         <a href="/profile" class="profile-link">
           <%= user.display_name %>
           <% if (user.role === 'admin') { %>
-            <span class="owner-badge" title="Owner">Owner</span>
+            <span class="owner-badge">Owner</span>
           <% } %>
         </a>
-        <a href="/logout" class="btn btn-sm">Logout</a>
+        <a href="/logout" class="btn btn-sm"><i data-lucide="log-out"></i></a>
       <% } else { %>
-        <a href="/login" class="btn btn-sm">Login</a>
+        <a href="/login" class="btn btn-sm"><i data-lucide="log-in"></i>Login</a>
         <a href="/signup" class="btn btn-sm btn-primary">Sign Up</a>
       <% } %>
     </div>
