@@ -9,6 +9,17 @@
     </section>
     <section class="friends-section">
       <div class="container">
+
+        <!-- Search box for finding users -->
+        <div class="friend-search-wrap">
+          <h2><i data-lucide="search"></i> Find People</h2>
+          <div class="friend-search-box">
+            <i data-lucide="search" class="friend-search-icon"></i>
+            <input type="text" id="friendSearchInput" placeholder="Search by username..." autocomplete="off">
+            <div class="friend-search-results" id="friendSearchResults" style="display:none"></div>
+          </div>
+        </div>
+
         <% if (pendingReceived.length > 0) { %>
           <h2><i data-lucide="inbox"></i> Requests (<%= pendingReceived.length %>)</h2>
           <div class="friend-list">
@@ -22,22 +33,39 @@
             <% }) %>
           </div>
         <% } %>
-        <h2><i data-lucide="users"></i> Friends (<%= friends.length %>)</h2>
-        <% if (friends.length === 0) { %>
-          <%- include('partials/empty-state', { icon: 'user-x', title: 'No friends yet. Visit someone\'s profile to add them!', subtitle: '' }) %>
-        <% } else { %>
+
+        <% if (pendingSent.length > 0) { %>
+          <h2><i data-lucide="send"></i> Sent Requests (<%= pendingSent.length %>)</h2>
           <div class="friend-list">
-            <% friends.forEach(f => { %>
+            <% pendingSent.forEach(r => { %>
               <div class="friend-row">
-                <a href="/profile/<%= f.id %>"><%= f.display_name %></a>
-                <span class="mono">Level <%= f.level %></span>
-                <span class="online-dot <%= (f.last_active && (Date.now() - new Date(f.last_active).getTime()) < 300000) ? 'online' : '' %>"></span>
-                <button class="btn btn-sm btn-primary" onclick="openDM(<%= f.id %>,'<%= f.display_name.replace(/'/g,"\\\\\'") %>')"><i data-lucide="message-circle"></i> Message</button>
-                <button class="btn btn-sm btn-danger-outline" onclick="removeFriend(<%= f.id %>)"><i data-lucide="user-minus"></i> Remove</button>
+                <a href="/profile/<%= r.id %>"><%= r.display_name %></a>
+                <span class="mono">Level <%= r.level %></span>
+                <span class="badge badge-visited"><i data-lucide="clock"></i> Pending</span>
               </div>
             <% }) %>
           </div>
         <% } %>
+
+        <h2><i data-lucide="users"></i> Friends (<%= friends.length %>)</h2>
+        <% if (friends.length === 0) { %>
+          <%- include('partials/empty-state', { icon: 'user-x', title: 'No friends yet', subtitle: 'Search for someone above to add them!' }) %>
+        <% } else { %>
+          <div class="friend-list">
+            <% friends.forEach(f => { %>
+              <div class="friend-row">
+                <span class="online-dot <%= (f.last_active && (Date.now() - new Date(f.last_active).getTime()) < 300000) ? 'online' : '' %>"></span>
+                <a href="/profile/<%= f.id %>"><%= f.display_name %></a>
+                <span class="mono">Level <%= f.level %></span>
+                <button class="btn btn-sm btn-primary" onclick="openDM(<%= f.id %>,'<%= f.display_name.replace(/'/g,"\\\\\'") %>')"><i data-lucide="message-circle"></i> Message</button>
+                <button class="btn btn-sm" onclick="openGift(<%= f.id %>,'<%= f.display_name.replace(/'/g,"\\\\\'") %>')"><i data-lucide="gift"></i> Gift</button>
+                <button class="btn btn-sm btn-danger-outline" onclick="removeFriend(<%= f.id %>)"><i data-lucide="user-minus"></i></button>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <!-- DM modal -->
         <div class="modal-overlay hidden" id="dmOverlay">
           <div class="modal" style="max-width:520px" role="dialog" aria-modal="true" aria-label="Direct messages">
             <div class="modal-header">
@@ -53,6 +81,56 @@
             </div>
           </div>
         </div>
+
+        <!-- Gift modal -->
+        <div class="modal-overlay hidden" id="giftOverlay">
+          <div class="modal" style="max-width:480px" role="dialog" aria-modal="true" aria-label="Send gift">
+            <div class="modal-header">
+              <h2><i data-lucide="gift"></i> Gift <span id="giftTargetName"></span></h2>
+              <button class="modal-close" onclick="closeGift()" aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+              <!-- Gift coins tab -->
+              <div class="gift-section">
+                <h3 style="font-size:0.9rem;margin-bottom:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px"><i data-lucide="coins"></i> Send Coins</h3>
+                <div class="form-group">
+                  <label>Amount (you have <span id="giftMyBalance"><%= myCoins %></span> coins)</label>
+                  <div class="plan-input-row">
+                    <input type="number" id="giftCoinAmount" min="1" placeholder="Amount" class="plan-input">
+                    <div class="plan-quick-btns">
+                      <button class="btn btn-xs quick-btn" onclick="document.getElementById('giftCoinAmount').value=50">50</button>
+                      <button class="btn btn-xs quick-btn" onclick="document.getElementById('giftCoinAmount').value=100">100</button>
+                      <button class="btn btn-xs quick-btn" onclick="document.getElementById('giftCoinAmount').value=<%= myCoins %>">All</button>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-full" onclick="sendGiftCoins()"><i data-lucide="send"></i> Send Coins</button>
+              </div>
+
+              <!-- Gift items tab -->
+              <% if (myInventory.length > 0) { %>
+              <div class="gift-section" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+                <h3 style="font-size:0.9rem;margin-bottom:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px"><i data-lucide="backpack"></i> Send an Item</h3>
+                <div class="gift-item-list">
+                  <% myInventory.forEach(item => { %>
+                    <div class="gift-item-row" onclick="sendGiftItem(<%= item.id %>, '<%= item.item_name.replace(/'/g,"\\'") %>')">
+                      <span class="gift-item-icon"><i data-lucide="<%= item.item_type === 'frame' ? 'square' : item.item_type === 'badge' ? 'medal' : 'quote' %>"></i></span>
+                      <span class="gift-item-name"><%= item.item_name %></span>
+                      <span class="gift-item-type"><%= item.item_type %></span>
+                      <i data-lucide="chevron-right" class="gift-item-go"></i>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <% } else { %>
+              <div class="gift-section" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+                <p class="empty-state" style="padding:16px">// no spare items to gift //</p>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   </main>
@@ -62,9 +140,61 @@
   <script>
     var dmFriendId = null;
     var dmInterval = null;
-    function acceptRequest(id) { fetch('/friends/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)location.reload()}) }
-    function rejectRequest(id) { fetch('/friends/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)location.reload()}) }
-    function removeFriend(id) { if(confirm('Remove friend?')){fetch('/friends/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success||d.message)location.reload()})} }
+    var giftFriendId = null;
+    var searchTimeout = null;
+
+    // ---- Friend search ----
+    var searchInput = document.getElementById('friendSearchInput');
+    var searchResults = document.getElementById('friendSearchResults');
+
+    searchInput.addEventListener('input', function() {
+      var q = this.value.trim();
+      clearTimeout(searchTimeout);
+      if (q.length < 1) { searchResults.style.display = 'none'; return; }
+      searchTimeout = setTimeout(function() {
+        fetch('/friends/search?q=' + encodeURIComponent(q))
+          .then(r => r.json())
+          .then(data => {
+            if (!data.users || data.users.length === 0) {
+              searchResults.innerHTML = '<div class="search-result-item search-no-results">// no users found //</div>';
+              searchResults.style.display = 'block';
+              return;
+            }
+            searchResults.innerHTML = data.users.map(function(u) {
+              var badge = '';
+              if (u.friend_status === 'friends') badge = '<span class="badge badge-active" style="margin-left:auto"><i data-lucide="check"></i> Friends</span>';
+              else if (u.friend_status === 'sent') badge = '<span class="badge badge-visited" style="margin-left:auto"><i data-lucide="clock"></i> Sent</span>';
+              else if (u.friend_status === 'received') badge = '<span class="badge badge-category" style="margin-left:auto"><i data-lucide="inbox"></i> Received</span>';
+              else badge = '<button class="btn btn-xs btn-primary" style="margin-left:auto" onclick="addFriend(' + u.id + ')"><i data-lucide="user-plus"></i> Add</button>';
+              return '<div class="search-result-item">' +
+                '<img src="' + (u.avatar ? '/uploads/avatars/' + u.avatar : '/images/default-avatar.svg') + '" class="search-result-avatar" onerror="this.src=\'/images/default-avatar.svg\'">' +
+                '<div class="search-result-info"><strong>' + escapeHtml(u.display_name) + '</strong><span class="mono">Level ' + u.level + '</span></div>' +
+                badge +
+              '</div>';
+            }).join('');
+            searchResults.style.display = 'block';
+            if (window.lucide) lucide.createIcons();
+          });
+      }, 200);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.friend-search-box')) searchResults.style.display = 'none';
+    });
+
+    function escapeHtml(t) { var d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+    function addFriend(id) {
+      fetch('/friends/add', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})})
+        .then(r=>r.json()).then(d=>{ showNotification(d.message, d.success!==false); if(d.success) searchInput.value=''; searchResults.style.display='none'; });
+    }
+
+    // ---- Friend requests ----
+    function acceptRequest(id) { fetch('/friends/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success)setTimeout(()=>location.reload(),800)}) }
+    function rejectRequest(id) { fetch('/friends/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success)setTimeout(()=>location.reload(),800)}) }
+    function removeFriend(id) { if(confirm('Remove friend?')){fetch('/friends/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:id})}).then(r=>r.json()).then(d=>{showNotification(d.message,d.success!==false);if(d.success)setTimeout(()=>location.reload(),800)})} }
+
+    // ---- DMs ----
     function openDM(id,name) {
       dmFriendId = id;
       document.getElementById('dmTitle').textContent = 'DM: ' + name;
@@ -85,9 +215,53 @@
       var msg = document.getElementById('dmInput').value.trim();
       if(!msg || !dmFriendId) return;
       fetch('/friends/dm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:dmFriendId,message:msg})}).then(r=>r.json()).then(d=>{
-        if(d.success) { document.getElementById('dmInput').value = ''; loadDMs(); } else showNotification(d.message,false);
+        if(d.success) { document.getElementById('dmInput').value=''; loadDMs(); } else showNotification(d.message,false);
       });
     }
+
+    // ---- Gifts ----
+    function openGift(id, name) {
+      giftFriendId = id;
+      document.getElementById('giftTargetName').textContent = name;
+      document.getElementById('giftOverlay').classList.remove('hidden');
+    }
+    function closeGift() {
+      document.getElementById('giftOverlay').classList.add('hidden');
+      giftFriendId = null;
+      document.getElementById('giftCoinAmount').value = '';
+    }
+    function sendGiftCoins() {
+      var amt = parseInt(document.getElementById('giftCoinAmount').value) || 0;
+      if (amt < 1) return showNotification('Enter an amount', false);
+      fetch('/friends/gift-coins', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:giftFriendId,amount:amt})})
+        .then(r=>r.json()).then(d=>{
+          showNotification(d.message, d.success!==false);
+          if (d.success) {
+            closeGift();
+            setTimeout(()=>location.reload(), 800);
+          }
+        });
+    }
+    function sendGiftItem(itemId, itemName) {
+      if (!confirm('Gift "' + itemName + '" to this friend?')) return;
+      fetch('/friends/gift-item', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({friendId:giftFriendId,itemId:itemId})})
+        .then(r=>r.json()).then(d=>{
+          showNotification(d.message, d.success!==false);
+          if (d.success) {
+            closeGift();
+            setTimeout(()=>location.reload(), 800);
+          }
+        });
+    }
+
+    // Escape closes modals
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (!document.getElementById('dmOverlay').classList.contains('hidden')) closeDM();
+        if (!document.getElementById('giftOverlay').classList.contains('hidden')) closeGift();
+      }
+    });
+
     <% if (typeof query !== 'undefined' && query.dm) { %>setTimeout(function(){ openDM(<%= query.dm %>, 'Friend'); }, 500);<% } %>
   </script>
 </body>

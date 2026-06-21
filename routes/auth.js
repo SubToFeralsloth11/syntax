@@ -44,16 +44,22 @@ router.get('/signup', (req, res) => {
 
 router.post('/signup', (req, res, next) => {
   const { email, password, display_name } = req.body;
+  const ge = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  const referred = !!req.cookies?.ref;
 
   if (!email || !password) {
-    const ge = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
-    return res.render('signup', { googleEnabled: ge, messages: 'Email and password are required' });
+    return res.render('signup', { googleEnabled: ge, messages: 'Email and password are required', referred });
+  }
+
+  // Require .eq.edu.au email for new accounts
+  const domain = email.split('@')[1] || '';
+  if (!domain.toLowerCase().endsWith('eq.edu.au')) {
+    return res.render('signup', { googleEnabled: ge, messages: 'You must use a Queensland Education email (e.g. name@eq.edu.au)', referred });
   }
 
   const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
   if (existing) {
-    const ge = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
-    return res.render('signup', { googleEnabled: ge, messages: 'Email already registered' });
+    return res.render('signup', { googleEnabled: ge, messages: 'This email is already registered', referred });
   }
 
   const hash = bcrypt.hashSync(password, 10);

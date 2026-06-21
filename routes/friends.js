@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/auth');
+const { awardCoins, getBalance } = require('../middleware/currency');
 
 // Public profile
 router.get('/profile/:id', requireAuth, (req, res) => {
@@ -118,7 +119,83 @@ router.get('/friends', requireAuth, (req, res) => {
     WHERE f.friend_id = ? AND f.status = 'pending'
   `).all(userId);
 
-  res.render('friends', { friends, pendingSent, pendingReceived, query: req.query });
+  // User's own inventory for gifting
+  const myInventory = db.prepare(
+    "SELECT id, item_name, item_type, rarity, equipped FROM inventory_items WHERE user_id = ? AND equipped = 0 ORDER BY item_type, item_name"
+  ).all(userId);
+
+  res.render('friends', { friends, pendingSent, pendingReceived, query: req.query, myInventory, myCoins: req.user.coins });
+});
+
+// Search users by display name (for friend requests)
+router.get('/friends/search', requireAuth, (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 1) return res.json({ users: [] });
+
+  const userId = req.user.id;
+  const results = db.prepare(`
+    SELECT u.id, u.display_name, u.avatar, u.level,
+      CASE
+        WHEN f.status = 'accepted' THEN 'friends'
+        WHEN f.user_id = ? AND f.status = 'pending' THEN 'sent'
+        WHEN f.friend_id = ? AND f.status = 'pending' THEN 'received'
+        ELSE 'none'
+      END as friend_status
+    FROM users u
+    LEFT JOIN friends f ON (f.user_id = ? AND f.friend_id = u.id) OR (f.friend_id = ? AND f.user_id = u.id)
+    WHERE u.id != ? AND u.display_name LIKE ?
+    ORDER BY u.display_name ASC
+    LIMIT 10
+  `).all(userId, userId, userId, userId, userId, '%' + q + '%');
+
+  res.json({ users: results });
+});
+
+// Gift coins to a friend
+router.post('/friends/gift-coins', requireAuth, (req, res) => {
+  const { friendId, amount } = req.body;
+  const amt = parseInt(amount);
+  const fid = parseInt(friendId);
+
+  if (!fid || isNaN(amt) || amt <= 0) {
+    return res.json({ success: false, message: 'Invalid gift' });
+  }
+
+  const areFriends = db.prepare(
+    "SELECT id FROM friends WHERE ((user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)) AND status = 'accepted'"
+  ).get(req.user.id, fid, fid, req.user.id);
+
+  if (!areFriends) return res.json({ success: false, message: 'You can only gift friends' });
+
+  const balance = getBalance(req.user.id);
+  if (balance < amt) return res.json({ success: false, message: 'Not enough coins' });
+
+  awardCoins(req.user.id, -amt, 'gift_sent');
+  awardCoins(fid, amt, 'gift_received');
+
+  res.json({ success: true, message: 'Gifted ' + amt + ' coins!', newBalance: getBalance(req.user.id) });
+});
+
+// Gift an inventory item to a friend
+router.post('/friends/gift-item', requireAuth, (req, res) => {
+  const { friendId, itemId } = req.body;
+  const fid = parseInt(friendId);
+  const iid = parseInt(itemId);
+
+  if (!fid || !iid) return res.json({ success: false, message: 'Invalid gift' });
+
+  const areFriends = db.prepare(
+    "SELECT id FROM friends WHERE ((user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)) AND status = 'accepted'"
+  ).get(req.user.id, fid, fid, req.user.id);
+
+  if (!areFriends) return res.json({ success: false, message: 'You can only gift friends' });
+
+  const item = db.prepare('SELECT * FROM inventory_items WHERE id = ? AND user_id = ? AND equipped = 0').get(iid, req.user.id);
+  if (!item) return res.json({ success: false, message: 'Item not found or equipped' });
+
+  db.prepare('UPDATE inventory_items SET user_id = ? WHERE id = ?').run(fid, iid);
+
+  res.json({ success: true, message: 'Gifted ' + item.item_name + '!' });
 });
 
 // DMs
