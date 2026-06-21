@@ -161,7 +161,7 @@ app.get('/games/funny-shooter', (req, res) => {
   res.type('html').send(html);
 });
 
-// Serve Funny Shooter Unity WebGL assets
+// Serve Funny Shooter 2 Unity WebGL assets
 const funnyShooterDir = path.join(__dirname, 'games', 'funny-shooter');
 app.use('/games/funny-shooter', express.static(funnyShooterDir));
 
