@@ -80,6 +80,17 @@ function avatarUrl(avatar) {
 }
 app.locals.avatarUrl = avatarUrl;
 
+function frameTier(name) {
+  if (!name) return null;
+  const n = name.toLowerCase();
+  if (n.includes('diamond')) return 'diamond';
+  if (n.includes('gold')) return 'gold';
+  if (n.includes('silver')) return 'silver';
+  if (n.includes('bronze')) return 'bronze';
+  return null;
+}
+app.locals.frameTier = frameTier;
+
 function injectGameNav(html) {
   const backBtn = `
 <style>

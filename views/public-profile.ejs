@@ -16,7 +16,19 @@
           <div class="profile-sidebar">
             <div class="profile-card">
               <div class="profile-avatar">
-                <img src="<%= avatarUrl(profile.avatar) %>" alt="" class="avatar-profile" onerror="this.src='/images/default-avatar.svg'">
+                <div class="avatar-frame avatar-frame-<%= frameTier(profile.equipped_frame) || 'none' %>">
+                  <img src="<%= avatarUrl(profile.avatar) %>" alt="" class="avatar-profile" onerror="this.src='/images/default-avatar.svg'">
+                  <% if (frameTier(profile.equipped_frame) === 'diamond') { %>
+                    <div class="diamond-gems"><span></span><span></span><span></span><span></span></div>
+                    <div class="diamond-particles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <% } else if (frameTier(profile.equipped_frame) === 'gold') { %>
+                    <div class="gold-particles"><span></span><span></span><span></span><span></span><span></span></div>
+                  <% } else if (frameTier(profile.equipped_frame) === 'silver') { %>
+                    <div class="silver-particles"><span></span><span></span><span></span><span></span></div>
+                  <% } else if (frameTier(profile.equipped_frame) === 'bronze') { %>
+                    <div class="bronze-particles"><span></span><span></span><span></span></div>
+                  <% } %>
+                </div>
               </div>
               <% if (profile.equipped_title) { %><p class="equipped-title">"<%= profile.equipped_title %>"</p><% } %>
               <% if (profile.bio) { %><p class="profile-bio"><%= profile.bio %></p><% } %>

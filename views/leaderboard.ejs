@@ -25,18 +25,10 @@
               <span class="lb-h-coins">All Time</span>
               <span class="lb-h-balance">Current</span>
             </div>
-            <% users.forEach((u, i) => {
-              const frameColor = u.equipped_frame
-                ? u.equipped_frame.includes('Bronze') ? '#cd7f32'
-                : u.equipped_frame.includes('Silver') ? '#c0c0c0'
-                : u.equipped_frame.includes('Gold') ? '#ffd700'
-                : u.equipped_frame.includes('Diamond') ? '#b9f2ff'
-                : 'transparent'
-                : 'transparent';
-            %>
+            <% users.forEach((u, i) => { %>
               <div class="lb-row <%= u.id === user.id ? 'highlight' : '' %>">
                 <span class="lb-rank"><%= i + 1 %></span>
-                <span class="lb-avatar-wrap" <% if (frameColor !== 'transparent') { %>style="border-color:<%= frameColor %>;border-width:3px;border-style:solid"<% } %>>
+                <span class="lb-avatar-wrap avatar-frame avatar-frame-<%= frameTier(u.equipped_frame) || 'none' %>">
                   <img src="<%= avatarUrl(u.avatar) %>" alt="" class="lb-avatar-img" onerror="this.parentElement.classList.add('fallback');this.outerHTML='<span class=lb-letter><%= u.display_name[0] %></span>'">
                 </span>
                 <span class="lb-player">
