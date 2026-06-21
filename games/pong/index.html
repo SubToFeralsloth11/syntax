@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Pong</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#e0e0e0;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:1rem}
+h1{font-size:1.5rem;margin-bottom:0.5rem;color:#00f0ff;text-shadow:0 0 10px #00f0ff44}
+h1 span{color:#b537f2}
+.scores{display:flex;gap:3rem;font-size:1.8rem;margin-bottom:0.5rem}
+.scores .p{color:#00f0ff}.scores .a{color:#b537f2}
+.info{display:flex;gap:1rem;margin-bottom:0.5rem;font-size:0.8rem;color:#555}
+canvas{border:1px solid #222;border-radius:4px;background:#111}
+.controls{margin-top:0.8rem;display:flex;gap:0.5rem;align-items:center}
+.controls button,.controls select{background:#111;border:1px solid #333;color:#aaa;padding:0.4rem 1rem;font-family:inherit;cursor:pointer;border-radius:3px}
+.controls button:hover,.controls select:hover{border-color:#00f0ff;color:#00f0ff}
+.restart{margin-top:0.8rem;background:#111;border:1px solid #b537f2;color:#b537f2;padding:0.5rem 1.5rem;font-family:inherit;cursor:pointer;font-size:0.9rem;border-radius:3px;transition:all .2s}
+.restart:hover{background:#b537f2;color:#0a0a14}
+</style>
+</head>
+<body>
+<h1>SYNTAX <span>// Pong</span></h1>
+<div class="scores"><div class="p" id="ps">0</div><div style="color:#333">:</div><div class="a" id="as">0</div></div>
+<div class="info"><span>W/S — Player 1</span><span>↑/↓ — Player 2 / AI</span></div>
+<canvas id="c" width="600" height="400"></canvas>
+<div class="controls">
+<select id="mode"><option value="ai">vs AI</option><option value="p2">2 Player</option></select>
+<button onclick="startGame()">Restart</button>
+</div>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+const PW=12,PH=70,PS=6,BR=6;
+let p1,p2,ball,ps,as,keys={},running,speed,mode;
+function startGame(){
+mode=document.getElementById('mode').value;
+ps=0;as=0;speed=4;running=true;keys={};
+document.getElementById('ps').textContent=0;document.getElementById('as').textContent=0;
+p1={x:15,y:cv.height/2-PH/2,w:PW,h:PH,score:0};
+p2={x:cv.width-15-PW,y:cv.height/2-PH/2,w:PW,h:PH,score:0};
+resetBall();requestAnimationFrame(loop)
+}
+function resetBall(){
+ball={x:cv.width/2,y:cv.height/2,dx:speed*(Math.random()>0.5?1:-1),dy:speed*(Math.random()-.5),r:BR}
+}
+function loop(){if(!running)return;update();draw();requestAnimationFrame(loop)}
+function update(){
+if(keys.KeyW)p1.y=Math.max(0,p1.y-PS);
+if(keys.KeyS)p1.y=Math.min(cv.height-PH,p1.y+PS);
+if(mode==='ai'){const t=ball.y-p2.y-PH/2;p2.y+=t*0.06}
+else{if(keys.ArrowUp)p2.y=Math.max(0,p2.y-PS);
+if(keys.ArrowDown)p2.y=Math.min(cv.height-PH,p2.y+PS)}
+ball.x+=ball.dx;ball.y+=ball.dy;
+if(ball.y-ball.r<0||ball.y+ball.r>cv.height)ball.dy*=-1;
+function paddleHit(p){
+if(ball.x+ball.r>p.x&&ball.x-ball.r<p.x+p.w&&ball.y+ball.r>p.y&&ball.y-ball.r<p.y+p.h){
+ball.dx*=-1;let hit=(ball.y-(p.y+p.h/2))/(p.h/2);ball.dy=hit*5;
+speed=Math.min(12,Math.abs(ball.dx)+0.3);ball.dx=ball.dx>0?speed:-speed;
+return true}return false}
+if(!paddleHit(p1)){if(ball.x<0){p2.score++;as=p2.score;document.getElementById('as').textContent=as;
+if(p2.score>=11){running=false;cx.fillStyle='#b537f2';cx.font='32px Courier New';cx.textAlign='center';cx.fillText('AI WINS',cv.width/2,cv.height/2);return}
+resetBall();speed=4}}
+if(!paddleHit(p2)){if(ball.x>cv.width){p1.score++;ps=p1.score;document.getElementById('ps').textContent=ps;
+if(p1.score>=11){running=false;cx.fillStyle='#00f0ff';cx.font='32px Courier New';cx.textAlign='center';cx.fillText('YOU WIN',cv.width/2,cv.height/2);return}
+resetBall();speed=4}}
+}
+function draw(){
+cx.fillStyle='#111';cx.fillRect(0,0,cv.width,cv.height);
+cx.strokeStyle='#333';cx.setLineDash([8,8]);cx.beginPath();cx.moveTo(cv.width/2,0);cx.lineTo(cv.width/2,cv.height);cx.stroke();cx.setLineDash([]);
+cx.fillStyle='#00f0ff';cx.shadowColor='#00f0ff';cx.shadowBlur=10;cx.fillRect(p1.x,p1.y,p1.w,p1.h);
+cx.fillStyle='#b537f2';cx.shadowColor='#b537f2';cx.fillRect(p2.x,p2.y,p2.w,p2.h);
+cx.fillStyle='#fff';cx.shadowColor='#fff';cx.shadowBlur=8;cx.beginPath();cx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);cx.fill();
+cx.shadowBlur=0}
+document.addEventListener('keydown',e=>{keys[e.code]=true});
+document.addEventListener('keyup',e=>{keys[e.code]=false});
+document.getElementById('mode').addEventListener('change',startGame);
+startGame()
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Bubble Shooter</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#fff;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px}
+h1{font-size:2em;margin-bottom:5px;color:#00f0ff;text-shadow:0 0 20px #00f0ff55}
+.info{display:flex;gap:40px;margin:5px 0;font-size:1.1em}
+.info span{color:#b537f2}
+canvas{border:2px solid #00f0ff;box-shadow:0 0 30px #00f0ff33;cursor:crosshair}
+.controls{margin-top:15px;display:flex;gap:10px}
+button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:10px 24px;font-family:inherit;font-size:1em;cursor:pointer;transition:all .2s}
+button:hover{background:#b537f233;color:#fff}
+</style>
+</head>
+<body>
+<h1>SYNTAX // Bubble Shooter</h1>
+<div class="info">
+<div>SCORE: <span id="score">0</span></div>
+<div>LEVEL: <span id="level">1</span></div>
+</div>
+<canvas id="game" width="480" height="600"></canvas>
+<div class="controls">
+<button onclick="resetGame()">RESTART</button>
+</div>
+<script>
+const canvas=document.getElementById('game');
+const ctx=canvas.getContext('2d');
+const W=480,H=600;
+const COLS=10,BUBBLE_R=20,ROW_H=34;
+const COLORS=['#ff3344','#33ff66','#3366ff','#ffcc00','#ff66cc','#00ccff'];
+
+let grid,shooter,shooting,shot,bubbles,score,level,nextColor,gameOver,aimAngle;
+
+function init(){
+grid=[];score=0;level=1;gameOver=false;
+shooter={x:W/2,y:H-50};aimAngle=-Math.PI/2;
+shooting=false;shot=null;nextColor=pickColor();
+bubbles=[];
+addRows(5);
+initShooter();
+render();
+}
+
+function pickColor(){
+const rowColors=[];
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+if(grid[r][c])rowColors.push(grid[r][c]);
+}
+}
+if(rowColors.length===0)return COLORS[Math.floor(Math.random()*COLORS.length)];
+return rowColors[Math.floor(Math.random()*rowColors.length)];
+}
+
+function addRows(n){
+for(let i=0;i<n;i++){
+const r=grid.length;
+const offset=(r%2===0)?0:BUBBLE_R;
+const row=[];
+for(let c=0;c<COLS+(r%2===0?0:0);c++){
+const x=offset+c*BUBBLE_R*2+BUBBLE_R;
+if(x-BUBBLE_R<W){
+row.push({color:COLORS[Math.floor(Math.random()*COLORS.length)],x:x,y:r*ROW_H+BUBBLE_R,r:BUBBLE_R});
+}else{
+row.push(null);
+}
+}
+grid.push(row);
+}
+}
+
+function initShooter(){
+shooter.nextColor=pickColor();
+}
+
+function render(){
+ctx.fillStyle='#0a0a14';
+ctx.fillRect(0,0,W,H);
+
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+const b=grid[r][c];
+if(!b)continue;
+drawBubble(b.x,b.y,b.r,b.color);
+}
+}
+
+if(shot){
+drawBubble(shot.x,shot.y,shot.r,shot.color);
+}
+
+if(!gameOver){
+ctx.save();
+ctx.translate(shooter.x,shooter.y);
+ctx.rotate(aimAngle);
+ctx.fillStyle='#333';
+ctx.fillRect(-3,0,6,-40);
+ctx.restore();
+drawBubble(shooter.x,shooter.y,18,shooter.nextColor);
+}
+
+for(const b of bubbles){
+drawBubble(b.x,b.y,b.r,b.color);
+}
+
+document.getElementById('score').textContent=score;
+document.getElementById('level').textContent=level;
+}
+
+function drawBubble(x,y,r,color){
+ctx.beginPath();
+ctx.arc(x,y,r,0,Math.PI*2);
+ctx.fillStyle=color;
+ctx.fill();
+ctx.strokeStyle='#ffffff44';
+ctx.lineWidth=2;
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(x-r*0.3,y-r*0.3,r*0.25,0,Math.PI*2);
+ctx.fillStyle='#ffffff33';
+ctx.fill();
+}
+
+function update(){
+if(shot){
+shot.x+=Math.cos(aimAngle)*12;
+shot.y+=Math.sin(aimAngle)*12;
+if(shot.x<shot.r||shot.x>W-shot.r)aimAngle=Math.PI-aimAngle;
+if(shot.y<shot.r){
+snapBubble();
+return;
+}
+checkCollision();
+}
+requestAnimationFrame(update);
+render();
+}
+
+function checkCollision(){
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+const b=grid[r][c];
+if(!b)continue;
+const dx=shot.x-b.x,dy=shot.y-b.y;
+if(Math.sqrt(dx*dx+dy*dy)<shot.r+b.r){
+snapBubble();
+return;
+}
+}
+}
+}
+
+function snapBubble(){
+let bestR=0,bestC=0,bestDist=Infinity;
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+const b=grid[r][c];
+if(!b)continue;
+const dx=shot.x-b.x,dy=shot.y-b.y;
+const dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<bestDist){bestDist=dist;bestR=r;bestC=c;}
+}
+}
+const neighbors=getNeighbors(bestR,bestC);
+let emptySpot=null;
+for(const[nr,nc]of neighbors){
+if(inBounds(nr,nc)&&(!grid[nr]||!grid[nr][nc])){
+emptySpot=[nr,nc];break;
+}
+}
+if(!emptySpot){
+emptySpot=[bestR+1,(bestC+(bestR%2===0?0:0))];
+}
+
+const[tr,tc]=emptySpot;
+while(grid.length<=tr)grid.push([]);
+while(grid[tr].length<=tc)grid[tr].push(null);
+grid[tr][tc]={color:shot.color,x:0,y:0,r:BUBBLE_R};
+updateBubblePositions();
+
+const matches=findMatches(tr,tc,shot.color);
+if(matches.length>=3){
+for(const[mr,mc]of matches){
+grid[mr][mc]=null;
+}
+score+=matches.length*10;
+dropFloating();
+cleanGrid();
+if(level%3===0)addRows(1);
+level++;
+}
+
+shooting=false;shot=null;
+shooter.nextColor=shooter.nextColor;
+const newColor=pickColor();
+shooter.nextColor=newColor;
+checkGameOver();
+}
+
+function findMatches(r,c,color){
+const visited=new Set();
+const matches=[];
+const queue=[[r,c]];
+visited.add(`${r},${c}`);
+while(queue.length){
+const[cr,cc]=queue.shift();
+if(!grid[cr]||!grid[cr][cc])continue;
+if(grid[cr][cc].color!==color)continue;
+matches.push([cr,cc]);
+for(const[nr,nc]of getNeighbors(cr,cc)){
+const key=`${nr},${nc}`;
+if(!visited.has(key)&&inBounds(nr,nc)&&grid[nr]&&grid[nr][nc]&&grid[nr][nc].color===color){
+visited.add(key);queue.push([nr,nc]);
+}
+}
+}
+return matches;
+}
+
+function getNeighbors(r,c){
+const even=r%2===0;
+const dirs=even?[[-1,-1],[-1,0],[0,-1],[0,1],[1,-1],[1,0]]:[[-1,0],[-1,1],[0,-1],[0,1],[1,0],[1,1]];
+return dirs.map(([dr,dc])=>[r+dr,c+dc]);
+}
+
+function inBounds(r,c){
+return r>=0&&c>=0;
+}
+
+function dropFloating(){
+const connected=new Set();
+const queue=[];
+for(let c=0;c<grid[0].length;c++){
+if(grid[0][c]){
+queue.push([0,c]);
+connected.add(`0,${c}`);
+}
+}
+while(queue.length){
+const[cr,cc]=queue.shift();
+for(const[nr,nc]of getNeighbors(cr,cc)){
+const key=`${nr},${nc}`;
+if(!connected.has(key)&&inBounds(nr,nc)&&grid[nr]&&grid[nr][nc]){
+connected.add(key);queue.push([nr,nc]);
+}
+}
+}
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+if(grid[r][c]&&!connected.has(`${r},${c}`)){
+bubbles.push({x:grid[r][c].x,y:grid[r][c].y,r:grid[r][c].r,color:grid[r][c].color,vy:0});
+grid[r][c]=null;
+}
+}
+}
+}
+
+function cleanGrid(){
+while(grid.length&&grid[grid.length-1].every(c=>c===null))grid.pop();
+updateBubblePositions();
+}
+
+function updateBubblePositions(){
+for(let r=0;r<grid.length;r++){
+const offset=(r%2===0)?0:BUBBLE_R;
+for(let c=0;c<grid[r].length;c++){
+if(grid[r][c]){
+grid[r][c].x=offset+c*BUBBLE_R*2+BUBBLE_R;
+grid[r][c].y=r*ROW_H+BUBBLE_R;
+}
+}
+}
+}
+
+function checkGameOver(){
+for(let r=0;r<grid.length;r++){
+for(let c=0;c<grid[r].length;c++){
+if(grid[r][c]&&grid[r][c].y+grid[r][c].r>=H-80){
+gameOver=true;
+return;
+}
+}
+}
+}
+
+canvas.addEventListener('mousemove',e=>{
+if(gameOver||shooting)return;
+const rect=canvas.getBoundingClientRect();
+const mx=e.clientX-rect.left;const my=e.clientY-rect.top;
+aimAngle=Math.atan2(my-shooter.y,mx-shooter.x);
+if(aimAngle>-0.1)aimAngle=-0.1;
+if(aimAngle<-Math.PI+0.1)aimAngle=-Math.PI+0.1;
+});
+
+canvas.addEventListener('click',()=>{
+if(gameOver||shooting)return;
+shooting=true;
+shot={x:shooter.x,y:shooter.y,r:BUBBLE_R,color:shooter.nextColor};
+});
+
+function resetGame(){init();}
+
+init();
+update();
+</script>
+</body>
+</html>

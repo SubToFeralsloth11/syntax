@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Tetris</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
+.container{display:flex;gap:25px;align-items:flex-start}
+h1{font-size:1.6rem;margin-bottom:5px;background:linear-gradient(135deg,#00f0ff,#b537f2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.left{text-align:center}
+.right{display:flex;flex-direction:column;gap:15px}
+.board{display:grid;grid-template-columns:repeat(10,28px);grid-template-rows:repeat(20,28px);gap:1px;background:#12121e;border:2px solid #222;border-radius:6px;padding:2px}
+.cell{width:28px;height:28px;background:#1a1a30;border-radius:2px}
+.filled{border:1px solid rgba(255,255,255,.15)}
+.info-box{background:#12121e;border:1px solid #222;border-radius:8px;padding:12px 18px;min-width:110px}
+.info-box .label{font-size:.6rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.info-box .value{font-size:1.2rem;font-weight:700;color:#00f0ff}
+.next-grid{display:grid;grid-template-columns:repeat(4,22px);grid-template-rows:repeat(4,22px);gap:1px;margin-top:5px}
+.nc{width:22px;height:22px;background:#1a1a30;border-radius:2px}
+.nf{border:1px solid rgba(255,255,255,.1)}
+.controls{margin-top:15px;display:flex;gap:10px;justify-content:center}
+button{background:linear-gradient(135deg,#00f0ff,#b537f2);border:none;color:#0a0a14;padding:10px 25px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:opacity .2s}
+button:hover{opacity:.85}
+.key-hint{font-size:.65rem;color:#555;margin-top:10px;text-align:center;line-height:1.6}
+.c0{background:#1a1a30}.c1{background:#00f0ff}.c2{background:#b537f2}.c3{background:#ff6b35}.c4{background:#ffcc00}.c5{background:#00ff88}.c6{background:#ff4040}.c7{background:#4080ff}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="left">
+<h1>TETRIS</h1>
+<div class="board" id="board"></div>
+<div class="key-hint">← → Move | ↑ Rotate | ↓ Soft Drop | Space Hard Drop</div>
+<div class="controls"><button onclick="init()">NEW GAME</button></div>
+</div>
+<div class="right">
+<div class="info-box"><div class="label">Score</div><div class="value" id="score">0</div></div>
+<div class="info-box"><div class="label">Level</div><div class="value" id="level">1</div></div>
+<div class="info-box"><div class="label">Lines</div><div class="value" id="lines">0</div></div>
+<div class="info-box"><div class="label">Next</div><div class="next-grid" id="next"></div></div>
+</div>
+</div>
+<script>
+const COLS=10,ROWS=20,CELL=28;
+const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+const COLORS=[0,1,2,3,4,5,6,7];
+let board,cur,next,score,level,lines,timer,speed,gameOver;
+const boardEl=document.getElementById('board'),scoreEl=document.getElementById('score'),levelEl=document.getElementById('level'),linesEl=document.getElementById('lines'),nextEl=document.getElementById('next');
+function init(){board=Array.from({length:ROWS},()=>Array(COLS).fill(0));score=0;level=1;lines=0;speed=800;gameOver=false;scoreEl.textContent=0;levelEl.textContent=1;linesEl.textContent=0;newPiece();nextPiece();draw();clearInterval(timer);timer=setInterval(tick,speed)}
+function newPiece(){cur={shape:next?next.shape:randShape(),color:next?next.color:randColor(),x:3,y:0};nextPiece()}
+function nextPiece(){next={shape:randShape(),color:randColor()};drawNext()}
+function randShape(){return SHAPES[Math.floor(Math.random()*7)].map(r=>[...r])}
+function randColor(){return COLORS[Math.floor(Math.random()*7)+1]}
+function draw(){boardEl.innerHTML='';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){let d=document.createElement('div');d.className='cell';if(board[r][c])d.className+=' filled c'+board[r][c];boardEl.appendChild(d)}let merged=cur.shape.map((row,y)=>row.map((v,x)=>v?{x:cur.x+x,y:cur.y+y,c:cur.color}:null)).flat().filter(Boolean);merged.forEach(p=>{if(p.y>=0&&p.y<ROWS&&p.x>=0&&p.x<COLS){let idx=p.y*COLS+p.x;let cell=boardEl.children[idx];cell.className='cell filled c'+p.c}})}
+function drawNext(){nextEl.innerHTML='';for(let r=0;r<4;r++)for(let c=0;c<4;c++){let d=document.createElement('div');d.className='nc';if(next.shape[r]&&next.shape[r][c])d.className+=' nf c'+next.color;nextEl.appendChild(d)}}
+function fit(shape,ox,oy){for(let r=0;r<shape.length;r++)for(let c=0;c<shape[r].length;c++)if(shape[r][c]){let nx=ox+c,ny=oy+r;if(nx<0||nx>=COLS||ny>=ROWS)return false;if(ny>=0&&board[ny][nx])return false}return true}
+function rotate(shape){let rows=shape.length,cols=shape[0].length,rot=[];for(let c=0;c<cols;c++){rot[c]=[];for(let r=0;r<rows;r++)rot[c][rows-1-r]=shape[r][c]}return rot}
+function lock(){cur.shape.forEach((row,y)=>row.forEach((v,x)=>{if(v&&cur.y+y>=0)board[cur.y+y][cur.x+x]=cur.color}));clearLines();newPiece();if(!fit(cur.shape,cur.x,cur.y)){gameOver=true;clearInterval(timer)}}
+function clearLines(){let cleared=0;for(let r=ROWS-1;r>=0;r--){if(board[r].every(c=>c)){board.splice(r,1);board.unshift(Array(COLS).fill(0));cleared++;r++}}if(cleared){lines+=cleared;score+=[0,100,300,500,800][cleared]*level;level=Math.floor(lines/10)+1;speed=Math.max(80,800-level*70);clearInterval(timer);timer=setInterval(tick,speed);scoreEl.textContent=score;levelEl.textContent=level;linesEl.textContent=lines}}
+function tick(){if(gameOver)return;drop()}
+function drop(){if(fit(cur.shape,cur.x,cur.y+1)){cur.y++;draw()}else lock()}
+function hardDrop(){while(fit(cur.shape,cur.x,cur.y+1))cur.y++;lock();draw()}
+let das=null,dasDir=0;
+document.addEventListener('keydown',e=>{if(gameOver)return;
+if(e.key==='ArrowLeft'){if(fit(cur.shape,cur.x-1,cur.y)){cur.x--;draw()}}
+if(e.key==='ArrowRight'){if(fit(cur.shape,cur.x+1,cur.y)){cur.x++;draw()}}
+if(e.key==='ArrowUp'){let r=rotate(cur.shape);if(fit(r,cur.x,cur.y)){cur.shape=r;draw()}}
+if(e.key==='ArrowDown'){e.preventDefault();drop()}
+if(e.key===' '){e.preventDefault();hardDrop()}
+});
+init();
+</script>
+</body>
+</html>

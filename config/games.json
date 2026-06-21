@@ -8,14 +8,6 @@
     "status": "coming-soon"
   },
   {
-    "id": "memory",
-    "name": "Memory Match",
-    "description": "Flip cards and find matching pairs.",
-    "thumbnail": "/images/game-covers/memory.svg",
-    "url": "/games/memory",
-    "status": "coming-soon"
-  },
-  {
     "id": "rps",
     "name": "Rock Paper Scissors",
     "description": "Play rock paper scissors against the computer.",
@@ -37,6 +29,206 @@
     "description": "A 3D shooter — blast waves of red guys in a blocky world!",
     "thumbnail": "/images/game-covers/funny-shooter.jpg",
     "url": "/games/funny-shooter",
+    "status": "active"
+  },
+  {
+    "id": "2048",
+    "name": "2048",
+    "description": "Slide tiles and merge numbers to reach 2048!",
+    "thumbnail": "/images/game-covers/2048.png",
+    "url": "/games/2048",
+    "status": "active"
+  },
+  {
+    "id": "tetris",
+    "name": "Tetris",
+    "description": "Classic falling blocks puzzle — clear lines and score big!",
+    "thumbnail": "/images/game-covers/tetris.png",
+    "url": "/games/tetris",
+    "status": "active"
+  },
+  {
+    "id": "flappy-bird",
+    "name": "Flappy Bird",
+    "description": "Flap through pipes — how far can you go?",
+    "thumbnail": "/images/game-covers/flappy-bird.png",
+    "url": "/games/flappy-bird",
+    "status": "active"
+  },
+  {
+    "id": "snake",
+    "name": "Snake",
+    "description": "Eat food, grow longer, don't hit the walls!",
+    "thumbnail": "/images/game-covers/snake.png",
+    "url": "/games/snake",
+    "status": "active"
+  },
+  {
+    "id": "minesweeper",
+    "name": "Minesweeper",
+    "description": "Reveal tiles and avoid the mines — a classic logic puzzle.",
+    "thumbnail": "/images/game-covers/minesweeper.png",
+    "url": "/games/minesweeper",
+    "status": "active"
+  },
+  {
+    "id": "tic-tac-toe",
+    "name": "Tic Tac Toe",
+    "description": "Beat the AI in this classic X's and O's strategy game.",
+    "thumbnail": "/images/game-covers/tic-tac-toe.png",
+    "url": "/games/tic-tac-toe",
+    "status": "active"
+  },
+  {
+    "id": "breakout",
+    "name": "Breakout",
+    "description": "Smash bricks with a bouncing ball — an arcade classic!",
+    "thumbnail": "/images/game-covers/breakout.png",
+    "url": "/games/breakout",
+    "status": "active"
+  },
+  {
+    "id": "pong",
+    "name": "Pong",
+    "description": "The OG arcade game — paddle, ball, and pure reflexes.",
+    "thumbnail": "/images/game-covers/pong.png",
+    "url": "/games/pong",
+    "status": "active"
+  },
+  {
+    "id": "memory",
+    "name": "Memory Match",
+    "description": "Flip cards and find matching pairs.",
+    "thumbnail": "/images/game-covers/memory.svg",
+    "url": "/games/memory",
+    "status": "active"
+  },
+  {
+    "id": "connect-four",
+    "name": "Connect Four",
+    "description": "Drop discs and get four in a row before the AI!",
+    "thumbnail": "/images/game-covers/connect-four.svg",
+    "url": "/games/connect-four",
+    "status": "active"
+  },
+  {
+    "id": "hangman",
+    "name": "Hangman",
+    "description": "Guess the word letter by letter before time runs out!",
+    "thumbnail": "/images/game-covers/hangman.svg",
+    "url": "/games/hangman",
+    "status": "active"
+  },
+  {
+    "id": "wordle",
+    "name": "Wordle",
+    "description": "Guess the 5-letter word in 6 tries — color clues guide you.",
+    "thumbnail": "/images/game-covers/wordle.svg",
+    "url": "/games/wordle",
+    "status": "active"
+  },
+  {
+    "id": "sudoku",
+    "name": "Sudoku",
+    "description": "Fill the 9x9 grid with numbers — a brain-bending logic puzzle.",
+    "thumbnail": "/images/game-covers/sudoku.svg",
+    "url": "/games/sudoku",
+    "status": "active"
+  },
+  {
+    "id": "space-invaders",
+    "name": "Space Invaders",
+    "description": "Defend Earth from waves of alien invaders!",
+    "thumbnail": "/images/game-covers/space-invaders.svg",
+    "url": "/games/space-invaders",
+    "status": "active"
+  },
+  {
+    "id": "whack-a-mole",
+    "name": "Whack-a-Mole",
+    "description": "Click the moles before they hide — test your reflexes!",
+    "thumbnail": "/images/game-covers/whack-a-mole.svg",
+    "url": "/games/whack-a-mole",
+    "status": "active"
+  },
+  {
+    "id": "simon",
+    "name": "Simon Says",
+    "description": "Repeat the sequence — how long can you remember?",
+    "thumbnail": "/images/game-covers/simon.svg",
+    "url": "/games/simon",
+    "status": "active"
+  },
+  {
+    "id": "reaction-time",
+    "name": "Reaction Time",
+    "description": "How fast are your reflexes? Test your reaction speed!",
+    "thumbnail": "/images/game-covers/reaction-time.svg",
+    "url": "/games/reaction-time",
+    "status": "active"
+  },
+  {
+    "id": "typing-speed",
+    "name": "Typing Speed",
+    "description": "Type as fast as you can — measure your WPM and accuracy.",
+    "thumbnail": "/images/game-covers/typing-speed.svg",
+    "url": "/games/typing-speed",
+    "status": "active"
+  },
+  {
+    "id": "color-match",
+    "name": "Color Match",
+    "description": "Does the color match the word? A Stroop effect challenge!",
+    "thumbnail": "/images/game-covers/color-match.svg",
+    "url": "/games/color-match",
+    "status": "active"
+  },
+  {
+    "id": "solitaire",
+    "name": "Solitaire",
+    "description": "Classic Klondike solitaire — stack cards into foundations.",
+    "thumbnail": "/images/game-covers/solitaire.svg",
+    "url": "/games/solitaire",
+    "status": "active"
+  },
+  {
+    "id": "chess",
+    "name": "Chess",
+    "description": "The game of kings — full chess with legal move validation.",
+    "thumbnail": "/images/game-covers/chess.svg",
+    "url": "/games/chess",
+    "status": "active"
+  },
+  {
+    "id": "checkers",
+    "name": "Checkers",
+    "description": "Classic draughts — jump your opponent's pieces to win.",
+    "thumbnail": "/images/game-covers/checkers.svg",
+    "url": "/games/checkers",
+    "status": "active"
+  },
+  {
+    "id": "bubble-shooter",
+    "name": "Bubble Shooter",
+    "description": "Aim and shoot — match 3 bubbles to pop them!",
+    "thumbnail": "/images/game-covers/bubble-shooter.svg",
+    "url": "/games/bubble-shooter",
+    "status": "active"
+  },
+  {
+    "id": "platformer",
+    "name": "Platformer",
+    "description": "Jump across platforms, collect coins, avoid enemies!",
+    "thumbnail": "/images/game-covers/platformer.svg",
+    "url": "/games/platformer",
+    "status": "active"
+  },
+  {
+    "id": "endless-runner",
+    "name": "Endless Runner",
+    "description": "Run forever, jump over obstacles — how far can you get?",
+    "thumbnail": "/images/game-covers/endless-runner.svg",
+    "url": "/games/endless-runner",
     "status": "active"
   }
 ]

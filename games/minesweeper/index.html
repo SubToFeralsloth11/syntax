@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Minesweeper</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
+.container{text-align:center}
+h1{font-size:2rem;margin-bottom:5px;background:linear-gradient(135deg,#00f0ff,#b537f2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:.85rem;color:#666;margin-bottom:15px;letter-spacing:2px}
+.top-bar{display:flex;gap:15px;justify-content:center;align-items:center;margin-bottom:15px;flex-wrap:wrap}
+.diff-btn{background:#1a1a30;border:1px solid #333;color:#aaa;padding:6px 14px;border-radius:5px;cursor:pointer;font-size:.75rem;letter-spacing:1px;transition:all .2s}
+.diff-btn.active{border-color:#00f0ff;color:#00f0ff;background:#00f0ff10}
+.diff-btn:hover{border-color:#00f0ff}
+.info-box{background:#12121e;border:1px solid #222;border-radius:8px;padding:6px 16px;text-align:center;min-width:70px}
+.info-box .label{font-size:.55rem;color:#888;text-transform:uppercase;letter-spacing:1px}
+.info-box .value{font-size:1.1rem;font-weight:700;color:#00f0ff}
+.board{display:inline-grid;gap:1px;background:#222;border:2px solid #222;border-radius:6px;padding:2px}
+.cell{width:30px;height:30px;background:#1a1a30;border-radius:3px;display:flex;justify-content:center;align-items:center;font-size:.8rem;font-weight:700;cursor:pointer;user-select:none;transition:background .1s}
+.cell:hover{background:#252545}
+.cell.revealed{background:#12121e;cursor:default}
+.cell.revealed:hover{background:#12121e}
+.cell.flagged{background:#b537f220}
+.c1{color:#00f0ff}.c2{color:#00ff88}.c3{color:#ff4040}.c4{color:#b537f2}.c5{color:#ff6b35}.c6{color:#00f0ff}.c7{color:#ffcc00}.c8{color:#ff8888}
+.mine{background:#ff404030!important}
+.controls{margin-top:15px;display:flex;gap:10px;justify-content:center}
+button.restart{background:linear-gradient(135deg,#00f0ff,#b537f2);border:none;color:#0a0a14;padding:10px 25px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:opacity .2s}
+button.restart:hover{opacity:.85}
+.msg{margin-top:10px;font-size:1rem;min-height:1.5rem;color:#b537f2}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>MINESWEEPER</h1>
+<div class="subtitle">SYNTAX // BROWSER GAMES</div>
+<div class="top-bar">
+<div class="diff-btn active" data-d="easy" onclick="setDiff('easy')">EASY</div>
+<div class="diff-btn" data-d="medium" onclick="setDiff('medium')">MEDIUM</div>
+<div class="diff-btn" data-d="hard" onclick="setDiff('hard')">HARD</div>
+<div class="info-box"><div class="label">Mines</div><div class="value" id="mines">10</div></div>
+<div class="info-box"><div class="label">Time</div><div class="value" id="timer">0</div></div>
+</div>
+<div class="board" id="board"></div>
+<div class="msg" id="msg"></div>
+<div class="controls"><button class="restart" onclick="init()">NEW GAME</button></div>
+</div>
+<script>
+const DIFFS={easy:{r:9,c:9,m:10},medium:{r:16,c:16,m:40},hard:{r:16,c:30,m:99}};
+let diff='easy',rows,cols,mineCount,board,revealed,flagged,gameOver,won,timerVal,timerInt,firstClick;
+const boardEl=document.getElementById('board'),minesEl=document.getElementById('mines'),timerEl=document.getElementById('timer'),msgEl=document.getElementById('msg');
+function setDiff(d){diff=d;document.querySelectorAll('.diff-btn').forEach(b=>b.classList.toggle('active',b.dataset.d===d));init()}
+function init(){
+let cfg=DIFFS[diff];rows=cfg.r;cols=cfg.c;mineCount=cfg.m;
+board=Array.from({length:rows},()=>Array(cols).fill(0));
+revealed=Array.from({length:rows},()=>Array(cols).fill(false));
+flagged=Array.from({length:rows},()=>Array(cols).fill(false));
+gameOver=false;won=false;firstClick=true;timerVal=0;
+clearInterval(timerInt);timerInt=null;
+minesEl.textContent=mineCount;timerEl.textContent='0';msgEl.textContent='';
+render();
+}
+function placeMines(safeR,safeC){
+let placed=0;
+while(placed<mineCount){
+let r=Math.floor(Math.random()*rows),c=Math.floor(Math.random()*cols);
+if(board[r][c]===-1)continue;
+if(Math.abs(r-safeR)<=1&&Math.abs(c-safeC)<=1)continue;
+board[r][c]=-1;placed++;
+}
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+if(board[r][c]===-1)continue;
+let cnt=0;
+for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){
+let nr=r+dr,nc=c+dc;
+if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&board[nr][nc]===-1)cnt++;
+}
+board[r][c]=cnt;
+}
+}
+function reveal(r,c){
+if(r<0||r>=rows||c<0||c>=cols||revealed[r][c]||flagged[r][c]||gameOver)return;
+revealed[r][c]=true;
+if(board[r][c]===0){for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)reveal(r+dr,c+dc)}
+}
+function checkWin(){
+let unrevealed=0;
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(!revealed[r][c])unrevealed++;
+if(unrevealed===mineCount){won=true;gameOver=true;clearInterval(timerInt);msgEl.textContent='YOU WIN!'}
+}
+function handleClick(r,c,e){
+if(gameOver||flagged[r][c]||revealed[r][c])return;
+e.preventDefault();
+if(firstClick){firstClick=false;placeMines(r,c);timerInt=setInterval(()=>{timerVal++;timerEl.textContent=timerVal},1000)}
+if(board[r][c]===-1){
+gameOver=true;clearInterval(timerInt);
+revealed[r][c]=true;
+for(let rr=0;rr<rows;rr++)for(let cc=0;cc<cols;cc++)if(board[rr][cc]===-1)revealed[rr][cc]=true;
+msgEl.textContent='GAME OVER';
+render();return;
+}
+reveal(r,c);checkWin();render();
+}
+function handleRight(r,c,e){
+e.preventDefault();if(gameOver||revealed[r][c])return;
+flagged[r][c]=!flagged[r][c];
+minesEl.textContent=mineCount-flagged.flat().filter(Boolean).length;
+render();
+}
+function render(){
+boardEl.innerHTML='';
+boardEl.style.gridTemplateColumns='repeat('+cols+',30px)';
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+let d=document.createElement('div');d.className='cell';
+if(revealed[r][c]){
+d.classList.add('revealed');
+if(board[r][c]===-1){d.classList.add('mine');d.textContent='\u{1F4A3}'}
+else if(board[r][c]>0){d.textContent=board[r][c];d.classList.add('c'+board[r][c])}
+}else{
+if(flagged[r][c]){d.classList.add('flagged');d.textContent='\u{1F6A9}'}
+d.addEventListener('click',e=>handleClick(r,c,e));
+d.addEventListener('contextmenu',e=>handleRight(r,c,e));
+}
+boardEl.appendChild(d);
+}
+}
+init();
+</script>
+</body>
+</html>

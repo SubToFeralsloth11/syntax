@@ -165,6 +165,56 @@ app.get('/games/funny-shooter', (req, res) => {
 const funnyShooterDir = path.join(__dirname, 'games', 'funny-shooter');
 app.use('/games/funny-shooter', express.static(funnyShooterDir));
 
+// Helper: serve a single-file game with visit coins + nav injection
+function serveGame(route, folder) {
+  app.get(route, (req, res) => {
+    if (req.isAuthenticated()) {
+      const db = require('./db/database');
+      const { awardCoins } = require('./middleware/currency');
+      const today = new Date().toISOString().split('T')[0];
+      const already = db.prepare(
+        "SELECT id FROM page_visits WHERE user_id = ? AND page_path = ? AND visited_date = ?"
+      ).get(req.user.id, route, today);
+      if (!already) {
+        db.prepare('INSERT INTO page_visits (user_id, page_path, visited_date) VALUES (?, ?, ?)').run(req.user.id, route, today);
+        awardCoins(req.user.id, 2, 'visit');
+      }
+    }
+    const fs = require('fs');
+    let html = fs.readFileSync(path.join(__dirname, 'games', folder, 'index.html'), 'utf8');
+    html = html.replace('<head>', '<head><base href="' + route + '/">');
+    html = injectGameNav(html);
+    res.type('html').send(html);
+  });
+  app.use(route, express.static(path.join(__dirname, 'games', folder)));
+}
+
+serveGame('/games/2048', '2048');
+serveGame('/games/tetris', 'tetris');
+serveGame('/games/flappy-bird', 'flappy-bird');
+serveGame('/games/snake', 'snake');
+serveGame('/games/minesweeper', 'minesweeper');
+serveGame('/games/tic-tac-toe', 'tic-tac-toe');
+serveGame('/games/breakout', 'breakout');
+serveGame('/games/pong', 'pong');
+serveGame('/games/memory', 'memory');
+serveGame('/games/connect-four', 'connect-four');
+serveGame('/games/hangman', 'hangman');
+serveGame('/games/wordle', 'wordle');
+serveGame('/games/sudoku', 'sudoku');
+serveGame('/games/space-invaders', 'space-invaders');
+serveGame('/games/whack-a-mole', 'whack-a-mole');
+serveGame('/games/simon', 'simon');
+serveGame('/games/reaction-time', 'reaction-time');
+serveGame('/games/typing-speed', 'typing-speed');
+serveGame('/games/color-match', 'color-match');
+serveGame('/games/solitaire', 'solitaire');
+serveGame('/games/chess', 'chess');
+serveGame('/games/checkers', 'checkers');
+serveGame('/games/bubble-shooter', 'bubble-shooter');
+serveGame('/games/platformer', 'platformer');
+serveGame('/games/endless-runner', 'endless-runner');
+
 app.use('/', indexRoutes);
 app.use('/', authRoutes);
 app.use('/', gamesRoutes);

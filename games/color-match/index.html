@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Color Match</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;user-select:none}
+h1{font-size:2.5rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+h1 span{color:#b537f2}
+.info{display:flex;gap:40px;margin-bottom:15px;font-size:1.1rem;color:#888}
+.info span{color:#00f0ff}
+.info .score{color:#b537f2}
+#timer-bar{width:500px;height:8px;background:#1a1a2e;border-radius:4px;margin-bottom:25px;overflow:hidden}
+#timer-fill{height:100%;background:linear-gradient(90deg,#00f0ff,#b537f2);width:100%;transition:width .1s linear;border-radius:4px}
+.color-word{font-size:6rem;font-weight:900;letter-spacing:4px;margin-bottom:40px;transition:color .1s;text-transform:uppercase}
+.buttons{display:flex;gap:30px}
+.btn{width:200px;height:80px;border:3px solid #2a2a3e;border-radius:16px;font-size:1.3rem;font-weight:bold;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .15s;background:#1a1a2e;color:#fff}
+.btn:hover{transform:scale(1.05)}
+.btn:active{transform:scale(.95)}
+.btn.match{border-color:#00f0ff;color:#00f0ff}
+.btn.mismatch{border-color:#b537f2;color:#b537f2}
+.btn.flash-correct{background:#1a5a1a;border-color:#00f0ff}
+.btn.flash-wrong{background:#5a1a1a;border-color:#b51a1a}
+#message{font-size:1.2rem;min-height:30px;margin-top:20px;color:#888}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.show{opacity:1;pointer-events:auto}
+.overlay h2{font-size:2.5rem;color:#00f0ff;margin-bottom:10px}
+.overlay p{font-size:1.2rem;color:#888;margin-bottom:8px}
+.overlay p span{color:#b537f2}
+.overlay button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:12px 40px;font-size:1rem;border-radius:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;margin-top:20px}
+.overlay button:hover{background:#b537f2;color:#0a0a14}
+.start-screen{display:flex;flex-direction:column;align-items:center}
+.start-screen p{color:#888;max-width:500px;text-align:center;line-height:1.6;margin-bottom:25px;font-size:1.05rem}
+</style>
+</head>
+<body>
+<h1><span>SYNTAX</span> // Color Match</h1>
+<div class="info" id="info">
+  <div>Score: <span class="score" id="score">0</span></div>
+  <div>Streak: <span id="streak">0</span></div>
+  <div>Best: <span id="best">0</span></div>
+</div>
+<div id="timer-bar"><div id="timer-fill"></div></div>
+<div id="gameArea" style="display:none">
+  <div class="color-word" id="colorWord">RED</div>
+  <div class="buttons">
+    <button class="btn match" id="matchBtn">Match</button>
+    <button class="btn mismatch" id="mismatchBtn">Mismatch</button>
+  </div>
+  <div id="message"></div>
+</div>
+<div class="start-screen" id="startScreen">
+  <p>A color name is shown, but rendered in a different color. Click <strong>Match</strong> if the text color matches the word, or <strong>Mismatch</strong> if it doesn't. You have 30 seconds!</p>
+  <button id="startBtn">Start Game</button>
+</div>
+<div class="overlay" id="overlay">
+  <h2>Time's Up!</h2>
+  <p>Score: <span id="finalScore">0</span></p>
+  <p>Best Streak: <span id="finalStreak">0</span></p>
+  <p>Accuracy: <span id="finalAcc">0%</span></p>
+  <button id="retryBtn">Play Again</button>
+</div>
+<script>
+const colorNames=['RED','BLUE','GREEN','YELLOW','PURPLE','ORANGE','CYAN','PINK'];
+const colorValues={'RED':'#b51a1a','BLUE':'#1a1ab5','GREEN':'#1a8a1a','YELLOW':'#b5a51a','PURPLE':'#b537f2','ORANGE':'#b57a1a','CYAN':'#00f0ff','PINK':'#e040a0'};
+const wordEl=document.getElementById('colorWord');
+const matchBtn=document.getElementById('matchBtn');
+const mismatchBtn=document.getElementById('mismatchBtn');
+const msgEl=document.getElementById('message');
+const scoreEl=document.getElementById('score');
+const streakEl=document.getElementById('streak');
+const bestEl=document.getElementById('best');
+const timerFill=document.getElementById('timer-fill');
+const gameArea=document.getElementById('gameArea');
+const startScreen=document.getElementById('startScreen');
+const overlay=document.getElementById('overlay');
+
+let score=0,streak=0,bestStreak=0,total=0,correctCount=0;
+let bestScore=parseInt(localStorage.getItem('colorMatchBest'))||0;
+let gameTimer,barTimer,timeLeft=30;
+let currentWord,currentColor,isMatch;
+let accepting=false;
+
+if(bestScore)bestEl.textContent=bestScore;
+
+function pickPair(){
+  const wordIdx=Math.floor(Math.random()*colorNames.length);
+  currentWord=colorNames[wordIdx];
+  let colorIdx;
+  do{colorIdx=Math.floor(Math.random()*colorNames.length)}while(colorIdx===wordIdx);
+  currentColor=colorValues[colorNames[colorIdx]];
+  isMatch=wordIdx===colorIdx;
+}
+
+function showWord(){
+  pickPair();
+  wordEl.textContent=currentWord;
+  wordEl.style.color=currentColor;
+  msgEl.textContent='';
+  accepting=true;
+}
+
+function flashResult(correct){
+  accepting=false;
+  total++;
+  if(correct){
+    correctCount++;
+    score+=10+streak*2;
+    streak++;
+    if(streak>bestStreak)bestStreak=streak;
+    scoreEl.textContent=score;
+    streakEl.textContent=streak;
+    msgEl.style.color='#00f0ff';
+    msgEl.textContent='+'+(10+(streak-1)*2);
+  }else{
+    streak=0;
+    streakEl.textContent=0;
+    msgEl.style.color='#b51a1a';
+    msgEl.textContent='Wrong!';
+  }
+  setTimeout(showWord,300);
+}
+
+matchBtn.addEventListener('click',()=>{if(accepting)flashResult(isMatch)});
+mismatchBtn.addEventListener('click',()=>{if(accepting)flashResult(!isMatch)});
+
+function startGame(){
+  score=0;streak=0;bestStreak=0;total=0;correctCount=0;timeLeft=30;
+  scoreEl.textContent='0';streakEl.textContent='0';
+  timerFill.style.width='100%';
+  startScreen.style.display='none';
+  gameArea.style.display='block';
+  overlay.classList.remove('show');
+  showWord();
+  barTimer=setInterval(()=>{
+    timeLeft-=0.1;
+    timerFill.style.width=Math.max(0,(timeLeft/30)*100)+'%';
+    if(timeLeft<=0){
+      clearInterval(barTimer);
+      endGame();
+    }
+  },100);
+}
+
+function endGame(){
+  accepting=false;
+  clearInterval(barTimer);
+  if(score>bestScore){bestScore=score;localStorage.setItem('colorMatchBest',bestScore);bestEl.textContent=bestScore}
+  document.getElementById('finalScore').textContent=score;
+  document.getElementById('finalStreak').textContent=bestStreak;
+  document.getElementById('finalAcc').textContent=total>0?Math.round((correctCount/total)*100)+'%':'0%';
+  overlay.classList.add('show');
+}
+
+document.getElementById('startBtn').addEventListener('click',startGame);
+document.getElementById('retryBtn').addEventListener('click',startGame);
+
+document.addEventListener('keydown',e=>{
+  if(!accepting)return;
+  if(e.key==='1'||e.key==='ArrowLeft')flashResult(isMatch);
+  if(e.key==='2'||e.key==='ArrowRight')flashResult(!isMatch);
+});
+</script>
+</body>
+</html>

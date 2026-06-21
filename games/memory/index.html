@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Memory</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#e0e0e0;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:1rem}
+h1{font-size:1.5rem;margin-bottom:0.5rem;color:#00f0ff;text-shadow:0 0 10px #00f0ff44}
+h1 span{color:#b537f2}
+.hud{display:flex;gap:2rem;margin:0.5rem 0;font-size:0.9rem}
+.hud span{color:#00f0ff}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(360px,90vw);aspect-ratio:1;margin-top:0.5rem}
+.card{perspective:600px;cursor:pointer;aspect-ratio:1}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.5s}
+.card.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:1.8rem}
+.card-back{background:#111;border:2px solid #333;transition:border-color .3s}
+.card-back:hover{border-color:#00f0ff}
+.card-front{background:linear-gradient(135deg,#111,#1a1a2e);border:2px solid #b537f2;transform:rotateY(180deg);color:#fff;text-shadow:0 0 10px #b537f288}
+.card.matched .card-front{border-color:#00f0ff;text-shadow:0 0 10px #00f0ff88}
+.card.matched .card-back{border-color:#00f0ff}
+.restart{margin-top:1rem;background:#111;border:1px solid #b537f2;color:#b537f2;padding:0.5rem 1.5rem;font-family:inherit;cursor:pointer;font-size:0.9rem;border-radius:3px;transition:all .2s}
+.restart:hover{background:#b537f2;color:#0a0a14}
+</style>
+</head>
+<body>
+<h1>SYNTAX <span>// Memory</span></h1>
+<div class="hud">
+<div>Moves: <span id="moves">0</span></div>
+<div>Time: <span id="timer">0s</span></div>
+<div>Best: <span id="best">--</span></div>
+</div>
+<div class="board" id="board"></div>
+<button class="restart" onclick="startGame()">Restart</button>
+<script>
+const symbols=['♠','♥','♦','♣','★','◉','▲','✖'];
+let cards,flipped,matched,moves,timerInt,elapsed,best=localStorage.getItem('memoryBest')||null;
+if(best)document.getElementById('best').textContent=best+'s';
+function startGame(){
+clearInterval(timerInt);elapsed=0;moves=0;flipped=[];matched=0;
+document.getElementById('moves').textContent=0;document.getElementById('timer').textContent='0s';
+const deck=[...symbols,...symbols].sort(()=>Math.random()-0.5);
+const b=document.getElementById('board');b.innerHTML='';cards=[];
+deck.forEach((sym,i)=>{
+const card=document.createElement('div');card.className='card';card.dataset.i=i;
+card.innerHTML=`<div class="card-inner"><div class="card-back">?</div><div class="card-front">${sym}</div></div>`;
+card.onclick=()=>flipCard(card,i,sym);b.appendChild(card);cards.push({el:card,sym,flipped:false,matched:false})});
+timerInt=setInterval(()=>{elapsed++;document.getElementById('timer').textContent=elapsed+'s'},1000);
+}
+function flipCard(card,i,sym){
+if(card.classList.contains('flipped')||card.classList.contains('matched')||flipped.length>=2)return;
+card.classList.add('flipped');flipped.push({card,i,sym});
+if(flipped.length===2){moves++;document.getElementById('moves').textContent=moves;
+if(flipped[0].sym===flipped[1].sym){flipped[0].card.classList.add('matched');flipped[1].card.classList.add('matched');
+matched+=2;flipped=[];
+if(matched===cards.length){clearInterval(timerInt);
+if(!best||elapsed<best){best=elapsed;localStorage.setItem('memoryBest',best);document.getElementById('best').textContent=best+'s'}}}
+else{const f=[...flipped];setTimeout(()=>{f.forEach(x=>x.card.classList.remove('flipped'))},700);flipped=[]}}}
+startGame()
+</script>
+</body>
+</html>

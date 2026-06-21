@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Typing Speed</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+h1{font-size:2.5rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+h1 span{color:#b537f2}
+.stats{display:flex;gap:30px;margin:15px 0 25px;font-size:1.1rem;color:#888}
+.stats span{color:#00f0ff}
+.stats .best{color:#b537f2}
+.text-display{max-width:700px;width:100%;background:#1a1a2e;border-radius:16px;padding:30px;font-size:1.3rem;line-height:2;letter-spacing:.5px;margin-bottom:20px;border:3px solid #1a1a2e;min-height:140px}
+.text-display .correct{color:#00f0ff}
+.text-display .wrong{color:#b51a1a;text-decoration:underline}
+.text-display .current{background:#b537f2;color:#fff;padding:0 2px;border-radius:3px}
+.text-display .pending{color:#555}
+#input{width:100%;max-width:700px;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:15px 20px;font-size:1.2rem;color:#fff;outline:none;resize:none;height:60px;font-family:inherit;transition:border-color .2s}
+#input:focus{border-color:#b537f2}
+#input:disabled{opacity:.5}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.show{opacity:1;pointer-events:auto}
+.overlay h2{font-size:2.5rem;color:#00f0ff;margin-bottom:20px}
+.overlay .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:25px}
+.overlay .result-box{background:#1a1a2e;border-radius:12px;padding:15px 25px;text-align:center}
+.overlay .result-box .label{font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:1px}
+.overlay .result-box .value{font-size:1.8rem;color:#00f0ff;margin-top:5px}
+.overlay .result-box.highlight .value{color:#b537f2}
+.overlay button{background:transparent;border:2px solid #b537f2;color:#b537f2;padding:12px 40px;font-size:1rem;border-radius:8px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+.overlay button:hover{background:#b537f2;color:#0a0a14}
+#timer{font-size:2rem;color:#b537f2;font-weight:bold;min-height:40px;margin-bottom:10px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1><span>SYNTAX</span> // Typing Speed</h1>
+<div class="stats">
+  <div>WPM: <span id="wpm">0</span></div>
+  <div>Accuracy: <span id="acc">100%</span></div>
+  <div>Best WPM: <span id="best" class="best">---</span></div>
+</div>
+<div id="timer"></div>
+<div class="text-display" id="display"></div>
+<textarea id="input" placeholder="Start typing here..." disabled></textarea>
+<div class="overlay" id="overlay">
+  <h2>Test Complete</h2>
+  <div class="result-grid">
+    <div class="result-box highlight"><div class="label">WPM</div><div class="value" id="resWpm">0</div></div>
+    <div class="result-box"><div class="label">Accuracy</div><div class="value" id="resAcc">0%</div></div>
+    <div class="result-box"><div class="label">Time</div><div class="value" id="resTime">0s</div></div>
+    <div class="result-box"><div class="label">Characters</div><div class="value" id="resChars">0</div></div>
+  </div>
+  <button id="retryBtn">Try Again</button>
+</div>
+<script>
+const paragraphs=[
+  "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet at least once, making it a popular choice for typing practice and font displays across the digital world.",
+  "In the beginning there was nothing but the void. Then came the first spark of creation, and from that single point of light the entire universe expanded outward in an explosion of energy and matter.",
+  "Technology continues to reshape our world at an unprecedented pace. Artificial intelligence, quantum computing, and biotechnology are converging to create possibilities that were once confined to science fiction.",
+  "The ocean depths remain one of Earth's last unexplored frontiers. Beneath the waves lie ancient ecosystems, mysterious creatures, and geological formations that challenge our understanding of life itself.",
+  "Music has the extraordinary power to transcend language barriers and connect people across cultures. From the rhythmic beats of tribal drums to the complex symphonies of classical composers, sound shapes human experience.",
+  "The art of programming is the art of organizing complexity. A great programmer can take chaotic requirements and transform them into elegant solutions that are both efficient and maintainable over time.",
+  "Stargazing on a clear night reveals the vastness of our cosmos. Each point of light is a distant sun, many with their own planetary systems, waiting to be explored by future generations of adventurers.",
+  "Culinary traditions pass down through families like precious heirlooms. Each recipe carries memories of shared meals, celebrations, and the simple comfort of food prepared with love and intention."
+];
+const input=document.getElementById('input');
+const display=document.getElementById('display');
+const timerEl=document.getElementById('timer');
+const wpmEl=document.getElementById('wpm');
+const accEl=document.getElementById('acc');
+const bestEl=document.getElementById('best');
+const overlay=document.getElementById('overlay');
+
+let text='',started=false,timerInterval,startTime;
+let currentIdx=0,correct=0,total=0;
+let best=parseInt(localStorage.getItem('typingBest'))||0;
+if(best)bestEl.textContent=best;
+
+function pickText(){text=paragraphs[Math.floor(Math.random()*paragraphs.length)]}
+
+function renderText(){
+  let html='';
+  for(let i=0;i<text.length;i++){
+    let cls='pending';
+    if(i<currentIdx){
+      cls=text[i]===input.value[i]?'correct':'wrong';
+    }else if(i===currentIdx){
+      cls='current';
+    }
+    const ch=text[i]===' '?'\u00A0':text[i];
+    html+=`<span class="${cls}">${ch}</span>`;
+  }
+  display.innerHTML=html;
+}
+
+function reset(){
+  clearInterval(timerInterval);
+  pickText();
+  input.value='';input.disabled=false;input.focus();
+  currentIdx=0;correct=0;total=0;started=false;
+  timerEl.textContent='';
+  wpmEl.textContent='0';
+  accEl.textContent='100%';
+  overlay.classList.remove('show');
+  renderText();
+}
+
+input.addEventListener('input',()=>{
+  if(!started){
+    started=true;
+    startTime=Date.now();
+    timerInterval=setInterval(()=>{
+      const elapsed=Math.floor((Date.now()-startTime)/1000);
+      timerEl.textContent=elapsed+'s';
+    },100);
+  }
+  const val=input.value;
+  currentIdx=val.length;
+  correct=0;
+  for(let i=0;i<val.length&&i<text.length;i++){
+    if(val[i]===text[i])correct++;
+  }
+  total=val.length;
+  const elapsed=(Date.now()-startTime)/60000;
+  const wpm=elapsed>0?Math.round((correct/5)/elapsed):0;
+  const acc=total>0?Math.round((correct/total)*100):100;
+  wpmEl.textContent=wpm;
+  accEl.textContent=acc+'%';
+  renderText();
+  if(val.length>=text.length){
+    finish();
+  }
+});
+
+function finish(){
+  input.disabled=true;
+  clearInterval(timerInterval);
+  const elapsed=(Date.now()-startTime)/1000;
+  const wpm=parseInt(wpmEl.textContent);
+  const acc=accEl.textContent;
+  document.getElementById('resWpm').textContent=wpm;
+  document.getElementById('resAcc').textContent=acc;
+  document.getElementById('resTime').textContent=Math.round(elapsed)+'s';
+  document.getElementById('resChars').textContent=correct+'/'+text.length;
+  if(!best||wpm>best){best=wpm;localStorage.setItem('typingBest',best);bestEl.textContent=best}
+  overlay.classList.add('show');
+}
+
+document.getElementById('retryBtn').addEventListener('click',reset);
+reset();
+</script>
+</body>
+</html>

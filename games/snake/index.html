@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTAX // Snake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
+.container{text-align:center}
+h1{font-size:2rem;margin-bottom:5px;background:linear-gradient(135deg,#00f0ff,#b537f2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:.85rem;color:#666;margin-bottom:15px;letter-spacing:2px}
+canvas{border:2px solid #222;border-radius:8px;display:block;margin:0 auto;background:#0d0d1a}
+.score-display{font-size:1.5rem;font-weight:700;color:#00f0ff;margin:10px 0}
+.info{font-size:.75rem;color:#555;margin-top:10px}
+.controls{margin-top:15px;display:flex;gap:10px;justify-content:center}
+button{background:linear-gradient(135deg,#00f0ff,#b537f2);border:none;color:#0a0a14;padding:10px 25px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:opacity .2s}
+button:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>SNAKE</h1>
+<div class="subtitle">SYNTAX // BROWSER GAMES</div>
+<div class="score-display">Score: <span id="score">0</span> | Best: <span id="best">0</span></div>
+<canvas id="c" width="400" height="400"></canvas>
+<div class="info">Arrow keys to move</div>
+<div class="controls"><button onclick="init()">NEW GAME</button></div>
+</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+const GRID=20,TILES=20,CW=GRID*TILES;
+let snake,dir,ndir,food,score,best=parseInt(localStorage.getItem('sbest'))||0,speed,timer,gameOver;
+bestEl.textContent=best;
+function init(){
+snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+dir={x:1,y:0};ndir={x:1,y:0};score=0;speed=120;gameOver=false;
+scoreEl.textContent='0';spawnFood();
+clearInterval(timer);timer=setInterval(tick,speed);
+}
+function spawnFood(){
+let empty=[];
+for(let x=0;x<TILES;x++)for(let y=0;y<TILES;y++){
+if(!snake.some(s=>s.x===x&&s.y===y))empty.push({x,y})}
+food=empty[Math.floor(Math.random()*empty.length)];
+}
+function tick(){
+if(gameOver)return;
+dir={...ndir};
+let head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+if(head.x<0||head.x>=TILES||head.y<0||head.y>=TILES||snake.some(s=>s.x===head.x&&s.y===head.y)){
+gameOver=true;clearInterval(timer);
+if(score>best){best=score;bestEl.textContent=best;localStorage.setItem('sbest',best)}
+return;
+}
+snake.unshift(head);
+if(head.x===food.x&&head.y===food.y){score++;scoreEl.textContent=score;spawnFood();if(speed>50){speed-=2;clearInterval(timer);timer=setInterval(tick,speed)}}
+else snake.pop();
+draw();
+}
+function draw(){
+ctx.fillStyle='#0d0d1a';ctx.fillRect(0,0,CW,CW);
+ctx.fillStyle='#ffffff06';
+for(let i=0;i<TILES;i++){ctx.fillRect(i*GRID,0,1,CW);ctx.fillRect(0,i*GRID,CW,1)}
+snake.forEach((s,i)=>{
+let g=1-i/(snake.length*3);
+ctx.fillStyle=i===0?`rgba(0,240,255,${0.7+g*0.3})`:`rgba(0,240,255,${0.3+g*0.4})`;
+ctx.fillRect(s.x*GRID+1,s.y*GRID+1,GRID-2,GRID-2);
+if(i===0){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x*GRID+12,s.y*GRID+10,2,0,Math.PI*2);ctx.fill()}
+});
+ctx.fillStyle='#b537f2';ctx.beginPath();
+ctx.arc(food.x*GRID+GRID/2,food.y*GRID+GRID/2,GRID/2-2,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#b537f280';ctx.beginPath();
+ctx.arc(food.x*GRID+GRID/2,food.y*GRID+GRID/2,GRID/2+3,0,Math.PI*2);ctx.fill();
+if(gameOver){ctx.fillStyle='#0a0a14cc';ctx.fillRect(0,0,CW,CW);ctx.fillStyle='#ff4040';ctx.font='bold 32px sans-serif';ctx.textAlign='center';ctx.fillText('GAME OVER',CW/2,CW/2-10);ctx.fillStyle='#ffffff80';ctx.font='16px sans-serif';ctx.fillText('Score: '+score,CW/2,CW/2+20)}
+}
+document.addEventListener('keydown',e=>{
+const map={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};
+if(map[e.key]){e.preventDefault();let n=map[e.key];if(n.x+dir.x!==0||n.y+dir.y!==0)ndir=n}
+});
+let tx,ty;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY});
+document.addEventListener('touchend',e=>{
+let dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+if(Math.abs(dx)<20&&Math.abs(dy)<20)return;
+let n;if(Math.abs(dx)>Math.abs(dy))n={x:dx>0?1:-1,y:0};else n={x:0,y:dy>0?1:-1};
+if(n.x+dir.x!==0||n.y+dir.y!==0)ndir=n;
+});
+init();
+</script>
+</body>
+</html>

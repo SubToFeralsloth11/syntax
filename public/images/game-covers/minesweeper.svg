@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a0a14"/>
+  <g stroke="#1a1a2e" stroke-width="1">
+    <rect x="100" y="50" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="140" y="50" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="180" y="50" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="220" y="50" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="260" y="50" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="100" y="90" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="140" y="90" width="40" height="40" fill="#b537f2"/>
+    <rect x="180" y="90" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="220" y="90" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="260" y="90" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="100" y="130" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="140" y="130" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="180" y="130" width="40" height="40" fill="#00f0ff"/>
+    <rect x="220" y="130" width="40" height="40" fill="#1a1a2e"/>
+    <rect x="260" y="130" width="40" height="40" fill="#1a1a2e"/>
+  </g>
+  <circle cx="160" cy="110" r="8" fill="#ff2bd6"/>
+  <line x1="160" y1="102" x2="160" y2="94" stroke="#ff2bd6" stroke-width="2"/>
+  <line x1="160" y1="118" x2="160" y2="126" stroke="#ff2bd6" stroke-width="2"/>
+  <line x1="152" y1="110" x2="144" y2="110" stroke="#ff2bd6" stroke-width="2"/>
+  <line x1="168" y1="110" x2="176" y2="110" stroke="#ff2bd6" stroke-width="2"/>
+  <polygon points="240,135 240,165 248,160" fill="#00ff88"/>
+  <line x1="240" y1="130" x2="240" y2="168" stroke="#00ff88" stroke-width="2"/>
+</svg>

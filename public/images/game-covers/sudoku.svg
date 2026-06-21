@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a0a14"/>
+  <g stroke="#1a1a2e" stroke-width="1">
+    <rect x="80" y="40" width="30" height="30" fill="none"/>
+    <rect x="110" y="40" width="30" height="30" fill="none"/>
+    <rect x="140" y="40" width="30" height="30" fill="none"/>
+    <rect x="180" y="40" width="30" height="30" fill="none"/>
+    <rect x="210" y="40" width="30" height="30" fill="none"/>
+    <rect x="240" y="40" width="30" height="30" fill="none"/>
+    <rect x="280" y="40" width="30" height="30" fill="none"/>
+    <rect x="310" y="40" width="30" height="30" fill="none"/>
+    <rect x="80" y="70" width="30" height="30" fill="none"/>
+    <rect x="110" y="70" width="30" height="30" fill="none"/>
+    <rect x="140" y="70" width="30" height="30" fill="none"/>
+    <rect x="80" y="100" width="30" height="30" fill="none"/>
+    <rect x="110" y="100" width="30" height="30" fill="none"/>
+    <rect x="140" y="100" width="30" height="30" fill="none"/>
+  </g>
+  <g stroke="#00f0ff" stroke-width="2">
+    <rect x="80" y="40" width="90" height="90" fill="none"/>
+    <rect x="180" y="40" width="90" height="90" fill="none"/>
+    <rect x="80" y="140" width="90" height="90" fill="none"/>
+  </g>
+  <rect x="80" y="40" width="270" height="270" fill="none" stroke="#00f0ff" stroke-width="3"/>
+  <g font-family="monospace" font-size="16" fill="#00f0ff">
+    <text x="95" y="62">5</text>
+    <text x="155" y="62">3</text>
+    <text x="195" y="62">7</text>
+    <text x="95" y="92">6</text>
+    <text x="125" y="92">9</text>
+    <text x="155" y="92">8</text>
+    <text x="285" y="62">6</text>
+    <text x="315" y="92">1</text>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a0a14"/>
+  <g transform="translate(100,50)">
+    <g fill="#1a1a2e">
+      <rect x="0" y="0" width="25" height="25"/><rect x="50" y="0" width="25" height="25"/>
+      <rect x="100" y="0" width="25" height="25"/><rect x="150" y="0" width="25" height="25"/>
+      <rect x="25" y="25" width="25" height="25"/><rect x="75" y="25" width="25" height="25"/>
+      <rect x="125" y="25" width="25" height="25"/><rect x="175" y="25" width="25" height="25"/>
+      <rect x="0" y="50" width="25" height="25"/><rect x="50" y="50" width="25" height="25"/>
+      <rect x="100" y="50" width="25" height="25"/><rect x="150" y="50" width="25" height="25"/>
+      <rect x="25" y="75" width="25" height="25"/><rect x="75" y="75" width="25" height="25"/>
+      <rect x="125" y="75" width="25" height="25"/><rect x="175" y="75" width="25" height="25"/>
+      <rect x="0" y="100" width="25" height="25"/><rect x="50" y="100" width="25" height="25"/>
+      <rect x="100" y="100" width="25" height="25"/><rect x="150" y="100" width="25" height="25"/>
+      <rect x="25" y="125" width="25" height="25"/><rect x="75" y="125" width="25" height="25"/>
+      <rect x="125" y="125" width="25" height="25"/><rect x="175" y="125" width="25" height="25"/>
+      <rect x="0" y="150" width="25" height="25"/><rect x="50" y="150" width="25" height="25"/>
+      <rect x="100" y="150" width="25" height="25"/><rect x="150" y="150" width="25" height="25"/>
+    </g>
+    <circle cx="37" cy="12" r="9" fill="#ff2bd6"/>
+    <circle cx="112" cy="12" r="9" fill="#ff2bd6"/>
+    <circle cx="87" cy="37" r="9" fill="#ff2bd6"/>
+    <circle cx="162" cy="37" r="9" fill="#00f0ff"/>
+    <circle cx="37" cy="162" r="9" fill="#00f0ff"/>
+    <circle cx="112" cy="162" r="9" fill="#00f0ff"/>
+  </g>
+</svg>

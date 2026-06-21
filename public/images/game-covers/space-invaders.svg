@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a0a14"/>
+  <g transform="translate(150,60)" fill="#00ff88">
+    <rect x="30" y="0" width="15" height="15"/>
+    <rect x="75" y="0" width="15" height="15"/>
+    <rect x="45" y="15" width="15" height="15"/>
+    <rect x="60" y="15" width="15" height="15"/>
+    <rect x="15" y="30" width="90" height="15"/>
+    <rect x="0" y="45" width="15" height="15"/>
+    <rect x="30" y="45" width="15" height="15"/>
+    <rect x="60" y="45" width="15" height="15"/>
+    <rect x="90" y="45" width="15" height="15"/>
+    <rect x="0" y="60" width="15" height="15"/>
+    <rect x="30" y="60" width="15" height="15"/>
+    <rect x="60" y="60" width="15" height="15"/>
+    <rect x="90" y="60" width="15" height="15"/>
+    <rect x="15" y="75" width="15" height="15"/>
+    <rect x="75" y="75" width="15" height="15"/>
+  </g>
+  <g transform="translate(100,180)" fill="#b537f2">
+    <rect x="30" y="0" width="15" height="15"/>
+    <rect x="75" y="0" width="15" height="15"/>
+    <rect x="45" y="15" width="15" height="15"/>
+    <rect x="60" y="15" width="15" height="15"/>
+    <rect x="15" y="30" width="90" height="15"/>
+    <rect x="0" y="45" width="15" height="15"/>
+    <rect x="30" y="45" width="15" height="15"/>
+    <rect x="60" y="45" width="15" height="15"/>
+    <rect x="90" y="45" width="15" height="15"/>
+    <rect x="0" y="60" width="15" height="15"/>
+    <rect x="30" y="60" width="15" height="15"/>
+    <rect x="60" y="60" width="15" height="15"/>
+    <rect x="90" y="60" width="15" height="15"/>
+    <rect x="15" y="75" width="15" height="15"/>
+    <rect x="75" y="75" width="15" height="15"/>
+  </g>
+  <rect x="175" y="260" width="50" height="12" rx="3" fill="#ff2bd6"/>
+</svg>
