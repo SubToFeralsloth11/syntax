@@ -1,4 +1,4 @@
-const CACHE = 'syntax-v3';
+const CACHE = 'syntax-v4';
 const OFFLINE = '/offline.html';
 
 const PRECACHE = [
@@ -16,6 +16,7 @@ const PRECACHE = [
   '/js/shop.js',
   '/js/wheel.js',
   '/js/gift-box.js',
+  '/images/logo.png',
   '/images/logo.svg',
   '/images/default-avatar.svg',
   '/favicon.svg',
