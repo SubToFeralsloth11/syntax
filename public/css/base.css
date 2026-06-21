@@ -1,0 +1,131 @@
+/* ===================================================================
+   SYNTAX — BASE
+   Reset, body, typography, backgrounds, scrollbar
+   =================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Techy grid background with radial fade */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ambient neon glow blobs */
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 50vh;
+  background: radial-gradient(ellipse at center, rgba(181, 55, 242, 0.12) 0%, rgba(0, 240, 255, 0.06) 35%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  animation: fadeIn 0.4s ease-out;
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+  transition: color var(--t-fast), text-shadow var(--t-fast);
+}
+
+a:hover {
+  color: var(--cyan-soft);
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
+}
+
+::selection {
+  background: var(--cyan);
+  color: var(--bg);
+  text-shadow: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--cyan), var(--purple));
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--cyan-soft), var(--purple-soft));
+}
+
+/* Lucide icon defaults */
+[data-lucide] {
+  width: 1em;
+  height: 1em;
+  stroke-width: 2;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}
+
+.highlight {
+  color: var(--gold);
+  text-shadow: 0 0 14px var(--gold-glow);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}

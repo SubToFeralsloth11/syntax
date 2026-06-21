@@ -1,0 +1,423 @@
+/* ===================================================================
+   SYNTAX — LAYOUT
+   Container, grids, header, footer, hero, page header, sections
+   =================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---- Section helpers ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  background: var(--grad-cyan-purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-title {
+  font-size: 1.35rem;
+  margin-bottom: 20px;
+  background: var(--grad-cyan-purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===================================================================
+   SITE HEADER — glassmorphism nav bar
+   =================================================================== */
+.site-header {
+  background: rgba(10, 10, 20, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  height: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+  flex-shrink: 0;
+  position: relative;
+  transition: filter var(--t);
+}
+
+.logo-img {
+  height: 34px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 14px var(--accent-glow));
+}
+
+/* ---- Nav ---- */
+.nav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav a {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: all var(--t-fast);
+  position: relative;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 1px;
+  background: var(--grad-cyan-purple);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t);
+}
+
+.nav a:hover {
+  color: var(--text);
+  background: rgba(0, 240, 255, 0.06);
+}
+
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-toggle {
+  display: none;
+}
+
+/* ---- User section ---- */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+/* ===================================================================
+   FOOTER
+   =================================================================== */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  background: rgba(8, 8, 15, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.site-footer p {
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+/* ===================================================================
+   PAGE HEADER (generic top banner)
+   =================================================================== */
+.page-header {
+  padding: 48px 0 32px;
+  text-align: center;
+  position: relative;
+}
+
+.page-header h1 {
+  font-size: 2.25rem;
+  margin-bottom: 8px;
+  background: var(--grad-cyan-purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.page-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ===================================================================
+   HERO (homepage)
+   =================================================================== */
+.hero {
+  padding: 80px 0 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  height: 120%;
+  background: radial-gradient(ellipse at center, rgba(0, 240, 255, 0.08) 0%, rgba(181, 55, 242, 0.05) 35%, transparent 70%);
+  pointer-events: none;
+}
+
+/* faint scanlines on hero */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(0, 240, 255, 0.015) 3px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-logo {
+  margin-bottom: 24px;
+  animation: heroFadeIn 0.8s ease-out;
+}
+
+.hero-logo-img {
+  height: 56px;
+  width: auto;
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.checkin-section {
+  margin-top: 16px;
+}
+
+.hero-xp {
+  margin-top: 16px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-quests {
+  margin-top: 14px;
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-quest-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+}
+
+.hq-name { color: var(--text-muted); }
+.hq-progress { color: var(--cyan); font-weight: 700; }
+
+.hero-quests .btn-sm {
+  margin-top: 8px;
+}
+
+.streak-info {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  animation: heroFadeIn 0.8s ease-out 0.2s both;
+}
+
+/* ===================================================================
+   SECTION: features / games preview
+   =================================================================== */
+.features-section {
+  padding: 0 0 56px;
+}
+
+.games-preview {
+  padding: 48px 0;
+}
+
+/* ---- Generic page section paddings ---- */
+.profile-page,
+.game-detail-page,
+.trivia-section,
+.wheel-section,
+.shop-section,
+.refer-section,
+.chat-section,
+.leaderboard-section,
+.quests-section,
+.friends-section,
+.trades-section,
+.lottery-section,
+.bank-balance-section,
+.bank-plans-section,
+.bank-active-section,
+.earn-section,
+.admin-section,
+.settings-section {
+  padding: 32px 0 64px;
+}
+
+.back-link {
+  margin-bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  transition: color var(--t-fast);
+}
+
+.back-link:hover {
+  color: var(--cyan);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .site-header {
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .site-header .container {
+    flex-wrap: nowrap;
+    gap: 10px;
+    height: auto;
+  }
+
+  .logo-img {
+    height: 26px;
+  }
+
+  .nav {
+    gap: 4px;
+  }
+
+  .nav a {
+    font-size: 0.7rem;
+    padding: 6px 8px;
+  }
+
+  .nav a [data-lucide] {
+    display: none;
+  }
+
+  .user-section {
+    gap: 6px;
+  }
+
+  .page-header {
+    padding: 28px 0 20px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+
+  .hero {
+    padding: 48px 0 36px;
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .page-header {
+    padding: 24px 0 16px;
+  }
+
+  .page-header h1 {
+    font-size: 1.3rem;
+  }
+}

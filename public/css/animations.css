@@ -1,0 +1,135 @@
+/* ===================================================================
+   SYNTAX — ANIMATIONS
+   Keyframes + animation utility classes
+   =================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes btnGlow {
+  0%, 100% { filter: blur(8px); opacity: 0.55; }
+  50% { filter: blur(16px); opacity: 0.85; }
+}
+
+@keyframes borderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes coinGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 204, 68, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(255, 204, 68, 0.5); }
+}
+
+@keyframes coinFlash {
+  0% { background: rgba(255, 204, 68, 0.8); transform: scale(1); }
+  50% { background: rgba(255, 204, 68, 1); transform: scale(1.1); }
+  100% { background: transparent; transform: scale(1); }
+}
+
+@keyframes jackpot-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes owner-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); }
+  50% { box-shadow: 0 0 18px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 140, 0, 0.5); }
+}
+
+@keyframes resultPulse {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0% { transform: translateX(-3px) rotate(-1deg); }
+  100% { transform: translateX(3px) rotate(1deg); }
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes warning-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes warning-scale {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes warning-pulse {
+  0%, 100% { text-shadow: 0 0 10px rgba(255, 204, 68, 0.5); }
+  50% { text-shadow: 0 0 25px rgba(255, 204, 68, 0.9), 0 0 40px rgba(255, 200, 0, 0.4); }
+}
+
+@keyframes errorFlicker {
+  0%, 100% { opacity: 1; }
+  45% { opacity: 1; }
+  47% { opacity: 0.7; }
+  49% { opacity: 1; }
+  72% { opacity: 1; }
+  74% { opacity: 0.85; }
+  76% { opacity: 1; }
+}
+
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 12px var(--accent-glow); }
+  50% { box-shadow: 0 0 24px var(--accent-glow), 0 0 48px rgba(0, 240, 255, 0.2); }
+}
+
+/* utility animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.neon-pulse {
+  animation: neonPulse 2.5s ease-in-out infinite;
+}
+
+/* Scroll-reveal (progressive enhancement; JS adds .revealed) */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
