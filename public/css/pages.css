@@ -1754,6 +1754,79 @@
   z-index: -1;
 }
 
+/* Prize table (wheel outcomes) */
+.wheel-prizes {
+  margin-top: 40px;
+}
+.wheel-prizes .section-title {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.prize-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+@media (max-width: 700px) {
+  .prize-table { grid-template-columns: 1fr; }
+}
+.prize-col {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 16px;
+  backdrop-filter: blur(10px);
+}
+.prize-col h3 {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prize-col h3 i { width: 18px; height: 18px; }
+.prize-col:nth-child(1) h3 { color: #ff4444; }
+.prize-col:nth-child(2) h3 { color: #44ff88; }
+.prize-col:nth-child(3) h3 { color: var(--magenta); }
+.prize-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.prize-list::-webkit-scrollbar { width: 4px; }
+.prize-list::-webkit-scrollbar-track { background: transparent; }
+.prize-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+.prize-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  transition: background 0.15s;
+}
+.prize-item:hover { background: rgba(255,255,255,0.04); }
+.prize-item.loss .prize-val { color: #ff6666; }
+.prize-item.win .prize-val { color: #44ff88; }
+.prize-item.warp .prize-val { color: var(--magenta); }
+.prize-item.epic { background: rgba(255,43,214,0.08); }
+.prize-item.high { background: rgba(255,174,0,0.06); }
+.prize-item.mid { background: rgba(68,221,136,0.04); }
+.prize-val {
+  font-weight: 700;
+  min-width: 60px;
+  white-space: nowrap;
+}
+.prize-desc {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
 /* ===================================================================
    SHOP / MYSTERY BOX / GIFT BOX
    =================================================================== */

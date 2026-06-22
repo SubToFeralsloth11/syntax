@@ -1,22 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#0a0a14"/>
-  <g transform="translate(60,80)">
-    <rect x="0" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="44" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="88" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="132" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="176" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="220" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="264" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="308" y="0" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#00f0ff" stroke-width="1"/>
-    <rect x="22" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="66" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="110" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="154" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="198" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="242" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="286" y="40" width="38" height="32" rx="4" fill="#1a1a2e" stroke="#b537f2" stroke-width="1"/>
-    <rect x="80" y="80" width="200" height="32" rx="4" fill="#1a1a2e" stroke="#ff2bd6" stroke-width="1"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1e"/>
+      <stop offset="50%" style="stop-color:#12062e"/>
+      <stop offset="100%" style="stop-color:#0a0a1e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f0ff"/>
+      <stop offset="100%" style="stop-color:#44dd88"/>
+    </linearGradient>
+    <filter id="f">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="1" y="1" width="398" height="298" rx="8" fill="none" stroke="url(#glow)" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="200" cy="115" r="45" fill="none" stroke="#00f0ff" stroke-width="2" opacity="0.25"/>
+  <circle cx="200" cy="115" r="60" fill="none" stroke="#44dd88" stroke-width="1" opacity="0.12"/>
+  <circle cx="200" cy="115" r="75" fill="none" stroke="#00f0ff" stroke-width="0.5" opacity="0.08"/>
+  <g filter="url(#f)">
+    <text x="200" y="125" text-anchor="middle" font-family="'Orbitron',monospace,sans-serif" font-size="24" font-weight="900" fill="#00f0ff" letter-spacing="3">TYPING SPEED</text>
   </g>
-  <text x="200" y="250" text-anchor="middle" fill="#00ff88" font-family="monospace" font-size="22" font-weight="bold">85 WPM</text>
+  <line x1="80" y1="170" x2="320" y2="170" stroke="url(#glow)" stroke-width="1" opacity="0.3"/>
+  <text x="200" y="195" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#44dd88" opacity="0.5" letter-spacing="6">PLAY NOW</text>
 </svg>

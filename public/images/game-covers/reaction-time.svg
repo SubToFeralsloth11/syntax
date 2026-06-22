@@ -1,11 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#0a0a14"/>
-  <circle cx="200" cy="150" r="70" fill="none" stroke="#00f0ff" stroke-width="3"/>
-  <line x1="200" y1="150" x2="200" y2="100" stroke="#00f0ff" stroke-width="3" stroke-linecap="round"/>
-  <line x1="200" y1="150" x2="235" y2="165" stroke="#ff2bd6" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="200" cy="150" r="4" fill="#00f0ff"/>
-  <polygon points="195,30 205,30 200,10" fill="#00ff88"/>
-  <polygon points="200,10 190,28 210,28" fill="#00ff88"/>
-  <line x1="200" y1="78" x2="200" y2="82" stroke="#00ff88" stroke-width="2"/>
-  <text x="200" y="240" text-anchor="middle" fill="#b537f2" font-family="monospace" font-size="28" font-weight="bold">0.32s</text>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1e"/>
+      <stop offset="50%" style="stop-color:#12062e"/>
+      <stop offset="100%" style="stop-color:#0a0a1e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffae00"/>
+      <stop offset="100%" style="stop-color:#ff2bd6"/>
+    </linearGradient>
+    <filter id="f">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="1" y="1" width="398" height="298" rx="8" fill="none" stroke="url(#glow)" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="200" cy="115" r="45" fill="none" stroke="#ffae00" stroke-width="2" opacity="0.25"/>
+  <circle cx="200" cy="115" r="60" fill="none" stroke="#ff2bd6" stroke-width="1" opacity="0.12"/>
+  <circle cx="200" cy="115" r="75" fill="none" stroke="#ffae00" stroke-width="0.5" opacity="0.08"/>
+  <g filter="url(#f)">
+    <text x="200" y="125" text-anchor="middle" font-family="'Orbitron',monospace,sans-serif" font-size="24" font-weight="900" fill="#ffae00" letter-spacing="3">REACTION TIME</text>
+  </g>
+  <line x1="80" y1="170" x2="320" y2="170" stroke="url(#glow)" stroke-width="1" opacity="0.3"/>
+  <text x="200" y="195" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#ff2bd6" opacity="0.5" letter-spacing="6">PLAY NOW</text>
 </svg>

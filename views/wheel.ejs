@@ -35,6 +35,26 @@
         </div>
       </div>
     </section>
+
+    <section class="wheel-prizes">
+      <div class="container">
+        <h2 class="section-title">All Possible Outcomes</h2>
+        <div class="prize-table">
+          <div class="prize-col">
+            <h3><i data-lucide="skull"></i> Losses</h3>
+            <div class="prize-list" id="lossList"></div>
+          </div>
+          <div class="prize-col">
+            <h3><i data-lucide="coins"></i> Wins</h3>
+            <div class="prize-list" id="winList"></div>
+          </div>
+          <div class="prize-col">
+            <h3><i data-lucide="zap"></i> Time Warps</h3>
+            <div class="prize-list" id="warpList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div id="wheelResultOverlay" class="result-overlay" style="display:none">
@@ -55,6 +75,40 @@
   <script>
     window.WHEEL_SEGMENTS = <%- JSON.stringify(segments) %>;
     window.SPIN_COST = <%= spinCost %>;
+
+    (function() {
+      const allSegs = window.WHEEL_SEGMENTS;
+      const lossList = document.getElementById('lossList');
+      const winList = document.getElementById('winList');
+      const warpList = document.getElementById('warpList');
+      if (!lossList) return;
+
+      const losses = allSegs.filter(s => s.type === 'coins' && s.value < 0).sort((a,b) => b.value - a.value);
+      const wins = allSegs.filter(s => s.type === 'coins' && s.value > 0).sort((a,b) => a.value - b.value);
+      const warps = allSegs.filter(s => s.type !== 'coins');
+
+      function renderList(items, container, isLoss) {
+        items.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'prize-item ' + (isLoss ? 'loss' : 'win');
+          if (s.value >= 100 || s.value <= -100) div.className += ' epic';
+          else if (s.value >= 50 || s.value <= -50) div.className += ' high';
+          else if (s.value >= 20 || s.value <= -20) div.className += ' mid';
+          div.innerHTML = '<span class="prize-val">' + s.label.replace(' coins','') + '</span><span class="prize-desc">' + s.desc + '</span>';
+          container.appendChild(div);
+        });
+      }
+
+      renderList(losses, lossList, true);
+      renderList(wins, winList, false);
+
+      warps.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'prize-item warp';
+        div.innerHTML = '<span class="prize-val">' + s.label + '</span><span class="prize-desc">' + s.desc + '</span>';
+        warpList.appendChild(div);
+      });
+    })();
   </script>
   <script src="/js/wheel.js?v=3"></script>
   <script src="/js/main.js"></script>

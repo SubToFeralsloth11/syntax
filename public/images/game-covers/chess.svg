@@ -1,15 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#0a0a14"/>
-  <g transform="translate(170,50)" fill="#00f0ff">
-    <rect x="22" y="0" width="16" height="10" rx="3"/>
-    <rect x="18" y="10" width="24" height="8" rx="2"/>
-    <rect x="26" y="18" width="8" height="20"/>
-    <rect x="14" y="38" width="32" height="8"/>
-    <rect x="10" y="46" width="40" height="10" rx="3"/>
-    <rect x="8" y="56" width="44" height="8"/>
-    <rect x="4" y="64" width="52" height="14" rx="4"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1e"/>
+      <stop offset="50%" style="stop-color:#12062e"/>
+      <stop offset="100%" style="stop-color:#0a0a1e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffae00"/>
+      <stop offset="100%" style="stop-color:#b537f2"/>
+    </linearGradient>
+    <filter id="f">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="1" y="1" width="398" height="298" rx="8" fill="none" stroke="url(#glow)" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="200" cy="115" r="45" fill="none" stroke="#ffae00" stroke-width="2" opacity="0.25"/>
+  <circle cx="200" cy="115" r="60" fill="none" stroke="#b537f2" stroke-width="1" opacity="0.12"/>
+  <circle cx="200" cy="115" r="75" fill="none" stroke="#ffae00" stroke-width="0.5" opacity="0.08"/>
+  <g filter="url(#f)">
+    <text x="200" y="125" text-anchor="middle" font-family="'Orbitron',monospace,sans-serif" font-size="28" font-weight="900" fill="#ffae00" letter-spacing="3">CHESS</text>
   </g>
-  <g transform="translate(170,50)" fill="none" stroke="#00f0ff" stroke-width="2">
-    <rect x="22" y="2" width="16" height="6" rx="2"/>
-  </g>
+  <line x1="80" y1="170" x2="320" y2="170" stroke="url(#glow)" stroke-width="1" opacity="0.3"/>
+  <text x="200" y="195" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#b537f2" opacity="0.5" letter-spacing="6">PLAY NOW</text>
 </svg>
