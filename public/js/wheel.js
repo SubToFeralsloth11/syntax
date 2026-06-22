@@ -125,6 +125,9 @@ function buildOffscreen(W, H) {
   return off;
 }
 
+let pointerBounce = 0;
+let lastSegmentIndex = -1;
+
 function drawWheel(angle) {
   const info = initCanvas();
   if (!info) return;
@@ -144,36 +147,51 @@ function drawPointer(ctx, W, H) {
   const cx = W / 2;
   const cy = H / 2 - 10;
   const r = 230;
-  const pointerY = cy - r - 10;
+  const tipY = cy - r + 2;
+  const bounceOff = pointerBounce;
 
   ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 8;
+  ctx.shadowColor = 'rgba(255,30,30,0.6)';
+  ctx.shadowBlur = 12 + bounceOff * 2;
 
   ctx.beginPath();
-  ctx.moveTo(cx, pointerY - 20);
-  ctx.lineTo(cx - 18, pointerY + 8);
-  ctx.lineTo(cx + 18, pointerY + 8);
+  ctx.moveTo(cx, tipY);
+  ctx.lineTo(cx - 14, tipY - 40 - bounceOff);
+  ctx.lineTo(cx - 22, tipY - 46 - bounceOff);
+  ctx.lineTo(cx - 22, tipY - 56 - bounceOff);
+  ctx.lineTo(cx + 22, tipY - 56 - bounceOff);
+  ctx.lineTo(cx + 22, tipY - 46 - bounceOff);
+  ctx.lineTo(cx + 14, tipY - 40 - bounceOff);
   ctx.closePath();
 
-  const grad = ctx.createLinearGradient(cx, pointerY - 20, cx, pointerY + 8);
-  grad.addColorStop(0, '#ff6b6b');
-  grad.addColorStop(0.4, '#ff2222');
-  grad.addColorStop(1, '#cc0000');
+  const grad = ctx.createLinearGradient(cx, tipY, cx, tipY - 56 - bounceOff);
+  grad.addColorStop(0, '#ff0000');
+  grad.addColorStop(0.3, '#ff3333');
+  grad.addColorStop(0.7, '#cc0000');
+  grad.addColorStop(1, '#880000');
   ctx.fillStyle = grad;
   ctx.fill();
-  ctx.strokeStyle = '#880000';
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#ff4444';
+  ctx.lineWidth = 1.5;
   ctx.stroke();
-  ctx.shadowBlur = 0;
 
   ctx.beginPath();
-  ctx.arc(cx, pointerY - 20, 5, 0, 2 * Math.PI);
+  ctx.moveTo(cx, tipY + 3);
+  ctx.lineTo(cx - 8, tipY - 8);
+  ctx.lineTo(cx + 8, tipY - 8);
+  ctx.closePath();
+  ctx.fillStyle = '#ff6666';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(cx, tipY - 56 - bounceOff, 5, 0, 2 * Math.PI);
   ctx.fillStyle = '#fff';
   ctx.fill();
   ctx.strokeStyle = '#cc0000';
   ctx.lineWidth = 2;
   ctx.stroke();
+
+  ctx.shadowBlur = 0;
   ctx.restore();
 }
 
@@ -222,20 +240,35 @@ function animateSpin() {
   const targetAngle = currentAngle + fullSpins * 2 * Math.PI + targetPointerAngle - (currentAngle % (2 * Math.PI));
 
   const startAngle = currentAngle;
-  const duration = 4000;
+  const duration = 5000;
   const startTime = performance.now();
+  lastSegmentIndex = -1;
+  pointerBounce = 0;
 
   function animate(time) {
     const elapsed = time - startTime;
     const progress = Math.min(elapsed / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
     currentAngle = startAngle + (targetAngle - startAngle) * eased;
+
+    const normalizedAngle = ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const currentSegIndex = Math.floor(normalizedAngle / arc) % segments.length;
+
+    if (currentSegIndex !== lastSegmentIndex && lastSegmentIndex !== -1) {
+      pointerBounce = 8;
+    }
+    lastSegmentIndex = currentSegIndex;
+
+    pointerBounce *= 0.85;
+    if (pointerBounce < 0.3) pointerBounce = 0;
+
     drawWheel(currentAngle);
 
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
       currentAngle = targetAngle;
+      pointerBounce = 0;
       drawWheel(currentAngle);
       showResult();
     }
