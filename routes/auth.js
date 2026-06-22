@@ -88,6 +88,7 @@ router.post('/signup', (req, res, next) => {
             'INSERT OR IGNORE INTO referrals (referrer_id, referred_id, reward_given) VALUES (?, ?, 1)'
           ).run(referrerId, user.id);
           awardCoins(referrerId, 100, 'referral');
+          awardCoins(user.id, 100, 'referral_bonus');
           if (totalReferrals === 0) {
             const coins = checkAchievement(referrerId, 'Social Butterfly');
             if (coins) awardCoins(referrerId, coins, 'achievement');
