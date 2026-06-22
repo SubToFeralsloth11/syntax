@@ -329,7 +329,7 @@ function isEventActive(key) {
 }
 
 function getEventBonus(userId, type) {
-  const bonus = db.prepare('SELECT * FROM user_bonuses WHERE user_id = ? AND bonus_type = ? AND expires_at > datetime("now")').get(userId, type);
+  const bonus = db.prepare(`SELECT * FROM user_bonuses WHERE user_id = ? AND bonus_type = ? AND expires_at > datetime('now')`).get(userId, type);
   return bonus ? bonus.multiplier : 1;
 }
 
@@ -486,7 +486,7 @@ router.post('/api/admin/events/:key/activate', requireAuth, requireAdmin, (req, 
   const duration = data.duration || 3600;
   const expires = new Date(Date.now() + duration * 1000).toISOString();
 
-  db.prepare('UPDATE events SET is_active = 1, activated_by = ?, activated_at = datetime("now"), expires_at = ? WHERE id = ?')
+  db.prepare(`UPDATE events SET is_active = 1, activated_by = ?, activated_at = datetime('now'), expires_at = ? WHERE id = ?`)
     .run(req.user.id, expires, event.id);
 
   if (data.type === 'global' && data.multiplier) {
