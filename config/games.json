@@ -230,5 +230,29 @@
     "thumbnail": "/images/game-covers/endless-runner.png",
     "url": "/games/endless-runner",
     "status": "active"
+  },
+  {
+    "id": "cuber",
+    "name": "Cube 2: Sauerbraten",
+    "description": "Fast-paced 3D FPS — Cube 2 engine compiled to WebAssembly.",
+    "thumbnail": "/images/game-covers/cuber.png",
+    "url": "/games/cuber",
+    "status": "active"
+  },
+  {
+    "id": "arena-fps",
+    "name": "ArenaJS",
+    "description": "Multiplayer arena FPS inspired by Quake — WebGL + WebRTC.",
+    "thumbnail": "/images/game-covers/arena-fps.png",
+    "url": "/games/arena-fps",
+    "status": "active"
+  },
+  {
+    "id": "openarena-web",
+    "name": "OpenArena Web",
+    "description": "Open-source arena shooter — JavaScript clone of OpenArena.",
+    "thumbnail": "/images/game-covers/openarena-web.png",
+    "url": "/games/openarena-web",
+    "status": "active"
   }
 ]

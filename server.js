@@ -487,6 +487,71 @@ serveGame('/games/bubble-shooter', 'bubble-shooter');
 serveGame('/games/platformer', 'platformer');
 serveGame('/games/endless-runner', 'endless-runner');
 
+// Static games (no server needed)
+app.get('/games/cuber', (req, res) => {
+  if (req.isAuthenticated()) {
+    const db = require('./db/database');
+    const { awardCoins } = require('./middleware/currency');
+    const today = new Date().toISOString().split('T')[0];
+    const already = db.prepare("SELECT id FROM page_visits WHERE user_id = ? AND page_path = ? AND visited_date = ?").get(req.user.id, '/games/cuber', today);
+    if (!already) {
+      db.prepare('INSERT INTO page_visits (user_id, page_path, visited_date) VALUES (?, ?, ?)').run(req.user.id, '/games/cuber', today);
+      awardCoins(req.user.id, 2, 'visit');
+    }
+  }
+  const fs = require('fs');
+  const gameDir = path.join(__dirname, 'games', 'cuber', 'cube2');
+  const htmlPath = path.join(gameDir, 'mini.html');
+  if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  html = html.replace('<head>', '<head><base href="/games/cuber/cube2/">');
+  html = injectGameNav(html);
+  res.type('html').send(html);
+});
+app.use('/games/cuber/cube2', express.static(path.join(__dirname, 'games', 'cuber', 'cube2')));
+
+app.get('/games/arena-fps', (req, res) => {
+  if (req.isAuthenticated()) {
+    const db = require('./db/database');
+    const { awardCoins } = require('./middleware/currency');
+    const today = new Date().toISOString().split('T')[0];
+    const already = db.prepare("SELECT id FROM page_visits WHERE user_id = ? AND page_path = ? AND visited_date = ?").get(req.user.id, '/games/arena-fps', today);
+    if (!already) {
+      db.prepare('INSERT INTO page_visits (user_id, page_path, visited_date) VALUES (?, ?, ?)').run(req.user.id, '/games/arena-fps', today);
+      awardCoins(req.user.id, 2, 'visit');
+    }
+  }
+  const fs = require('fs');
+  const htmlPath = path.join(__dirname, 'games', 'arena-fps', 'public', 'index.html');
+  if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  html = html.replace('<head>', '<head><base href="/games/arena-fps/">');
+  html = injectGameNav(html);
+  res.type('html').send(html);
+});
+app.use('/games/arena-fps', express.static(path.join(__dirname, 'games', 'arena-fps', 'public')));
+
+app.get('/games/openarena-web', (req, res) => {
+  if (req.isAuthenticated()) {
+    const db = require('./db/database');
+    const { awardCoins } = require('./middleware/currency');
+    const today = new Date().toISOString().split('T')[0];
+    const already = db.prepare("SELECT id FROM page_visits WHERE user_id = ? AND page_path = ? AND visited_date = ?").get(req.user.id, '/games/openarena-web', today);
+    if (!already) {
+      db.prepare('INSERT INTO page_visits (user_id, page_path, visited_date) VALUES (?, ?, ?)').run(req.user.id, '/games/openarena-web', today);
+      awardCoins(req.user.id, 2, 'visit');
+    }
+  }
+  const fs = require('fs');
+  const htmlPath = path.join(__dirname, 'games', 'openarena-web', 'release', 'index.html');
+  if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  html = html.replace('<head>', '<head><base href="/games/openarena-web/release/">');
+  html = injectGameNav(html);
+  res.type('html').send(html);
+});
+app.use('/games/openarena-web/release', express.static(path.join(__dirname, 'games', 'openarena-web', 'release')));
+
 app.use('/', indexRoutes);
 app.use('/', authRoutes);
 app.use('/', gamesRoutes);

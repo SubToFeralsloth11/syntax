@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a2e"/>
+      <stop offset="100%" style="stop-color:#0a0a1e"/>
+    </linearGradient>
+    <linearGradient id="cube" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f0ff"/>
+      <stop offset="100%" style="stop-color:#b537f2"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <g transform="translate(200,140)">
+    <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="none" stroke="url(#cube)" stroke-width="3"/>
+    <polygon points="0,-60 52,-30 0,0 -52,-30" fill="rgba(0,240,255,0.15)"/>
+    <polygon points="52,-30 52,30 0,0" fill="rgba(181,55,242,0.15)"/>
+    <polygon points="-52,-30 -52,30 0,0" fill="rgba(0,240,255,0.1)"/>
+    <line x1="0" y1="0" x2="0" y2="60" stroke="rgba(0,240,255,0.3)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="52" y2="30" stroke="rgba(181,55,242,0.3)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="-52" y2="30" stroke="rgba(0,240,255,0.2)" stroke-width="1"/>
+  </g>
+  <text x="200" y="230" text-anchor="middle" font-family="monospace" font-size="28" font-weight="bold" fill="#00f0ff">CUBE 2</text>
+  <text x="200" y="258" text-anchor="middle" font-family="monospace" font-size="14" fill="#b537f2">SAUERBRATEN</text>
+</svg>
