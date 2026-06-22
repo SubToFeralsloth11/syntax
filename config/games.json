@@ -43,7 +43,7 @@
     "id": "tetris",
     "name": "Tetris",
     "description": "Classic falling blocks puzzle — clear lines and score big!",
-    "thumbnail": "/images/game-covers/tetris.svg",
+    "thumbnail": "/images/game-covers/tetris.png",
     "url": "/games/tetris",
     "status": "active"
   },
@@ -51,7 +51,7 @@
     "id": "flappy-bird",
     "name": "Flappy Bird",
     "description": "Flap through pipes — how far can you go?",
-    "thumbnail": "/images/game-covers/flappy-bird.svg",
+    "thumbnail": "/images/game-covers/flappy-bird.png",
     "url": "/games/flappy-bird",
     "status": "active"
   },
@@ -59,7 +59,7 @@
     "id": "snake",
     "name": "Snake",
     "description": "Eat food, grow longer, don't hit the walls!",
-    "thumbnail": "/images/game-covers/snake.svg",
+    "thumbnail": "/images/game-covers/snake.png",
     "url": "/games/snake",
     "status": "active"
   },
@@ -67,7 +67,7 @@
     "id": "minesweeper",
     "name": "Minesweeper",
     "description": "Reveal tiles and avoid the mines — a classic logic puzzle.",
-    "thumbnail": "/images/game-covers/minesweeper.svg",
+    "thumbnail": "/images/game-covers/minesweeper.png",
     "url": "/games/minesweeper",
     "status": "active"
   },
@@ -75,7 +75,7 @@
     "id": "tic-tac-toe",
     "name": "Tic Tac Toe",
     "description": "Beat the AI in this classic X's and O's strategy game.",
-    "thumbnail": "/images/game-covers/tic-tac-toe.svg",
+    "thumbnail": "/images/game-covers/tic-tac-toe.png",
     "url": "/games/tic-tac-toe",
     "status": "active"
   },
@@ -83,7 +83,7 @@
     "id": "breakout",
     "name": "Breakout",
     "description": "Smash bricks with a bouncing ball — an arcade classic!",
-    "thumbnail": "/images/game-covers/breakout.svg",
+    "thumbnail": "/images/game-covers/breakout.png",
     "url": "/games/breakout",
     "status": "active"
   },
@@ -91,7 +91,7 @@
     "id": "pong",
     "name": "Pong",
     "description": "The OG arcade game — paddle, ball, and pure reflexes.",
-    "thumbnail": "/images/game-covers/pong.svg",
+    "thumbnail": "/images/game-covers/pong.png",
     "url": "/games/pong",
     "status": "active"
   },
@@ -99,7 +99,7 @@
     "id": "memory",
     "name": "Memory Match",
     "description": "Flip cards and find matching pairs.",
-    "thumbnail": "/images/game-covers/memory.svg",
+    "thumbnail": "/images/game-covers/memory.png",
     "url": "/games/memory",
     "status": "active"
   },
@@ -107,7 +107,7 @@
     "id": "connect-four",
     "name": "Connect Four",
     "description": "Drop discs and get four in a row before the AI!",
-    "thumbnail": "/images/game-covers/connect-four.svg",
+    "thumbnail": "/images/game-covers/connect-four.png",
     "url": "/games/connect-four",
     "status": "active"
   },
@@ -115,7 +115,7 @@
     "id": "hangman",
     "name": "Hangman",
     "description": "Guess the word letter by letter before time runs out!",
-    "thumbnail": "/images/game-covers/hangman.svg",
+    "thumbnail": "/images/game-covers/hangman.png",
     "url": "/games/hangman",
     "status": "active"
   },
@@ -123,7 +123,7 @@
     "id": "wordle",
     "name": "Wordle",
     "description": "Guess the 5-letter word in 6 tries — color clues guide you.",
-    "thumbnail": "/images/game-covers/wordle.svg",
+    "thumbnail": "/images/game-covers/wordle.png",
     "url": "/games/wordle",
     "status": "active"
   },
@@ -131,7 +131,7 @@
     "id": "sudoku",
     "name": "Sudoku",
     "description": "Fill the 9x9 grid with numbers — a brain-bending logic puzzle.",
-    "thumbnail": "/images/game-covers/sudoku.svg",
+    "thumbnail": "/images/game-covers/sudoku.png",
     "url": "/games/sudoku",
     "status": "active"
   },
@@ -147,7 +147,7 @@
     "id": "whack-a-mole",
     "name": "Whack-a-Mole",
     "description": "Click the moles before they hide — test your reflexes!",
-    "thumbnail": "/images/game-covers/whack-a-mole.svg",
+    "thumbnail": "/images/game-covers/whack-a-mole.png",
     "url": "/games/whack-a-mole",
     "status": "active"
   },
@@ -155,7 +155,7 @@
     "id": "simon",
     "name": "Simon Says",
     "description": "Repeat the sequence — how long can you remember?",
-    "thumbnail": "/images/game-covers/simon.svg",
+    "thumbnail": "/images/game-covers/simon.png",
     "url": "/games/simon",
     "status": "active"
   },
@@ -163,7 +163,7 @@
     "id": "reaction-time",
     "name": "Reaction Time",
     "description": "How fast are your reflexes? Test your reaction speed!",
-    "thumbnail": "/images/game-covers/reaction-time.svg",
+    "thumbnail": "/images/game-covers/reaction-time.png",
     "url": "/games/reaction-time",
     "status": "active"
   },
@@ -171,7 +171,7 @@
     "id": "typing-speed",
     "name": "Typing Speed",
     "description": "Type as fast as you can — measure your WPM and accuracy.",
-    "thumbnail": "/images/game-covers/typing-speed.svg",
+    "thumbnail": "/images/game-covers/typing-speed.png",
     "url": "/games/typing-speed",
     "status": "active"
   },
@@ -179,7 +179,7 @@
     "id": "color-match",
     "name": "Color Match",
     "description": "Does the color match the word? A Stroop effect challenge!",
-    "thumbnail": "/images/game-covers/color-match.svg",
+    "thumbnail": "/images/game-covers/color-match.png",
     "url": "/games/color-match",
     "status": "active"
   },
@@ -187,7 +187,7 @@
     "id": "solitaire",
     "name": "Solitaire",
     "description": "Classic Klondike solitaire — stack cards into foundations.",
-    "thumbnail": "/images/game-covers/solitaire.svg",
+    "thumbnail": "/images/game-covers/solitaire.png",
     "url": "/games/solitaire",
     "status": "active"
   },
@@ -195,7 +195,7 @@
     "id": "chess",
     "name": "Chess",
     "description": "The game of kings — full chess with legal move validation.",
-    "thumbnail": "/images/game-covers/chess.svg",
+    "thumbnail": "/images/game-covers/chess.png",
     "url": "/games/chess",
     "status": "active"
   },
@@ -203,7 +203,7 @@
     "id": "checkers",
     "name": "Checkers",
     "description": "Classic draughts — jump your opponent's pieces to win.",
-    "thumbnail": "/images/game-covers/checkers.svg",
+    "thumbnail": "/images/game-covers/checkers.png",
     "url": "/games/checkers",
     "status": "active"
   },
@@ -211,7 +211,7 @@
     "id": "bubble-shooter",
     "name": "Bubble Shooter",
     "description": "Aim and shoot — match 3 bubbles to pop them!",
-    "thumbnail": "/images/game-covers/bubble-shooter.svg",
+    "thumbnail": "/images/game-covers/bubble-shooter.png",
     "url": "/games/bubble-shooter",
     "status": "active"
   },
@@ -219,7 +219,7 @@
     "id": "platformer",
     "name": "Platformer",
     "description": "Jump across platforms, collect coins, avoid enemies!",
-    "thumbnail": "/images/game-covers/platformer.svg",
+    "thumbnail": "/images/game-covers/platformer.png",
     "url": "/games/platformer",
     "status": "active"
   },
@@ -227,7 +227,7 @@
     "id": "endless-runner",
     "name": "Endless Runner",
     "description": "Run forever, jump over obstacles — how far can you get?",
-    "thumbnail": "/images/game-covers/endless-runner.svg",
+    "thumbnail": "/images/game-covers/endless-runner.png",
     "url": "/games/endless-runner",
     "status": "active"
   },
@@ -235,7 +235,7 @@
     "id": "cuber",
     "name": "Cube 2: Sauerbraten",
     "description": "Fast-paced 3D FPS — Cube 2 engine compiled to WebAssembly.",
-    "thumbnail": "/images/game-covers/cuber.svg",
+    "thumbnail": "/images/game-covers/cuber.png",
     "url": "/games/cuber",
     "status": "active"
   },
@@ -243,7 +243,7 @@
     "id": "arena-fps",
     "name": "ArenaJS",
     "description": "Multiplayer arena FPS inspired by Quake — WebGL + WebRTC.",
-    "thumbnail": "/images/game-covers/arena-fps.svg",
+    "thumbnail": "/images/game-covers/arena-fps.png",
     "url": "/games/arena-fps",
     "status": "active"
   },
@@ -251,7 +251,7 @@
     "id": "openarena-web",
     "name": "OpenArena Web",
     "description": "Open-source arena shooter — JavaScript clone of OpenArena.",
-    "thumbnail": "/images/game-covers/openarena-web.svg",
+    "thumbnail": "/images/game-covers/openarena-web.png",
     "url": "/games/openarena-web",
     "status": "active"
   }

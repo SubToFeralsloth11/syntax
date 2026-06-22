@@ -71,6 +71,7 @@ function buildOffscreen(W, H) {
   const r = 230;
 
   const arc = (2 * Math.PI) / segments.length;
+  const n = segments.length;
 
   segments.forEach((seg, i) => {
     const startAngle = i * arc - Math.PI / 2;
@@ -82,8 +83,8 @@ function buildOffscreen(W, H) {
     ctx.closePath();
     ctx.fillStyle = segmentColors[i];
     ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
     const mid = startAngle + arc / 2;
@@ -94,10 +95,11 @@ function buildOffscreen(W, H) {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#fff';
     const label = seg.label || String(seg.value || 0);
-    ctx.font = 'bold ' + (label.length > 6 ? '15px' : '18px') + ' sans-serif';
-    ctx.shadowColor = 'rgba(0,0,0,0.4)';
-    ctx.shadowBlur = 3;
-    ctx.fillText(label, r * 0.7, 0);
+    const fontSize = n > 50 ? 9 : n > 20 ? 13 : 18;
+    ctx.font = 'bold ' + fontSize + 'px sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 2;
+    ctx.fillText(label, r * 0.72, 0);
     ctx.shadowBlur = 0;
     ctx.restore();
   });

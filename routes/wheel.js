@@ -108,9 +108,8 @@ function applyEffect(userId, user, seg) {
 
 router.get('/wheel', requireAuth, (req, res) => {
   const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(req.user.id);
-  const displayed = pickSegments(12);
-  req.session.wheelSegments = displayed;
-  res.render('wheel', { spinCost: SPIN_COST, userCoins: user.coins, segments: displayed });
+  req.session.wheelSegments = SEGMENT_POOL;
+  res.render('wheel', { spinCost: SPIN_COST, userCoins: user.coins, segments: SEGMENT_POOL });
 });
 
 router.post('/wheel/spin', requireAuth, (req, res) => {
@@ -120,7 +119,7 @@ router.post('/wheel/spin', requireAuth, (req, res) => {
   let freeSpin = false;
 
   if (!displayed || displayed.length === 0) {
-    displayed = pickSegments(12);
+    displayed = SEGMENT_POOL;
   }
 
   const picked = pickFromDisplayed(displayed);
