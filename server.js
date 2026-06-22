@@ -137,7 +137,7 @@ function injectGameNav(html) {
   <svg class="sgn-home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 </a>
 
-<button class="syntax-exit-btn" onclick="document.getElementById('syntaxExitModal').classList.add('open');if(window.loadExitScores)window.loadExitScores();" title="Exit Game">
+<button class="syntax-exit-btn" id="syntaxExitBtn" onclick="document.getElementById('syntaxExitModal').classList.add('open');if(window.loadExitScores)window.loadExitScores();" title="Exit Game">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
   <span class="sgn-label">Exit Game</span>
 </button>
@@ -168,7 +168,7 @@ function injectGameNav(html) {
   var isAuth = !!window.SYNTAX_AUTH;
 
   window.loadExitScores = function() {
-    if (!gid || !isAuth) return;
+    if (!gid || !window.SYNTAX_AUTH) return;
     var url = window.location.origin + '/api/game-scores/' + encodeURIComponent(gid);
     fetch(url, {credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
       var el = document.getElementById('syntaxBestScore');
@@ -181,7 +181,7 @@ function injectGameNav(html) {
   };
 
   window.syntaxSaveAndExit = function() {
-    if (!isAuth) {
+    if (!window.SYNTAX_AUTH) {
       window.location.href = '/login';
       return;
     }
@@ -222,12 +222,20 @@ function injectGameNav(html) {
     }
   });
 
-  if (!isAuth) {
+  function updateExitAuthUI() {
+    var auth = !!window.SYNTAX_AUTH;
     var saveBtn = document.getElementById('syntaxSaveBtn');
-    if (saveBtn) saveBtn.textContent = 'Login to Save';
     var sub = document.querySelector('.syntax-exit-panel .sub');
-    if (sub) sub.textContent = 'Log in to save your progress';
+    if (!auth) {
+      if (saveBtn) { saveBtn.textContent = 'Login to Save'; saveBtn.onclick = function(){ window.location.href = '/login'; }; }
+      if (sub) sub.textContent = 'Log in to save your progress';
+    } else {
+      if (saveBtn) { saveBtn.textContent = 'Save & Exit'; saveBtn.onclick = syntaxSaveAndExit; }
+      if (sub) sub.textContent = 'Save your progress before leaving?';
+    }
   }
+  updateExitAuthUI();
+  document.getElementById('syntaxExitBtn').addEventListener('click', updateExitAuthUI);
 })();
 </script>`;
   if (html.includes('<body>')) {
