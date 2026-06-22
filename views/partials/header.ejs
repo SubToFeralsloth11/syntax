@@ -147,6 +147,112 @@ function showRPS() {
 }
 </script>
 
+<div id="eventAnnouncementPopup" class="event-announcement" style="display:none">
+  <div class="event-announcement-card">
+    <div class="event-announcement-glow"></div>
+    <div class="event-announcement-icon" id="annIcon">🎉</div>
+    <div class="event-announcement-title" id="annTitle">EVENT ACTIVATED!</div>
+    <div class="event-announcement-name" id="annName"></div>
+    <div class="event-announcement-desc" id="annDesc"></div>
+    <button class="btn btn-primary" onclick="closeAnnouncement()">LET'S GO!</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  let lastCheck = 0;
+  function checkAnnouncements() {
+    fetch('/api/events/announcements').then(r => r.json()).then(events => {
+      events.forEach(ev => {
+        const ts = new Date(ev.activated_at).getTime();
+        if (ts > lastCheck) {
+          lastCheck = ts;
+          showAnnouncement(ev);
+        }
+      });
+    }).catch(() => {});
+  }
+
+  function showAnnouncement(ev) {
+    document.getElementById('annIcon').textContent = ev.icon;
+    document.getElementById('annName').textContent = ev.name;
+    document.getElementById('annDesc').textContent = ev.description;
+    const popup = document.getElementById('eventAnnouncementPopup');
+    popup.style.display = 'flex';
+    requestAnimationFrame(() => popup.classList.add('visible'));
+  }
+
+  window.closeAnnouncement = function() {
+    const popup = document.getElementById('eventAnnouncementPopup');
+    popup.classList.remove('visible');
+    setTimeout(() => { popup.style.display = 'none'; }, 400);
+  };
+
+  checkAnnouncements();
+  setInterval(checkAnnouncements, 10000);
+})();
+</script>
+
+<style>
+.event-announcement {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 2, 8, 0.8);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.event-announcement.visible { opacity: 1; }
+.event-announcement-card {
+  position: relative;
+  background: var(--bg-card-solid, #0d0d1a);
+  border: 2px solid var(--cyan);
+  border-radius: 20px;
+  padding: 40px 50px;
+  text-align: center;
+  max-width: 420px;
+  transform: scale(0.7) translateY(30px);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 80px rgba(0, 240, 255, 0.3);
+}
+.event-announcement.visible .event-announcement-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+.event-announcement-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+.event-announcement-icon { font-size: 3.5rem; margin-bottom: 12px; }
+.event-announcement-title {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: var(--cyan);
+  margin-bottom: 8px;
+}
+.event-announcement-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.event-announcement-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+</style>
+
 <style>
 .event-banner-container {
   position: fixed;

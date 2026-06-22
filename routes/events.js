@@ -12,6 +12,7 @@ const EVENTS = [
     desc: 'A tiny red button is hidden somewhere on the site. First person to find it gets x2 coins for 1 hour!',
     icon: '🎯',
     type: 'hidden',
+    category: 'competitive',
     duration: 3600,
   },
   {
@@ -20,6 +21,7 @@ const EVENTS = [
     desc: 'Work together! Everyone must click 10,000 times total to defeat the evil button. Reward: 200-450 coins each!',
     icon: '👾',
     type: 'collective',
+    category: 'social',
     target: 10000,
     reward_min: 200,
     reward_max: 450,
@@ -31,6 +33,7 @@ const EVENTS = [
     desc: 'All wheel spins are FREE for 1 hour!',
     icon: '🎰',
     type: 'global',
+    category: 'global',
     duration: 3600,
   },
   {
@@ -39,6 +42,7 @@ const EVENTS = [
     desc: 'All XP gains are doubled for 30 minutes!',
     icon: '⚡',
     type: 'global',
+    category: 'global',
     multiplier: 2,
     duration: 1800,
   },
@@ -48,6 +52,7 @@ const EVENTS = [
     desc: 'Every page visit gives 10 coins instead of 2 for 1 hour!',
     icon: '🌧️',
     type: 'global',
+    category: 'reward',
     multiplier: 5,
     duration: 3600,
   },
@@ -57,6 +62,7 @@ const EVENTS = [
     desc: 'All shop items are 50% off for 30 minutes!',
     icon: '🏷️',
     type: 'global',
+    category: 'global',
     discount: 0.5,
     duration: 1800,
   },
@@ -66,6 +72,7 @@ const EVENTS = [
     desc: 'First 10 users to log in get a free Mystery Box!',
     icon: '🎁',
     type: 'first_come',
+    category: 'reward',
     max_participants: 10,
     duration: 3600,
   },
@@ -75,6 +82,7 @@ const EVENTS = [
     desc: 'Next 5 spins per user are guaranteed epic+ results!',
     icon: '🎡',
     type: 'per_user',
+    category: 'reward',
     uses: 5,
     duration: 1800,
   },
@@ -84,6 +92,7 @@ const EVENTS = [
     desc: 'First to type the secret phrase gets 500 coins!',
     icon: '💬',
     type: 'chat',
+    category: 'competitive',
     secret_phrase: 'SYNTAX LEGEND',
     reward: 500,
     duration: 3600,
@@ -94,6 +103,7 @@ const EVENTS = [
     desc: 'Answer correctly for 300 coins! Check #chat for the question.',
     icon: '🧠',
     type: 'trivia',
+    category: 'minigame',
     reward: 300,
     duration: 1800,
   },
@@ -103,6 +113,7 @@ const EVENTS = [
     desc: 'Complete any game in under 60 seconds for 2x score!',
     icon: '⏱️',
     type: 'global',
+    category: 'competitive',
     multiplier: 2,
     duration: 3600,
   },
@@ -112,6 +123,7 @@ const EVENTS = [
     desc: 'Next person to land on exactly +100 coins wins 1000 bonus!',
     icon: '🔢',
     type: 'wheel',
+    category: 'competitive',
     target_value: 100,
     reward: 1000,
     duration: 7200,
@@ -122,6 +134,7 @@ const EVENTS = [
     desc: 'All game scores worth double coins for 1 hour!',
     icon: '🌪️',
     type: 'global',
+    category: 'global',
     multiplier: 2,
     duration: 3600,
   },
@@ -131,6 +144,7 @@ const EVENTS = [
     desc: 'Send a friend request — both you and your friend get 100 coins!',
     icon: '🤝',
     type: 'social',
+    category: 'social',
     reward: 100,
     duration: 3600,
   },
@@ -140,6 +154,7 @@ const EVENTS = [
     desc: 'All trades have 0% tax for 30 minutes!',
     icon: '🔄',
     type: 'global',
+    category: 'global',
     duration: 1800,
   },
   {
@@ -148,6 +163,7 @@ const EVENTS = [
     desc: 'Complete any quest for 3x rewards for 1 hour!',
     icon: '🏆',
     type: 'global',
+    category: 'reward',
     multiplier: 3,
     duration: 3600,
   },
@@ -157,6 +173,7 @@ const EVENTS = [
     desc: 'Bank interest rates tripled for 1 hour!',
     icon: '🏦',
     type: 'global',
+    category: 'reward',
     multiplier: 3,
     duration: 3600,
   },
@@ -166,6 +183,7 @@ const EVENTS = [
     desc: 'Lottery tickets cost half price for 30 minutes!',
     icon: '🎰',
     type: 'global',
+    category: 'global',
     discount: 0.5,
     duration: 1800,
   },
@@ -175,6 +193,7 @@ const EVENTS = [
     desc: 'Next gift sent gives double coins to the receiver!',
     icon: '💧',
     type: 'social',
+    category: 'social',
     multiplier: 2,
     duration: 3600,
   },
@@ -184,6 +203,7 @@ const EVENTS = [
     desc: 'Admin is feeling generous! 5 random online users get 500 coins!',
     icon: '💸',
     type: 'instant',
+    category: 'reward',
     reward: 500,
     winners: 5,
   },
@@ -193,6 +213,7 @@ const EVENTS = [
     desc: 'Click any button 100 times to earn 200 coins!',
     icon: '🖱️',
     type: 'click',
+    category: 'minigame',
     target: 100,
     reward: 200,
     duration: 3600,
@@ -203,6 +224,7 @@ const EVENTS = [
     desc: 'Match the color shown on screen for 400 coins!',
     icon: '🎨',
     type: 'minigame',
+    category: 'minigame',
     reward: 400,
     duration: 1800,
   },
@@ -212,6 +234,7 @@ const EVENTS = [
     desc: 'Win 3 rock-paper-scissors in a row for 600 coins!',
     icon: '✊',
     type: 'minigame',
+    category: 'minigame',
     streak: 3,
     reward: 600,
     duration: 3600,
@@ -222,6 +245,7 @@ const EVENTS = [
     desc: 'Find the hidden element on the page for 350 coins!',
     icon: '🔍',
     type: 'hidden',
+    category: 'competitive',
     reward: 350,
     duration: 1800,
   },
@@ -231,6 +255,7 @@ const EVENTS = [
     desc: 'Admin reveals a password in chat. First to enter it gets 500 coins!',
     icon: '🔑',
     type: 'first_come',
+    category: 'competitive',
     reward: 500,
     max_participants: 1,
     duration: 3600,
@@ -241,6 +266,7 @@ const EVENTS = [
     desc: 'Roll a 6 to win 1000 coins! Try your luck.',
     icon: '🎲',
     type: 'minigame',
+    category: 'minigame',
     target_value: 6,
     reward: 1000,
     duration: 3600,
@@ -251,6 +277,7 @@ const EVENTS = [
     desc: 'Follow the pattern correctly for 250 coins!',
     icon: '🧠',
     type: 'minigame',
+    category: 'minigame',
     reward: 250,
     duration: 1800,
   },
@@ -260,6 +287,7 @@ const EVENTS = [
     desc: 'Hidden coins scattered across 5 pages. Collect them all for 800 coins!',
     icon: '🗺️',
     type: 'scavenger',
+    category: 'competitive',
     reward: 800,
     pages: 5,
     duration: 7200,
@@ -270,6 +298,7 @@ const EVENTS = [
     desc: 'All coins earned are doubled for 30 minutes!',
     icon: '✌️',
     type: 'global',
+    category: 'global',
     multiplier: 2,
     duration: 1800,
   },
@@ -316,6 +345,26 @@ router.get('/api/events', (req, res) => {
     data: JSON.parse(e.data || '{}'),
   }));
   res.json(data);
+});
+
+// API: get latest event announcement (for popups)
+let lastAnnouncement = 0;
+router.get('/api/events/announcements', (req, res) => {
+  const events = db.prepare('SELECT * FROM events WHERE is_active = 1 AND activated_at IS NOT NULL ORDER BY activated_at DESC LIMIT 5').all();
+  const recent = events.filter(e => {
+    const ts = new Date(e.activated_at).getTime();
+    return ts > lastAnnouncement;
+  });
+  if (recent.length > 0) {
+    lastAnnouncement = Math.max(...recent.map(e => new Date(e.activated_at).getTime()));
+  }
+  res.json(recent.map(e => ({
+    key: e.event_key,
+    name: e.name,
+    description: e.description,
+    icon: JSON.parse(e.data || '{}').icon || '🎉',
+    activated_at: e.activated_at,
+  })));
 });
 
 // API: click for defeat_button event

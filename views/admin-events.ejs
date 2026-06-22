@@ -14,15 +14,26 @@
 
     <section class="admin-section">
       <div class="container">
+        <div class="event-categories">
+          <button class="cat-btn active" onclick="filterEvents('all', this)">All</button>
+          <button class="cat-btn" onclick="filterEvents('global', this)">Global</button>
+          <button class="cat-btn" onclick="filterEvents('competitive', this)">Competitive</button>
+          <button class="cat-btn" onclick="filterEvents('social', this)">Social</button>
+          <button class="cat-btn" onclick="filterEvents('minigame', this)">Minigames</button>
+          <button class="cat-btn" onclick="filterEvents('reward', this)">Rewards</button>
+        </div>
+
         <div class="event-grid" id="eventGrid">
           <% events.forEach(ev => { %>
-            <div class="event-card <%= ev.is_active ? 'active' : '' %>" data-key="<%= ev.event_key %>">
+            <div class="event-card <%= ev.is_active ? 'active' : '' %>" data-key="<%= ev.event_key %>" data-cat="<%= ev.data.category || 'global' %>">
               <div class="event-icon"><%= ev.data.icon || '🎉' %></div>
               <div class="event-info">
-                <h3><%= ev.name %></h3>
+                <div class="event-header-row">
+                  <h3><%= ev.name %></h3>
+                  <span class="event-cat-badge <%= ev.data.category || 'global' %>"><%= ev.data.category || 'global' %></span>
+                </div>
                 <p><%= ev.description %></p>
                 <div class="event-meta">
-                  <span class="event-type"><%= ev.data.type || 'global' %></span>
                   <% if (ev.is_active) { %>
                     <span class="event-status active">ACTIVE</span>
                     <% if (ev.expires_at) { %>
@@ -30,6 +41,9 @@
                     <% } %>
                   <% } else { %>
                     <span class="event-status inactive">OFF</span>
+                  <% } %>
+                  <% if (ev.data.duration) { %>
+                    <span class="event-duration"><%= Math.floor(ev.data.duration / 60) %>m</span>
                   <% } %>
                 </div>
               </div>
@@ -49,114 +63,128 @@
 
   <%- include('partials/footer') %>
   <script>
+    function filterEvents(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.event-card').forEach(card => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
     async function activateEvent(key) {
-      const res = await fetch('/api/admin/events/' + key + '/activate', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        location.reload();
-      } else {
-        alert(data.message || 'Failed');
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        const res = await fetch('/api/admin/events/' + key + '/activate', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert(data.message || data.error || 'Failed');
+          btn.disabled = false;
+          btn.textContent = 'Activate';
+        }
+      } catch (e) {
+        alert('Network error');
+        btn.disabled = false;
+        btn.textContent = 'Activate';
       }
     }
 
     async function deactivateEvent(key) {
-      const res = await fetch('/api/admin/events/' + key + '/deactivate', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) location.reload();
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        const res = await fetch('/api/admin/events/' + key + '/deactivate', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) location.reload();
+        else { btn.disabled = false; btn.textContent = 'Deactivate'; }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Deactivate';
+      }
     }
   </script>
   <style>
+    .event-categories {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .cat-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-btn:hover { border-color: var(--cyan); color: var(--text); }
+    .cat-btn.active {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
     .event-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .event-card {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       background: var(--bg-card);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       backdrop-filter: blur(10px);
       transition: all 0.2s;
     }
+    .event-card:hover { border-color: rgba(0, 240, 255, 0.3); }
     .event-card.active {
       border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.12);
     }
-    .event-icon {
-      font-size: 2rem;
-      width: 50px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .event-info {
-      flex: 1;
-    }
-    .event-info h3 {
-      margin: 0 0 4px;
-      font-size: 1rem;
-      color: var(--text);
-    }
-    .event-info p {
-      margin: 0 0 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-    .event-meta {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .event-type {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(181, 55, 242, 0.15);
-      color: var(--purple);
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-    }
-    .event-status {
-      font-size: 0.7rem;
+    .event-icon { font-size: 1.8rem; width: 44px; text-align: center; flex-shrink: 0; }
+    .event-info { flex: 1; min-width: 0; }
+    .event-header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .event-header-row h3 { margin: 0; font-size: 0.95rem; color: var(--text); white-space: nowrap; }
+    .event-cat-badge {
+      font-size: 0.6rem;
       padding: 2px 8px;
       border-radius: 4px;
       font-weight: 700;
       font-family: var(--font-mono);
-    }
-    .event-status.active {
-      background: rgba(0, 255, 136, 0.15);
-      color: #00ff88;
-      animation: pulse 2s infinite;
-    }
-    .event-status.inactive {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-muted);
-    }
-    .event-expires {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-    .event-actions {
+      text-transform: uppercase;
       flex-shrink: 0;
     }
-    .btn-sm {
-      padding: 6px 14px;
-      font-size: 0.8rem;
-    }
-    .btn-danger {
-      background: rgba(255, 68, 68, 0.2);
-      border: 1px solid rgba(255, 68, 68, 0.4);
-      color: #ff4444;
-    }
-    .btn-danger:hover {
-      background: rgba(255, 68, 68, 0.3);
-    }
+    .event-cat-badge.global { background: rgba(0, 240, 255, 0.12); color: var(--cyan); }
+    .event-cat-badge.competitive { background: rgba(255, 43, 214, 0.12); color: var(--magenta); }
+    .event-cat-badge.social { background: rgba(68, 221, 136, 0.12); color: #44dd88; }
+    .event-cat-badge.minigame { background: rgba(255, 174, 0, 0.12); color: #ffae00; }
+    .event-cat-badge.reward { background: rgba(181, 55, 242, 0.12); color: var(--purple); }
+    .event-info p { margin: 0 0 6px; font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; }
+    .event-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .event-status { font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-family: var(--font-mono); }
+    .event-status.active { background: rgba(0, 255, 136, 0.15); color: #00ff88; animation: pulse 2s infinite; }
+    .event-status.inactive { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+    .event-expires, .event-duration { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .event-actions { flex-shrink: 0; }
+    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+    .btn-danger { background: rgba(255, 68, 68, 0.2); border: 1px solid rgba(255, 68, 68, 0.4); color: #ff4444; }
+    .btn-danger:hover { background: rgba(255, 68, 68, 0.3); }
   </style>
 </body>
 </html>
