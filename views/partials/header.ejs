@@ -340,6 +340,11 @@ function showRPS() {
       <a href="/settings" class="sidebar-link<%= _p.startsWith('/settings') ? ' active' : '' %>"><i data-lucide="settings"></i><span>Settings</span></a>
     </div>
 
+    <div class="sidebar-group" id="eventsSidebarGroup" style="display:none">
+      <span class="sidebar-label event-label"><i data-lucide="sparkles"></i> LIVE Events</span>
+      <div id="eventsSidebarList"></div>
+    </div>
+
     <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
     <div class="sidebar-group">
       <span class="sidebar-label"><i data-lucide="shield"></i> Admin</span>
@@ -441,6 +446,43 @@ function showRPS() {
   if (_chatPage) {
     fetch('/api/notifications/read-chat', { method: 'POST', credentials: 'same-origin' }).catch(function(){});
   }
+
+  function updateEventsSidebar() {
+    fetch('/api/events', { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(events) {
+        var group = document.getElementById('eventsSidebarGroup');
+        var list = document.getElementById('eventsSidebarList');
+        if (!group || !list) return;
+        if (events.length === 0) { group.style.display = 'none'; return; }
+        group.style.display = '';
+        list.innerHTML = '';
+        events.forEach(function(ev) {
+          var card = document.createElement('div');
+          card.className = 'sidebar-event-card';
+          var html = '<div class="sidebar-event-header"><span class="sidebar-event-icon">' + (ev.icon || '🎉') + '</span><span class="sidebar-event-name">' + ev.name + '</span></div>';
+          html += '<div class="sidebar-event-desc">' + ev.description.substring(0, 60) + (ev.description.length > 60 ? '...' : '') + '</div>';
+          if (ev.key === 'defeat_button') {
+            html += '<button class="btn btn-xs btn-event" onclick="joinDefeatButton()">CLICK!</button>';
+          } else if (ev.key === 'click_frenzy') {
+            html += '<button class="btn btn-xs btn-event" onclick="clickFrenzy()">CLICK!</button>';
+          } else if (ev.key === 'dice_roll') {
+            html += '<button class="btn btn-xs btn-event" onclick="rollDice()">ROLL</button>';
+          } else if (ev.key === 'rps_tournament') {
+            html += '<button class="btn btn-xs btn-event" onclick="showRPS()">PLAY</button>';
+          } else {
+            html += '<div class="sidebar-event-active">LIVE</div>';
+          }
+          card.innerHTML = html;
+          list.appendChild(card);
+        });
+        if (window.lucide) lucide.createIcons();
+      })
+      .catch(function(){});
+  }
+
+  updateEventsSidebar();
+  setInterval(updateEventsSidebar, 15000);
 })();
 </script>
 <% } %>
