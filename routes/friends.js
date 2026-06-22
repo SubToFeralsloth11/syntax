@@ -60,6 +60,14 @@ router.post('/friends/add', requireAuth, (req, res) => {
       const { updateQuestProgress } = require('../middleware/quests');
       updateQuestProgress(req.user.id, 'friend');
       updateQuestProgress(friendId, 'friend');
+
+      const friendBonus = db.prepare("SELECT * FROM events WHERE event_key = 'friend_bonus' AND is_active = 1").get();
+      if (friendBonus) {
+        const { awardCoins } = require('../middleware/currency');
+        awardCoins(req.user.id, 100, 'friend_bonus');
+        awardCoins(friendId, 100, 'friend_bonus');
+      }
+
       return res.json({ success: true, message: 'Friend request accepted!' });
     }
   }
@@ -174,7 +182,15 @@ router.post('/friends/gift-coins', requireAuth, (req, res) => {
   if (balance < amt) return res.json({ success: false, message: 'Not enough coins' });
 
   awardCoins(req.user.id, -amt, 'gift_sent');
-  awardCoins(fid, amt, 'gift_received');
+
+  let giftMultiplier = 1;
+  const giftSplash = db.prepare("SELECT * FROM events WHERE event_key = 'gift_splash' AND is_active = 1").get();
+  if (giftSplash) {
+    const data = JSON.parse(giftSplash.data || '{}');
+    giftMultiplier = data.multiplier || 2;
+  }
+
+  awardCoins(fid, Math.floor(amt * giftMultiplier), 'gift_received');
 
   res.json({ success: true, message: 'Gifted ' + amt + ' coins!', newBalance: getBalance(req.user.id) });
 });

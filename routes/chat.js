@@ -79,6 +79,20 @@ router.post('/chat/send', requireAuth, (req, res) => {
   awardXP(req.user.id, 5, 'chat');
   updateQuestProgress(req.user.id, 'chat');
 
+  const chatChallenge = db.prepare("SELECT * FROM events WHERE event_key = 'chat_challenge' AND is_active = 1").get();
+  if (chatChallenge) {
+    const data = JSON.parse(chatChallenge.data || '{}');
+    const secret = (data.secret_phrase || '').toUpperCase();
+    if (message.toUpperCase().trim() === secret) {
+      const existing = db.prepare('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?').get(chatChallenge.id, req.user.id);
+      if (!existing) {
+        awardCoins(req.user.id, data.reward || 500, 'chat_challenge_win');
+        db.prepare('INSERT INTO event_participants (event_id, user_id) VALUES (?, ?)').run(chatChallenge.id, req.user.id);
+        db.prepare('UPDATE events SET is_active = 0 WHERE id = ?').run(chatChallenge.id);
+      }
+    }
+  }
+
   const msg = db.prepare(`
     SELECT cm.id, cm.message, cm.created_at, u.display_name, u.id as user_id, u.role
     FROM chat_messages cm
