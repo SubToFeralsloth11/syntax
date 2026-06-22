@@ -137,6 +137,7 @@ function injectGameNav(html) {
   var _api = window.location.origin + '/api/game-scores';
   var _lastScore = 0;
   var _saved = false;
+  var _bestLocal = 0;
 
   var bar = document.getElementById('syntaxScoreBar');
   var val = document.getElementById('syntaxScoreVal');
@@ -158,14 +159,18 @@ function injectGameNav(html) {
     bar.classList.add('saved');
   }
 
+  function updateDisplay(score) {
+    if (score > _lastScore) _lastScore = score;
+    if (val) val.textContent = _lastScore;
+  }
+
   window.setGameScore = function(score) {
-    _lastScore = score;
-    if (val) val.textContent = score;
+    updateDisplay(score);
     _saved = false;
   };
 
   function postScore(score, extra) {
-    if (!auth || !gid || _saved) return;
+    if (!auth || !gid || score <= 0) return Promise.resolve();
     return fetch(_api, {
       method: 'POST',
       credentials: 'same-origin',
@@ -174,17 +179,16 @@ function injectGameNav(html) {
     }).then(function(r){ return r.json(); }).then(function(d){
       if (d.ok) {
         _saved = true;
+        _bestLocal = d.best;
         if (best) best.textContent = '/ best: ' + d.best;
         flashBar();
-        return d;
       }
     }).catch(function(){});
   }
 
   window.saveGameScore = function(score, extra) {
-    _lastScore = score;
-    if (val) val.textContent = score;
-    postScore(score, extra);
+    updateDisplay(score);
+    postScore(_lastScore, extra);
   };
 
   window.getGameScores = function(cb) {
@@ -193,6 +197,79 @@ function injectGameNav(html) {
       .then(function(r){return r.json()}).then(cb).catch(function(){});
   };
 
+  // Auto-detect score from DOM (most common game score selectors)
+  function scrapeScore() {
+    var selectors = [
+      '.score-container', '.score', '#score', '#score-value', '#current-score',
+      '.game-score', '.points', '#points', '.current', '.value',
+      '#game-score', '.score-value', '.score-text', '.myscore',
+      'h2.score', 'span.score', 'div.score', '.best-score',
+      '[data-score]', '.count', '#count', '.timer'
+    ];
+    for (var i = 0; i < selectors.length; i++) {
+      var els = document.querySelectorAll(selectors[i]);
+      for (var j = 0; j < els.length; j++) {
+        var txt = els[j].textContent.replace(/[^0-9]/g, '');
+        var n = parseInt(txt, 10);
+        if (n > 0 && n > _lastScore) return n;
+      }
+    }
+    return 0;
+  }
+
+  // Intercept localStorage.setItem to capture scores
+  var _origSetItem = Storage.prototype.setItem;
+  Storage.prototype.setItem = function(key, val) {
+    _origSetItem.call(this, key, val);
+    if (!auth) return;
+    var k = key.toLowerCase();
+    if (k.indexOf('score') !== -1 || k.indexOf('points') !== -1 || k.indexOf('high') !== -1 || k.indexOf('best') !== -1) {
+      var n = parseInt(val, 10);
+      if (n > 0 && n > _lastScore) updateDisplay(n);
+    }
+    // Also check if value is JSON containing score
+    try {
+      var obj = JSON.parse(val);
+      if (obj && typeof obj === 'object') {
+        var s = obj.score || obj.points || obj.highScore || obj.bestScore || 0;
+        if (s > _lastScore) updateDisplay(s);
+      }
+    } catch(e){}
+  };
+
+  // Intercept common score variables
+  var _origDefineProperty = Object.defineProperty;
+  var _scoreWatchers = [];
+  function watchScore(obj, prop) {
+    try {
+      var val = obj[prop];
+      _origDefineProperty.call(Object, obj, prop, {
+        get: function(){ return val; },
+        set: function(v){
+          val = v;
+          if (typeof v === 'number' && v > _lastScore) updateDisplay(v);
+        },
+        configurable: true
+      });
+      _scoreWatchers.push(prop);
+    } catch(e){}
+  }
+
+  // Watch common global score variables after DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', function(){
+    ['score','Score','SCORE','points','Points','gameScore','currentScore','playerScore'].forEach(function(p){
+      if (window[p] !== undefined) watchScore(window, p);
+    });
+  });
+
+  // Poll DOM for score changes every 3 seconds
+  setInterval(function(){
+    if (!auth) return;
+    var s = scrapeScore();
+    if (s > _lastScore) updateDisplay(s);
+  }, 3000);
+
+  // Auto-save every 15 seconds if score changed
   if (auth && gid) {
     fetch(_api + '/' + encodeURIComponent(gid), {credentials:'same-origin'})
       .then(function(r){return r.json()}).then(function(d){
@@ -205,6 +282,7 @@ function injectGameNav(html) {
       }
     }, 15000);
 
+    // Save on page close
     window.addEventListener('beforeunload', function(){
       if (_lastScore > 0 && auth) {
         try {
