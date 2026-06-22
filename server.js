@@ -165,10 +165,12 @@ function injectGameNav(html) {
 <script>
 (function(){
   var gid = window.SYNTAX_GAME_ID || '';
+  var isAuth = !!window.SYNTAX_AUTH;
 
   window.loadExitScores = function() {
-    if (!gid) return;
-    fetch('/api/game-scores/' + gid, {credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
+    if (!gid || !isAuth) return;
+    var url = window.location.origin + '/api/game-scores/' + encodeURIComponent(gid);
+    fetch(url, {credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
       var el = document.getElementById('syntaxBestScore');
       if (d.best > 0) {
         document.getElementById('syntaxBestScoreVal').textContent = d.best;
@@ -179,6 +181,10 @@ function injectGameNav(html) {
   };
 
   window.syntaxSaveAndExit = function() {
+    if (!isAuth) {
+      window.location.href = '/login';
+      return;
+    }
     var score = parseInt(document.getElementById('syntaxScoreInput').value) || 0;
     var notes = document.getElementById('syntaxNotes').value;
     var btn = document.getElementById('syntaxSaveBtn');
@@ -186,12 +192,12 @@ function injectGameNav(html) {
     btn.disabled = true;
     btn.textContent = 'Saving...';
 
-    fetch('/api/game-scores', {
+    fetch(window.location.origin + '/api/game-scores', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ game_id: gid, score: score, extra_data: notes || null })
-    }).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
+    }).then(function(r){return r.json()}).then(function(d){
       if (d.ok) {
         status.className = 'save-status ok';
         status.textContent = 'Score saved! Best: ' + d.best;
@@ -201,7 +207,7 @@ function injectGameNav(html) {
       }
     }).catch(function(e){
       status.className = 'save-status err';
-      status.textContent = 'Failed to save — are you logged in?';
+      status.textContent = 'Failed to save — try again';
       btn.disabled = false;
       btn.textContent = 'Save & Exit';
     });
@@ -215,6 +221,13 @@ function injectGameNav(html) {
       }
     }
   });
+
+  if (!isAuth) {
+    var saveBtn = document.getElementById('syntaxSaveBtn');
+    if (saveBtn) saveBtn.textContent = 'Login to Save';
+    var sub = document.querySelector('.syntax-exit-panel .sub');
+    if (sub) sub.textContent = 'Log in to save your progress';
+  }
 })();
 </script>`;
   if (html.includes('<body>')) {
@@ -293,9 +306,7 @@ function serveGame(route, folder) {
     let html = fs.readFileSync(path.join(__dirname, 'games', folder, 'index.html'), 'utf8');
     html = html.replace('<head>', '<head><base href="' + route + '/">');
     html = injectGameNav(html);
-    if (req.isAuthenticated()) {
-      html = injectGameSave(html, gameId);
-    }
+    html = injectGameSave(html, gameId);
     res.type('html').send(html);
   });
   app.use(route, express.static(path.join(__dirname, 'games', folder)));
@@ -325,15 +336,18 @@ function injectGameSave(html, gameId) {
   const saveScript = `<script>
 (function(){
   window.SYNTAX_GAME_ID = '${gameId}';
+  window.SYNTAX_AUTH = true;
+  var _apiBase = window.location.origin + '/api/game-scores';
   window.saveGameScore = function(score, extra) {
-    fetch('/api/game-scores', {
+    fetch(_apiBase, {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ game_id: '${gameId}', score: score, extra_data: extra ? JSON.stringify(extra) : null })
     }).catch(function(){});
   };
   window.getGameScores = function(cb) {
-    fetch('/api/game-scores/${gameId}').then(function(r){return r.json()}).then(cb).catch(function(){});
+    fetch(_apiBase + '/${gameId}', {credentials:'same-origin'}).then(function(r){return r.json()}).then(cb).catch(function(){});
   };
 })();</script>`;
   if (html.includes('</head>')) {
