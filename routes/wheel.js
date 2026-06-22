@@ -21,11 +21,26 @@ function pickSegments(count) {
 
 function pickFromDisplayed(displayed) {
   const weights = displayed.map(s => {
+    const val = s.value || 0;
     const tier = s.tier || 'low';
-    if (tier === 'epic') return 1;
-    if (tier === 'high') return 3;
-    if (tier === 'mid') return 6;
-    return 10;
+    const isWin = s.type === 'coins' && val > 0;
+    const isLoss = s.type === 'coins' && val < 0;
+
+    if (isWin) {
+      if (tier === 'epic') return 3;
+      if (tier === 'high') return 6;
+      if (tier === 'mid') return 10;
+      return 14;
+    }
+    if (isLoss) {
+      if (tier === 'epic') return 0.5;
+      if (tier === 'high') return 1;
+      if (tier === 'mid') return 1.5;
+      return 2;
+    }
+    if (tier === 'epic') return 3;
+    if (tier === 'high') return 4;
+    return 5;
   });
   const totalWeight = weights.reduce((a, b) => a + b, 0);
   let rand = Math.random() * totalWeight;
