@@ -25,6 +25,13 @@ try {
   db.exec('ALTER TABLE lottery_state ADD COLUMN coins_toward_jackpot INTEGER DEFAULT 0');
 }
 
+// Migrations: add last_read_chat column to users if missing
+try {
+  db.prepare('SELECT last_read_chat FROM users LIMIT 1').get();
+} catch (e) {
+  db.exec('ALTER TABLE users ADD COLUMN last_read_chat INTEGER DEFAULT 0');
+}
+
 const { restoreAccounts } = require('./accounts');
 const restored = restoreAccounts(db);
 if (restored > 0) console.log(`Restored ${restored} account(s) from accounts.json`);

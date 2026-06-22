@@ -124,6 +124,9 @@ router.get('/friends', requireAuth, (req, res) => {
     "SELECT id, item_name, item_type, rarity, equipped FROM inventory_items WHERE user_id = ? AND equipped = 0 ORDER BY item_type, item_name"
   ).all(userId);
 
+  // Mark DMs as read
+  db.prepare("UPDATE friend_dms SET read = 1 WHERE to_id = ? AND read = 0").run(userId);
+
   res.render('friends', { friends, pendingSent, pendingReceived, query: req.query, myInventory, myCoins: req.user.coins });
 });
 

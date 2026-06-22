@@ -45,8 +45,20 @@ app.use((req, res, next) => {
       'SELECT w.id, w.message, w.created_at, a.display_name as admin_name FROM warnings w JOIN users a ON a.id = w.admin_id WHERE w.user_id = ? AND w.read = 0 ORDER BY w.created_at DESC'
     ).all(req.user.id);
     res.locals.unreadWarnings = unreadWarnings;
+
+    const pendingFriends = db.prepare(
+      "SELECT COUNT(*) as cnt FROM friends WHERE friend_id = ? AND status = 'pending'"
+    ).get(req.user.id).cnt;
+    const unreadDMs = db.prepare(
+      "SELECT COUNT(*) as cnt FROM friend_dms WHERE to_id = ? AND read = 0"
+    ).get(req.user.id).cnt;
+    const unreadChat = db.prepare(
+      "SELECT COUNT(*) as cnt FROM chat_messages WHERE id > COALESCE((SELECT last_read_chat FROM users WHERE id = ?), 0)"
+    ).get(req.user.id).cnt;
+    res.locals.notifCounts = { friends: pendingFriends, dms: unreadDMs, chat: unreadChat };
   } else {
     res.locals.unreadWarnings = [];
+    res.locals.notifCounts = { friends: 0, dms: 0, chat: 0 };
   }
   next();
 });
@@ -54,6 +66,33 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.locals.googleEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+
+// Notification counts API
+app.get('/api/notifications', (req, res) => {
+  if (!req.isAuthenticated()) return res.json({ friends: 0, dms: 0, chat: 0 });
+  const db = require('./db/database');
+  const pendingFriends = db.prepare(
+    "SELECT COUNT(*) as cnt FROM friends WHERE friend_id = ? AND status = 'pending'"
+  ).get(req.user.id).cnt;
+  const unreadDMs = db.prepare(
+    "SELECT COUNT(*) as cnt FROM friend_dms WHERE to_id = ? AND read = 0"
+  ).get(req.user.id).cnt;
+  const unreadChat = db.prepare(
+    "SELECT COUNT(*) as cnt FROM chat_messages WHERE id > COALESCE((SELECT last_read_chat FROM users WHERE id = ?), 0)"
+  ).get(req.user.id).cnt;
+  res.json({ friends: pendingFriends, dms: unreadDMs, chat: unreadChat });
+});
+
+// Mark chat as read
+app.post('/api/notifications/read-chat', (req, res) => {
+  if (!req.isAuthenticated()) return res.json({ ok: true });
+  const db = require('./db/database');
+  const last = db.prepare('SELECT MAX(id) as max_id FROM chat_messages').get();
+  if (last && last.max_id) {
+    db.prepare('UPDATE users SET last_read_chat = ? WHERE id = ?').run(last.max_id, req.user.id);
+  }
+  res.json({ ok: true });
+});
 
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
