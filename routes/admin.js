@@ -237,4 +237,9 @@ router.post('/dismiss-warning', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+router.get('/admin/events', requireAdmin, (req, res) => {
+  const events = db.prepare('SELECT * FROM events ORDER BY is_active DESC, name').all();
+  res.render('admin-events', { events: events.map(e => ({ ...e, data: JSON.parse(e.data || '{}') })) });
+});
+
 module.exports = router;

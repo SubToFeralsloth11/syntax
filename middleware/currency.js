@@ -8,6 +8,13 @@ function awardCoins(userId, amount, reason) {
     }
   }
 
+  if (amount > 0) {
+    const eventBonus = db.prepare('SELECT multiplier FROM user_bonuses WHERE user_id = ? AND bonus_type = ? AND expires_at > datetime("now")').get(userId, 'visit');
+    if (eventBonus && eventBonus.multiplier > 1) {
+      amount = Math.floor(amount * eventBonus.multiplier);
+    }
+  }
+
   const insertTx = db.prepare(
     'INSERT INTO coin_transactions (user_id, amount, reason) VALUES (?, ?, ?)'
   );
@@ -19,7 +26,6 @@ function awardCoins(userId, amount, reason) {
     insertTx.run(userId, amount, reason);
     updateUser.run(amount, amount > 0 ? amount : 0, userId);
 
-    // Every 10 coins earned (positive) across all players → +1 to lottery jackpot
     if (amount > 0) {
       const state = db.prepare('SELECT coins_toward_jackpot FROM lottery_state WHERE id = 1').get();
       if (state) {

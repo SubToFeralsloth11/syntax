@@ -137,7 +137,29 @@ router.post('/wheel/spin', requireAuth, (req, res) => {
     displayed = SEGMENT_POOL;
   }
 
-  const picked = pickFromDisplayed(displayed);
+  const luckyHour = db.prepare('SELECT * FROM events WHERE event_key = ? AND is_active = 1').get('lucky_hour');
+  if (luckyHour) freeSpin = true;
+
+  let picked = pickFromDisplayed(displayed);
+
+  const wheelGuarantee = db.prepare('SELECT * FROM events WHERE event_key = ? AND is_active = 1').get('wheel_guarantee');
+  if (wheelGuarantee) {
+    const participant = db.prepare('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?').get(wheelGuarantee.id, userId);
+    const uses = participant ? (JSON.parse(participant.data || '{}').uses || 0) : 0;
+    if (uses < 5) {
+      const epicSegs = displayed.filter(s => s.tier === 'epic');
+      if (epicSegs.length > 0) {
+        picked = epicSegs[Math.floor(Math.random() * epicSegs.length)];
+        picked.index = displayed.indexOf(picked);
+      }
+      const newUses = uses + 1;
+      if (participant) {
+        db.prepare('UPDATE event_participants SET data = ? WHERE id = ?').run(JSON.stringify({ uses: newUses }), participant.id);
+      } else {
+        db.prepare('INSERT INTO event_participants (event_id, user_id, data) VALUES (?, ?, ?)').run(wheelGuarantee.id, userId, JSON.stringify({ uses: newUses }));
+      }
+    }
+  }
 
   if (picked.type === 'free_spin') {
     freeSpin = true;

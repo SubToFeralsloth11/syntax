@@ -77,6 +77,125 @@ function dismissAllWarnings() {
   </div>
 </header>
 
+<% if (typeof activeEvents !== 'undefined' && activeEvents.length > 0) { %>
+<div class="event-banner-container">
+  <% activeEvents.forEach(ev => { %>
+    <% const data = JSON.parse(ev.data || '{}'); %>
+    <div class="event-banner" id="eventBanner_<%= ev.event_key %>">
+      <span class="event-banner-icon"><%= data.icon || '🎉' %></span>
+      <span class="event-banner-text"><strong><%= ev.name %></strong> — <%= ev.description.substring(0, 80) %><%= ev.description.length > 80 ? '...' : '' %></span>
+      <% if (ev.event_key === 'defeat_button') { %>
+        <button class="btn btn-sm btn-primary event-banner-btn" onclick="joinDefeatButton()">CLICK!</button>
+      <% } else if (ev.event_key === 'click_frenzy') { %>
+        <button class="btn btn-sm btn-primary event-banner-btn" onclick="clickFrenzy()">CLICK!</button>
+      <% } else if (ev.event_key === 'dice_roll') { %>
+        <button class="btn btn-sm btn-primary event-banner-btn" onclick="rollDice()">ROLL</button>
+      <% } else if (ev.event_key === 'rps_tournament') { %>
+        <button class="btn btn-sm btn-primary event-banner-btn" onclick="showRPS()">PLAY RPS</button>
+      <% } %>
+      <button class="event-banner-close" onclick="this.parentElement.remove()">×</button>
+    </div>
+  <% }) %>
+</div>
+<% } %>
+
+<script>
+async function joinDefeatButton() {
+  const res = await fetch('/api/events/click', { method: 'POST' });
+  const data = await res.json();
+  if (data.complete) {
+    showNotification('🎉 Button defeated! You earned ' + data.reward + ' coins!', true);
+  } else if (data.success) {
+    showNotification('Clicked! Progress: ' + data.total + '/' + data.target + ' (' + data.progress + '%)', true);
+  }
+}
+
+async function clickFrenzy() {
+  const res = await fetch('/api/events/click-frenzy', { method: 'POST' });
+  const data = await res.json();
+  if (data.complete) {
+    showNotification('🎉 Click Frenzy complete! +200 coins!', true);
+  } else if (data.success) {
+    showNotification('Clicks: ' + data.clicks + '/' + data.target, true);
+  }
+}
+
+async function rollDice() {
+  const res = await fetch('/api/events/roll-dice', { method: 'POST' });
+  const data = await res.json();
+  if (data.won) {
+    showNotification('🎲 You rolled a ' + data.roll + '! +' + data.reward + ' coins!', true);
+  } else {
+    showNotification('🎲 You rolled a ' + data.roll + '. Try again!', false);
+  }
+}
+
+function showRPS() {
+  const choice = prompt('Choose: rock, paper, or scissors?');
+  if (!choice) return;
+  fetch('/api/events/rps', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ choice: choice.toLowerCase() })
+  }).then(r => r.json()).then(data => {
+    if (data.won) {
+      showNotification('✊ ' + data.choice + ' vs ' + data.cpu + ' — WIN! Streak: ' + data.streak + '/' + data.target, true);
+    } else {
+      showNotification('✊ ' + data.choice + ' vs ' + data.cpu + ' — ' + data.result.toUpperCase() + '. Streak reset.', false);
+    }
+  });
+}
+</script>
+
+<style>
+.event-banner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.event-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(0,240,255,0.15), rgba(181,55,242,0.15), rgba(255,43,214,0.15));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,240,255,0.3);
+  color: var(--text);
+  font-size: 0.85rem;
+  pointer-events: all;
+  animation: eventSlide 0.3s ease;
+}
+@keyframes eventSlide {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.event-banner-icon { font-size: 1.2rem; }
+.event-banner-text { flex: 1; }
+.event-banner-text strong { color: var(--cyan); }
+.event-banner-btn {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  animation: pulse 1.5s infinite;
+}
+.event-banner-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.event-banner-close:hover { color: var(--text); }
+</style>
+
 <!-- Sidebar overlay (mobile) -->
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeNav()"></div>
 

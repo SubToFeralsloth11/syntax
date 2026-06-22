@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: 'SYNTAX // Admin Events' }) %>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1><i data-lucide="calendar-clock"></i> Server Events</h1>
+        <p>Activate events for all players</p>
+      </div>
+    </section>
+
+    <section class="admin-section">
+      <div class="container">
+        <div class="event-grid" id="eventGrid">
+          <% events.forEach(ev => { %>
+            <div class="event-card <%= ev.is_active ? 'active' : '' %>" data-key="<%= ev.event_key %>">
+              <div class="event-icon"><%= ev.data.icon || '🎉' %></div>
+              <div class="event-info">
+                <h3><%= ev.name %></h3>
+                <p><%= ev.description %></p>
+                <div class="event-meta">
+                  <span class="event-type"><%= ev.data.type || 'global' %></span>
+                  <% if (ev.is_active) { %>
+                    <span class="event-status active">ACTIVE</span>
+                    <% if (ev.expires_at) { %>
+                      <span class="event-expires">Expires: <%= new Date(ev.expires_at).toLocaleTimeString() %></span>
+                    <% } %>
+                  <% } else { %>
+                    <span class="event-status inactive">OFF</span>
+                  <% } %>
+                </div>
+              </div>
+              <div class="event-actions">
+                <% if (ev.is_active) { %>
+                  <button class="btn btn-danger btn-sm" onclick="deactivateEvent('<%= ev.event_key %>')">Deactivate</button>
+                <% } else { %>
+                  <button class="btn btn-primary btn-sm" onclick="activateEvent('<%= ev.event_key %>')">Activate</button>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script>
+    async function activateEvent(key) {
+      const res = await fetch('/api/admin/events/' + key + '/activate', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.message || 'Failed');
+      }
+    }
+
+    async function deactivateEvent(key) {
+      const res = await fetch('/api/admin/events/' + key + '/deactivate', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) location.reload();
+    }
+  </script>
+  <style>
+    .event-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .event-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .event-card.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+    .event-icon {
+      font-size: 2rem;
+      width: 50px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .event-info {
+      flex: 1;
+    }
+    .event-info h3 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .event-info p {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .event-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .event-type {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(181, 55, 242, 0.15);
+      color: var(--purple);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    .event-status {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .event-status.active {
+      background: rgba(0, 255, 136, 0.15);
+      color: #00ff88;
+      animation: pulse 2s infinite;
+    }
+    .event-status.inactive {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+    .event-expires {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .event-actions {
+      flex-shrink: 0;
+    }
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+    }
+    .btn-danger {
+      background: rgba(255, 68, 68, 0.2);
+      border: 1px solid rgba(255, 68, 68, 0.4);
+      color: #ff4444;
+    }
+    .btn-danger:hover {
+      background: rgba(255, 68, 68, 0.3);
+    }
+  </style>
+</body>
+</html>

@@ -584,6 +584,8 @@ app.use('/', questRoutes);
 app.use('/', friendRoutes);
 app.use('/', tradeRoutes);
 app.use('/', adminRoutes);
+const eventRoutes = require('./routes/events');
+app.use('/', eventRoutes);
 
 // Custom error pages
 app.use((req, res) => {
