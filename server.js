@@ -168,7 +168,7 @@ function injectGameNav(html) {
 
   window.loadExitScores = function() {
     if (!gid) return;
-    fetch('/api/game-scores/' + gid).then(function(r){return r.json()}).then(function(d){
+    fetch('/api/game-scores/' + gid, {credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
       var el = document.getElementById('syntaxBestScore');
       if (d.best > 0) {
         document.getElementById('syntaxBestScoreVal').textContent = d.best;
@@ -188,9 +188,10 @@ function injectGameNav(html) {
 
     fetch('/api/game-scores', {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ game_id: gid, score: score, extra_data: notes || null })
-    }).then(function(r){return r.json()}).then(function(d){
+    }).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
       if (d.ok) {
         status.className = 'save-status ok';
         status.textContent = 'Score saved! Best: ' + d.best;
@@ -200,7 +201,7 @@ function injectGameNav(html) {
       }
     }).catch(function(e){
       status.className = 'save-status err';
-      status.textContent = 'Failed to save — try again';
+      status.textContent = 'Failed to save — are you logged in?';
       btn.disabled = false;
       btn.textContent = 'Save & Exit';
     });

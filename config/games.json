@@ -227,7 +227,7 @@
     "id": "endless-runner",
     "name": "Endless Runner",
     "description": "Run forever, jump over obstacles — how far can you get?",
-    "thumbnail": "/images/game-covers/endless-runner.svg",
+    "thumbnail": "/images/game-covers/endless-runner.png",
     "url": "/games/endless-runner",
     "status": "active"
   }
