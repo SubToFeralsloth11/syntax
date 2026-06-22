@@ -344,6 +344,20 @@ function injectGameNav(html) {
   return navHtml + html;
 }
 
+// Cyberpunk theme injected into all games
+const cyberpunkBg = `<style id="syntax-theme">
+  html, body { background: #0a0a1e !important; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,240,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(181,55,242,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+</style>`;
+
 app.get('/games/echoes', (req, res) => {
   if (req.isAuthenticated()) {
     const db = require('./db/database');
@@ -409,7 +423,7 @@ function serveGame(route, folder) {
     }
     const fs = require('fs');
     let html = fs.readFileSync(path.join(__dirname, 'games', folder, 'index.html'), 'utf8');
-    html = html.replace('<head>', '<head><base href="' + route + '/">');
+    html = html.replace('<head>', '<head><base href="' + route + '/">' + cyberpunkBg);
     html = injectGameNav(html);
     html = injectGameSave(html, gameId);
     res.type('html').send(html);
@@ -504,7 +518,7 @@ app.get('/games/cuber', (req, res) => {
   const htmlPath = path.join(gameDir, 'mini.html');
   if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
   let html = fs.readFileSync(htmlPath, 'utf8');
-  html = html.replace('<head>', '<head><base href="/games/cuber/cube2/">');
+  html = html.replace('<head>', '<head><base href="/games/cuber/cube2/">' + cyberpunkBg);
   html = injectGameNav(html);
   res.type('html').send(html);
 });
@@ -525,7 +539,7 @@ app.get('/games/arena-fps', (req, res) => {
   const htmlPath = path.join(__dirname, 'games', 'arena-fps', 'public', 'index.html');
   if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
   let html = fs.readFileSync(htmlPath, 'utf8');
-  html = html.replace('<head>', '<head><base href="/games/arena-fps/">');
+  html = html.replace('<head>', '<head><base href="/games/arena-fps/">' + cyberpunkBg);
   html = injectGameNav(html);
   res.type('html').send(html);
 });
@@ -546,7 +560,7 @@ app.get('/games/openarena-web', (req, res) => {
   const htmlPath = path.join(__dirname, 'games', 'openarena-web', 'release', 'index.html');
   if (!fs.existsSync(htmlPath)) return res.status(404).render('404');
   let html = fs.readFileSync(htmlPath, 'utf8');
-  html = html.replace('<head>', '<head><base href="/games/openarena-web/release/">');
+  html = html.replace('<head>', '<head><base href="/games/openarena-web/release/">' + cyberpunkBg);
   html = injectGameNav(html);
   res.type('html').send(html);
 });

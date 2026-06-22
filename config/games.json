@@ -19,7 +19,7 @@
     "id": "echoes",
     "name": "Echoes of the Forgotten",
     "description": "An epic adventure awaits...",
-    "thumbnail": "/images/game-covers/echoes.svg",
+    "thumbnail": "/images/game-covers/echoes.png",
     "url": "/games/echoes",
     "status": "active"
   },
@@ -35,7 +35,7 @@
     "id": "2048",
     "name": "2048",
     "description": "Slide tiles and merge numbers to reach 2048!",
-    "thumbnail": "/images/game-covers/2048.svg",
+    "thumbnail": "/images/game-covers/2048.png",
     "url": "/games/2048",
     "status": "active"
   },
