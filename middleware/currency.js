@@ -9,7 +9,7 @@ function awardCoins(userId, amount, reason) {
   }
 
   if (amount > 0) {
-    const eventBonus = db.prepare('SELECT multiplier FROM user_bonuses WHERE user_id = ? AND bonus_type = ? AND expires_at > datetime("now")').get(userId, 'visit');
+    const eventBonus = db.prepare(`SELECT multiplier FROM user_bonuses WHERE user_id = ? AND bonus_type = ? AND expires_at > datetime('now')`).get(userId, 'visit');
     if (eventBonus && eventBonus.multiplier > 1) {
       amount = Math.floor(amount * eventBonus.multiplier);
     }

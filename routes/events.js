@@ -367,6 +367,25 @@ router.get('/api/events/announcements', (req, res) => {
   })));
 });
 
+// API: claim red button (first person wins)
+router.post('/api/events/claim-red-button', requireAuth, (req, res) => {
+  const event = db.prepare("SELECT * FROM events WHERE event_key = 'red_button' AND is_active = 1").get();
+  if (!event) return res.json({ success: false, message: 'Event not active' });
+
+  const existing = db.prepare('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?').get(event.id, req.user.id);
+  if (existing) return res.json({ success: false, message: 'Already claimed!' });
+
+  const data = JSON.parse(event.data || '{}');
+  const duration = data.duration || 3600;
+  const expires = new Date(Date.now() + duration * 1000).toISOString();
+
+  db.prepare('INSERT INTO event_participants (event_id, user_id) VALUES (?, ?)').run(event.id, req.user.id);
+  db.prepare(`INSERT INTO user_bonuses (user_id, bonus_type, multiplier, expires_at) VALUES (?, 'visit', 2, ?)`).run(req.user.id, expires);
+  db.prepare('UPDATE events SET is_active = 0 WHERE id = ?').run(event.id);
+
+  res.json({ success: true, message: 'x2 coins for 1 hour!' });
+});
+
 // API: click for defeat_button event
 router.post('/api/events/click', requireAuth, (req, res) => {
   const event = db.prepare('SELECT * FROM events WHERE event_key = ? AND is_active = 1').get('defeat_button');

@@ -485,4 +485,36 @@ function showRPS() {
   setInterval(updateEventsSidebar, 15000);
 })();
 </script>
+
+<div id="redButtonHunt" style="display:none;position:fixed;z-index:9990;cursor:pointer;transition:transform 0.1s" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">
+  <button id="redButton" onclick="claimRedButton()" style="width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff4444,#cc0000);border:2px solid #880000;box-shadow:0 0 12px rgba(255,0,0,0.5);cursor:pointer;transition:box-shadow 0.2s" onmouseenter="this.style.boxShadow='0 0 20px rgba(255,0,0,0.8)'" onmouseleave="this.style.boxShadow='0 0 12px rgba(255,0,0,0.5)'"></button>
+</div>
+<script>
+(function(){
+  fetch('/api/events').then(r=>r.json()).then(events=>{
+    const rb = events.find(e=>e.key==='red_button');
+    const el = document.getElementById('redButtonHunt');
+    if (!rb || !el) return;
+    el.style.display = 'block';
+    const positions = [
+      {top:'85%',left:'5%'}, {top:'90%',right:'3%'}, {top:'70%',left:'92%'},
+      {top:'15%',right:'8%'}, {top:'50%',left:'2%'}, {top:'95%',left:'45%'},
+      {top:'40%',right:'1%'}, {top:'80%',left:'80%'}, {top:'60%',left:'1%'},
+      {top:'30%',right:'4%'}, {top:'88%',left:'25%'}, {top:'20%',left:'15%'}
+    ];
+    let pos = positions[Math.floor(Math.random()*positions.length)];
+    Object.keys(pos).forEach(k=>el.style[k]=pos[k]);
+  }).catch(()=>{});
+})();
+function claimRedButton(){
+  fetch('/api/events/claim-red-button',{method:'POST'}).then(r=>r.json()).then(data=>{
+    if(data.success){
+      document.getElementById('redButtonHunt').style.display='none';
+      showNotification('🎯 You found the Red Button! x2 coins for 1 hour!',true);
+    } else {
+      showNotification(data.message||'Too slow!',false);
+    }
+  });
+}
+</script>
 <% } %>
