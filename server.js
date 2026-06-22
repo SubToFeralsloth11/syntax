@@ -103,31 +103,16 @@ function injectGameNav(html) {
   .syntax-game-nav:hover .sgn-home{color:#c96bff}
   @media(max-width:480px){.syntax-game-nav span:not(.sgn-label){display:none}.syntax-game-nav .sgn-divider{display:none}.syntax-game-nav .sgn-label{display:inline}}
 
-  .syntax-exit-btn{position:fixed;top:16px;right:16px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:10px 18px 10px 14px;background:rgba(10,10,20,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,43,214,0.3);border-radius:10px;color:#ff2bd6;font-family:'Inter',-apple-system,sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;box-shadow:0 0 20px rgba(255,43,214,0.15)}
-  .syntax-exit-btn:hover{background:rgba(255,43,214,0.12);border-color:#ff2bd6;color:#ff5ce6;box-shadow:0 0 28px rgba(255,43,214,0.4);transform:translateY(-1px)}
-  .syntax-exit-btn svg{width:18px;height:18px;flex-shrink:0}
+  .syntax-score-bar{position:fixed;top:16px;right:16px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:rgba(10,10,20,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,255,136,0.3);border-radius:10px;color:#00ff88;font-family:'Inter',-apple-system,sans-serif;font-size:0.85rem;font-weight:600;box-shadow:0 0 20px rgba(0,255,136,0.15);cursor:pointer;transition:all 0.2s}
+  .syntax-score-bar:hover{border-color:#00ff88;box-shadow:0 0 28px rgba(0,255,136,0.4)}
+  .syntax-score-bar svg{width:16px;height:16px}
+  .syntax-score-bar .ssb-best{color:#888;font-weight:400;margin-left:4px}
+  .syntax-score-bar.saved{animation:ssbFlash 0.6s ease}
+  @keyframes ssbFlash{0%,100%{border-color:rgba(0,255,136,0.3)}50%{border-color:#00ff88;box-shadow:0 0 30px rgba(0,255,136,0.6)}}
 
-  .syntax-exit-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center}
-  .syntax-exit-modal.open{display:flex}
-  .syntax-exit-panel{background:#12121e;border:1px solid rgba(0,240,255,0.3);border-radius:16px;padding:32px;max-width:420px;width:90%;box-shadow:0 0 40px rgba(0,240,255,0.15);font-family:'Inter',-apple-system,sans-serif;color:#e0e0e0}
-  .syntax-exit-panel h2{margin:0 0 8px;color:#00f0ff;font-size:1.3rem;font-weight:700}
-  .syntax-exit-panel .sub{margin:0 0 24px;color:#888;font-size:0.85rem}
-  .syntax-exit-panel label{display:block;margin-bottom:6px;color:#aaa;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-  .syntax-exit-panel input,.syntax-exit-panel textarea{width:100%;padding:10px 14px;background:#0a0a14;border:1px solid rgba(0,240,255,0.2);border-radius:8px;color:#fff;font-family:inherit;font-size:0.95rem;outline:none;box-sizing:border-box;margin-bottom:16px}
-  .syntax-exit-panel input:focus,.syntax-exit-panel textarea:focus{border-color:#00f0ff;box-shadow:0 0 12px rgba(0,240,255,0.2)}
-  .syntax-exit-panel textarea{resize:vertical;min-height:60px}
-  .syntax-exit-panel .btn-row{display:flex;gap:12px;margin-top:8px}
-  .syntax-exit-panel .btn-save{flex:1;padding:12px;background:linear-gradient(135deg,#00f0ff,#b537f2);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s}
-  .syntax-exit-panel .btn-save:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(0,240,255,0.4)}
-  .syntax-exit-panel .btn-save:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-  .syntax-exit-panel .btn-quit{flex:1;padding:12px;background:transparent;border:1px solid rgba(255,43,214,0.4);border-radius:8px;color:#ff2bd6;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;text-decoration:none;text-align:center;display:block;box-sizing:border-box}
-  .syntax-exit-panel .btn-quit:hover{background:rgba(255,43,214,0.1);border-color:#ff2bd6}
-  .syntax-exit-panel .save-status{margin-top:12px;padding:10px;border-radius:8px;font-size:0.85rem;display:none;text-align:center}
-  .syntax-exit-panel .save-status.ok{display:block;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:#00ff88}
-  .syntax-exit-panel .save-status.err{display:block;background:rgba(255,43,214,0.1);border:1px solid rgba(255,43,214,0.3);color:#ff2bd6}
-  .syntax-exit-panel .best-score{margin:0 0 20px;padding:12px;background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:8px;text-align:center}
-  .syntax-exit-panel .best-score span{color:#00f0ff;font-size:1.5rem;font-weight:700}
-  .syntax-exit-panel .best-score small{display:block;color:#888;font-size:0.75rem;margin-top:2px}
+  .syntax-save-toast{position:fixed;bottom:24px;right:24px;z-index:10000;padding:12px 20px;border-radius:10px;font-family:'Inter',-apple-system,sans-serif;font-size:0.85rem;font-weight:600;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+  .syntax-save-toast.show{opacity:1;transform:translateY(0)}
+  .syntax-save-toast.ok{background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.4);color:#00ff88}
 </style>
 
 <a href="/games" class="syntax-game-nav" title="Back to Games">
@@ -137,107 +122,102 @@ function injectGameNav(html) {
   <svg class="sgn-home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 </a>
 
-<button class="syntax-exit-btn" id="syntaxExitBtn" onclick="document.getElementById('syntaxExitModal').classList.add('open');if(window.loadExitScores)window.loadExitScores();" title="Exit Game">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-  <span class="sgn-label">Exit Game</span>
-</button>
-
-<div id="syntaxExitModal" class="syntax-exit-modal">
-  <div class="syntax-exit-panel">
-    <h2>Exit Game</h2>
-    <p class="sub">Save your progress before leaving?</p>
-    <div class="best-score" id="syntaxBestScore" style="display:none">
-      <span id="syntaxBestScoreVal">0</span>
-      <small>Best Score</small>
-    </div>
-    <label for="syntaxScoreInput">Your Score</label>
-    <input type="number" id="syntaxScoreInput" placeholder="Enter your score" value="0">
-    <label for="syntaxNotes">Notes (optional)</label>
-    <textarea id="syntaxNotes" placeholder="Any notes about this run..."></textarea>
-    <div class="btn-row">
-      <button class="btn-save" id="syntaxSaveBtn" onclick="syntaxSaveAndExit()">Save & Exit</button>
-      <a href="/games" class="btn-quit">Quit Without Saving</a>
-    </div>
-    <div class="save-status" id="syntaxSaveStatus"></div>
-  </div>
+<div class="syntax-score-bar" id="syntaxScoreBar" style="display:none" title="Auto-saves your score">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+  <span id="syntaxScoreVal">0</span>
+  <span class="ssb-best" id="syntaxScoreBest"></span>
 </div>
+
+<div class="syntax-save-toast" id="syntaxSaveToast"></div>
 
 <script>
 (function(){
   var gid = window.SYNTAX_GAME_ID || '';
-  var isAuth = !!window.SYNTAX_AUTH;
+  var auth = !!window.SYNTAX_AUTH;
+  var _api = window.location.origin + '/api/game-scores';
+  var _lastScore = 0;
+  var _saved = false;
 
-  window.loadExitScores = function() {
-    if (!gid || !window.SYNTAX_AUTH) return;
-    var url = window.location.origin + '/api/game-scores/' + encodeURIComponent(gid);
-    fetch(url, {credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
-      var el = document.getElementById('syntaxBestScore');
-      if (d.best > 0) {
-        document.getElementById('syntaxBestScoreVal').textContent = d.best;
-        el.style.display = 'block';
-        document.getElementById('syntaxScoreInput').value = d.best;
-      }
-    }).catch(function(){});
+  var bar = document.getElementById('syntaxScoreBar');
+  var val = document.getElementById('syntaxScoreVal');
+  var best = document.getElementById('syntaxScoreBest');
+  var toast = document.getElementById('syntaxSaveToast');
+
+  if (auth && bar) bar.style.display = 'inline-flex';
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.className = 'syntax-save-toast ok show';
+    setTimeout(function(){ toast.className = 'syntax-save-toast'; }, 2500);
+  }
+
+  function flashBar() {
+    if (!bar) return;
+    bar.classList.remove('saved');
+    void bar.offsetWidth;
+    bar.classList.add('saved');
+  }
+
+  window.setGameScore = function(score) {
+    _lastScore = score;
+    if (val) val.textContent = score;
+    _saved = false;
   };
 
-  window.syntaxSaveAndExit = function() {
-    if (!window.SYNTAX_AUTH) {
-      window.location.href = '/login';
-      return;
-    }
-    var score = parseInt(document.getElementById('syntaxScoreInput').value) || 0;
-    var notes = document.getElementById('syntaxNotes').value;
-    var btn = document.getElementById('syntaxSaveBtn');
-    var status = document.getElementById('syntaxSaveStatus');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-
-    fetch(window.location.origin + '/api/game-scores', {
+  function postScore(score, extra) {
+    if (!auth || !gid || _saved) return;
+    return fetch(_api, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ game_id: gid, score: score, extra_data: notes || null })
-    }).then(function(r){return r.json()}).then(function(d){
+      body: JSON.stringify({ game_id: gid, score: score, extra_data: extra || null })
+    }).then(function(r){ return r.json(); }).then(function(d){
       if (d.ok) {
-        status.className = 'save-status ok';
-        status.textContent = 'Score saved! Best: ' + d.best;
-        setTimeout(function(){ window.location.href = '/games'; }, 800);
-      } else {
-        throw new Error('Save failed');
+        _saved = true;
+        if (best) best.textContent = '/ best: ' + d.best;
+        flashBar();
+        return d;
       }
-    }).catch(function(e){
-      status.className = 'save-status err';
-      status.textContent = 'Failed to save — try again';
-      btn.disabled = false;
-      btn.textContent = 'Save & Exit';
-    });
+    }).catch(function(){});
+  }
+
+  window.saveGameScore = function(score, extra) {
+    _lastScore = score;
+    if (val) val.textContent = score;
+    postScore(score, extra);
   };
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      var modal = document.getElementById('syntaxExitModal');
-      if (modal && modal.classList.contains('open')) {
-        modal.classList.remove('open');
-      }
-    }
-  });
+  window.getGameScores = function(cb) {
+    if (!auth || !gid) return;
+    fetch(_api + '/' + encodeURIComponent(gid), {credentials:'same-origin'})
+      .then(function(r){return r.json()}).then(cb).catch(function(){});
+  };
 
-  function updateExitAuthUI() {
-    var auth = !!window.SYNTAX_AUTH;
-    var saveBtn = document.getElementById('syntaxSaveBtn');
-    var sub = document.querySelector('.syntax-exit-panel .sub');
-    if (!auth) {
-      if (saveBtn) { saveBtn.textContent = 'Login to Save'; saveBtn.onclick = function(){ window.location.href = '/login'; }; }
-      if (sub) sub.textContent = 'Log in to save your progress';
-    } else {
-      if (saveBtn) { saveBtn.textContent = 'Save & Exit'; saveBtn.onclick = syntaxSaveAndExit; }
-      if (sub) sub.textContent = 'Save your progress before leaving?';
-    }
+  if (auth && gid) {
+    fetch(_api + '/' + encodeURIComponent(gid), {credentials:'same-origin'})
+      .then(function(r){return r.json()}).then(function(d){
+        if (d.best > 0 && best) best.textContent = '/ best: ' + d.best;
+      }).catch(function(){});
+
+    setInterval(function(){
+      if (_lastScore > 0 && !_saved) {
+        postScore(_lastScore);
+      }
+    }, 15000);
+
+    window.addEventListener('beforeunload', function(){
+      if (_lastScore > 0 && auth) {
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', _api, false);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.withCredentials = true;
+          xhr.send(JSON.stringify({game_id:gid,score:_lastScore}));
+        } catch(e){}
+      }
+    });
   }
-  updateExitAuthUI();
-  document.getElementById('syntaxExitBtn').addEventListener('click', updateExitAuthUI);
-})();
-</script>`;
+})();</script>`;
   if (html.includes('<body>')) {
     return html.replace('<body>', '<body>' + navHtml);
   }
